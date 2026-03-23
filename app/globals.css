@@ -1,0 +1,162 @@
+@import "tailwindcss";
+
+:root {
+  /* Core palette */
+  --background: #11101C;
+  --surface: #1A1830;
+  --primary: #6B5CE7;
+  --primary-hover: #7D70ED;
+  --primary-muted: rgba(107, 92, 231, 0.15);
+  --luxury: #C9A84C;
+  --luxury-hover: #D4B85E;
+  --luxury-muted: rgba(201, 168, 76, 0.15);
+  --destructive: #E74C5C;
+  --destructive-muted: rgba(231, 76, 92, 0.15);
+  --success: #34D399;
+  --warning: #FBBF24;
+
+  /* Text */
+  --foreground: #F0EFF8;
+  --text-primary: #F0EFF8;
+  --text-secondary: #C4C3D0;
+  --text-muted: #8B89A0;
+
+  /* Glass / Surface */
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --glass-bg-hover: rgba(255, 255, 255, 0.07);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-hover: rgba(255, 255, 255, 0.14);
+
+  /* Borders & Rings */
+  --border: rgba(255, 255, 255, 0.08);
+  --ring: rgba(107, 92, 231, 0.4);
+
+  /* Radius */
+  --radius: 0.75rem;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-glow-primary: 0 0 20px rgba(107, 92, 231, 0.25);
+  --shadow-glow-luxury: 0 0 20px rgba(201, 168, 76, 0.25);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-muted: var(--primary-muted);
+  --color-luxury: var(--luxury);
+  --color-luxury-hover: var(--luxury-hover);
+  --color-luxury-muted: var(--luxury-muted);
+  --color-destructive: var(--destructive);
+  --color-destructive-muted: var(--destructive-muted);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-glass-bg: var(--glass-bg);
+  --color-glass-bg-hover: var(--glass-bg-hover);
+  --color-glass-border: var(--glass-border);
+  --color-glass-border-hover: var(--glass-border-hover);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --font-display: var(--font-cormorant);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
+}
+
+/* Base styles */
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans, 'Inter', sans-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Selection */
+::selection {
+  background: var(--primary-muted);
+  color: var(--text-primary);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Glass card utility */
+.glass-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--radius);
+}
+
+.glass-card-hover {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--radius);
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glass-card-hover:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  box-shadow: var(--shadow-md);
+}
+
+/* Gold glow for milestones and scores */
+.glow-luxury {
+  box-shadow: var(--shadow-glow-luxury);
+}
+
+.glow-primary {
+  box-shadow: var(--shadow-glow-primary);
+}
+
+/* Heading utility for Cormorant Garamond */
+.heading-display {
+  font-family: var(--font-display, 'Cormorant Garamond', serif);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Data table font */
+.font-data {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.8125rem;
+  letter-spacing: -0.01em;
+}
+
+/* Shimmer animation for skeleton loaders */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}

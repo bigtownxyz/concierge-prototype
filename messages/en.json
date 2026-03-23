@@ -1,0 +1,134 @@
+{
+  "common": {
+    "getStarted": "Get Started",
+    "learnMore": "Learn More",
+    "checkEligibility": "Check Your Eligibility",
+    "bookConsultation": "Book Consultation",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "notFound": "Page not found"
+  },
+  "nav": {
+    "programs": "Programs",
+    "compare": "Compare",
+    "blog": "Blog",
+    "about": "About",
+    "contact": "Contact",
+    "login": "Log In",
+    "portal": "My Portal",
+    "admin": "Admin"
+  },
+  "hero": {
+    "title": "Your Second Citizenship Starts Here",
+    "subtitle": "Expert advisory for global citizenship, residency, and investment migration programmes",
+    "cta": "Check Your Eligibility"
+  },
+  "programs": {
+    "title": "Explore Programmes",
+    "subtitle": "Discover citizenship and residency options worldwide",
+    "filterByRegion": "Filter by region",
+    "allRegions": "All Regions",
+    "investmentFrom": "Investment from",
+    "processingTime": "Processing time",
+    "months": "months",
+    "visaFree": "visa-free destinations",
+    "featured": "Featured",
+    "exclusive": "Exclusive"
+  },
+  "qualify": {
+    "title": "Find Your Perfect Programme",
+    "step": "Step {current} of {total}",
+    "goal": {
+      "title": "What is your primary goal?",
+      "passport": "Second Passport",
+      "tax": "Tax Optimisation",
+      "lifestyle": "Lifestyle & Relocation",
+      "business": "Business Expansion",
+      "security": "Family Security"
+    },
+    "timeline": {
+      "title": "What is your target timeline?",
+      "under6": "Under 6 months",
+      "6to12": "6-12 months",
+      "1to2years": "1-2 years",
+      "noUrgency": "No urgency"
+    },
+    "budget": {
+      "title": "What is your investment budget?",
+      "placeholder": "Enter amount in USD"
+    },
+    "nationality": {
+      "title": "What nationalities do you hold?",
+      "search": "Search countries..."
+    },
+    "family": {
+      "title": "Who will be included?",
+      "solo": "Just me",
+      "partner": "Me & partner",
+      "children": "Family with children",
+      "parents": "Including parents"
+    },
+    "criminal": {
+      "title": "Do you have any criminal record?",
+      "note": "All programmes require a clean background check"
+    },
+    "funds": {
+      "title": "What is your primary source of funds?",
+      "employment": "Employment",
+      "business": "Business ownership",
+      "investment": "Investments",
+      "inheritance": "Inheritance"
+    },
+    "region": {
+      "title": "Which regions interest you?",
+      "caribbean": "Caribbean",
+      "europe": "Europe",
+      "middleEast": "Middle East",
+      "asiaPacific": "Asia Pacific",
+      "southAmerica": "South America",
+      "centralAmerica": "Central America"
+    },
+    "tax": {
+      "title": "Is tax optimisation a priority?",
+      "tooltip": "Some programmes offer significant tax advantages including zero income tax"
+    },
+    "contact": {
+      "title": "Let's get in touch",
+      "name": "Full name",
+      "email": "Email address",
+      "phone": "Phone number",
+      "country": "Country of residence"
+    },
+    "results": {
+      "title": "Your Top Matches",
+      "fitScore": "Fit Score",
+      "startApplication": "Start Application",
+      "advisorReady": "Your dedicated advisor is ready",
+      "noMatches": "No strong matches found. Book a consultation for personalised guidance.",
+      "createAccount": "Create account to save your results"
+    }
+  },
+  "portal": {
+    "dashboard": "Dashboard",
+    "documents": "Documents",
+    "messages": "Messages",
+    "notifications": "Notifications",
+    "payments": "Payments",
+    "settings": "Settings",
+    "welcome": "Welcome back, {name}",
+    "currentStage": "Current stage",
+    "uploadDocument": "Upload Document",
+    "noMessages": "No messages yet"
+  },
+  "footer": {
+    "tagline": "Expert second citizenship & residency advisory",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "copyright": "All rights reserved."
+  }
+}
