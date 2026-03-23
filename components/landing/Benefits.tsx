@@ -2,10 +2,11 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import { cn } from "@/lib/utils";
 import {
-  Shield,
   Globe,
   TrendingDown,
+  Shield,
   Users,
   Zap,
   Lock,
@@ -17,50 +18,32 @@ const benefits = [
   {
     icon: Globe,
     title: "Global Mobility",
-    description:
-      "Access 150+ countries visa-free. Travel, live, and work without borders.",
-    stat: "150+",
-    statLabel: "countries",
+    description: "150+ countries visa-free",
   },
   {
     icon: TrendingDown,
     title: "Tax Optimisation",
-    description:
-      "Legally reduce your tax burden with territorial tax systems and zero-income-tax jurisdictions.",
-    stat: "0%",
-    statLabel: "income tax",
+    description: "Zero income tax jurisdictions",
   },
   {
     icon: Shield,
     title: "Asset Protection",
-    description:
-      "Shield your wealth from political instability, litigation, and economic uncertainty.",
-    stat: "100%",
-    statLabel: "legal",
+    description: "Shield wealth from instability",
   },
   {
     icon: Users,
     title: "Family Security",
-    description:
-      "Include your spouse, children, and parents. Secure your family's future.",
-    stat: "4",
-    statLabel: "generations",
+    description: "Include spouse, children, parents",
   },
   {
     icon: Zap,
     title: "Fast Processing",
-    description:
-      "Most programmes process in 3-6 months. Some offer citizenship in 30 days.",
-    stat: "30",
-    statLabel: "days min",
+    description: "Citizenship in as little as 30 days",
   },
   {
     icon: Lock,
-    title: "Full Confidentiality",
-    description:
-      "Absolute discretion. We never share your information with third parties.",
-    stat: "100%",
-    statLabel: "private",
+    title: "Confidentiality",
+    description: "Absolute discretion guaranteed",
   },
 ];
 
@@ -69,85 +52,118 @@ export function Benefits() {
   const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
 
   return (
-    <section ref={sectionRef} className="relative py-32 px-6 overflow-hidden">
-      {/* Atmospheric background */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse at 20% 50%, rgba(107,92,231,0.05), transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(201,168,76,0.04), transparent 50%)",
-        }}
-      />
+    <section
+      ref={sectionRef}
+      className="relative overflow-hidden py-32"
+      style={{ backgroundColor: "#1A1830" }}
+    >
+      {/* Subtle top border to delineate from adjacent sections */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
 
-      {/* Noise grain */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.02]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-          backgroundSize: "128px",
-        }}
-      />
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="flex flex-col lg:flex-row">
 
-      <div className="relative mx-auto max-w-6xl">
-        {/* Header */}
-        <div className="mb-20 max-w-xl">
-          <motion.p
-            className="text-[11px] font-medium uppercase tracking-[0.3em] text-primary/60 mb-4"
-            initial={{ opacity: 0, x: -20 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, ease: EASE }}
-          >
-            Why Second Citizenship
-          </motion.p>
-          <motion.h2
-            className="heading-display text-4xl sm:text-5xl lg:text-6xl text-text-primary leading-[1.05]"
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7, delay: 0.1, ease: EASE }}
-          >
-            The ultimate insurance for your{" "}
-            <span className="text-primary">freedom</span>
-          </motion.h2>
-        </div>
-
-        {/* Bento-style grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {benefits.map((benefit, i) => (
-            <motion.div
-              key={benefit.title}
-              initial={{ opacity: 0, y: 24 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{
-                delay: 0.15 + i * 0.08,
-                duration: 0.5,
-                ease: EASE,
-              }}
-              className="group relative rounded-2xl border border-white/[0.05] p-7 bg-white/[0.02] transition-all duration-500 hover:bg-white/[0.04] hover:border-white/[0.1] overflow-hidden"
+          {/* LEFT — Atmospheric stat panel */}
+          <div className="relative lg:w-1/2 flex flex-col items-center justify-center py-20 lg:py-0 lg:pr-16">
+            {/* Violet glow behind the stat */}
+            <div
+              className="pointer-events-none absolute inset-0 flex items-center justify-center"
+              aria-hidden="true"
             >
-              {/* Large background stat */}
-              <span className="absolute -bottom-2 -right-1 heading-display text-[80px] font-bold leading-none text-white/[0.02] transition-colors duration-500 group-hover:text-primary/[0.04] select-none">
-                {benefit.stat}
-              </span>
+              <div
+                className="h-[420px] w-[420px] rounded-full"
+                style={{
+                  background:
+                    "radial-gradient(circle, rgba(107,92,231,0.10) 0%, transparent 70%)",
+                }}
+              />
+            </div>
 
-              <div className="relative z-10">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.06] transition-all duration-300 group-hover:bg-primary/10 group-hover:border-primary/20">
-                    <benefit.icon className="h-4.5 w-4.5 text-text-muted transition-colors group-hover:text-primary" />
-                  </div>
-                  <span className="text-[10px] uppercase tracking-widest text-text-muted/30">
-                    {benefit.statLabel}
-                  </span>
-                </div>
+            {/* Noise grain overlay */}
+            <div
+              className="pointer-events-none absolute inset-0 opacity-[0.03]"
+              aria-hidden="true"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+                backgroundSize: "128px",
+              }}
+            />
 
-                <h3 className="text-base font-semibold text-text-primary mb-2 tracking-tight">
-                  {benefit.title}
-                </h3>
-                <p className="text-[13px] leading-relaxed text-text-muted/70">
-                  {benefit.description}
-                </p>
-              </div>
-            </motion.div>
-          ))}
+            {/* The massive stat */}
+            <div className="relative z-10 text-center select-none">
+              <motion.span
+                className="heading-display block leading-none bg-clip-text text-transparent"
+                style={{
+                  fontSize: "clamp(8rem, 18vw, 14rem)",
+                  backgroundImage:
+                    "linear-gradient(135deg, #B8943F 0%, #C9A84C 40%, #E8D48B 70%, #C9A84C 100%)",
+                }}
+                initial={{ opacity: 0, scale: 0.88 }}
+                animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                transition={{ duration: 0.8, ease: EASE }}
+              >
+                150+
+              </motion.span>
+
+              <motion.p
+                className="mt-2 text-xl text-text-muted tracking-wide"
+                initial={{ opacity: 0, y: 12 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
+              >
+                visa-free destinations
+              </motion.p>
+            </div>
+
+            {/* Vertical divider on desktop */}
+            <motion.div
+              className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 w-[1px] h-3/4 bg-gradient-to-b from-transparent via-white/[0.08] to-transparent"
+              initial={{ scaleY: 0, opacity: 0 }}
+              animate={isInView ? { scaleY: 1, opacity: 1 } : {}}
+              transition={{ duration: 0.8, delay: 0.3, ease: EASE }}
+              style={{ transformOrigin: "center" }}
+            />
+          </div>
+
+          {/* RIGHT — Benefits 2x3 grid */}
+          <div className="lg:w-1/2 lg:pl-16 flex items-center">
+            <div className="w-full grid grid-cols-2 gap-x-8 gap-y-10 lg:gap-x-12 lg:gap-y-12">
+              {benefits.map((benefit, i) => {
+                const BenefitIcon = benefit.icon;
+                return (
+                  <motion.div
+                    key={benefit.title}
+                    className="group flex flex-col gap-2"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{
+                      duration: 0.55,
+                      delay: 0.15 + i * 0.09,
+                      ease: EASE,
+                    }}
+                  >
+                    {/* Icon — transitions to gold on hover */}
+                    <BenefitIcon
+                      className={cn(
+                        "h-5 w-5 mb-1 transition-colors duration-300",
+                        "text-primary/60 group-hover:text-[#C9A84C]"
+                      )}
+                    />
+
+                    <h3 className="text-sm font-semibold text-text-primary tracking-tight">
+                      {benefit.title}
+                    </h3>
+
+                    <p className="text-xs leading-relaxed text-text-muted/70">
+                      {benefit.description}
+                    </p>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
