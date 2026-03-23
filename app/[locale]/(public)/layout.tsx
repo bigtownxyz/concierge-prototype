@@ -1,3 +1,6 @@
+import { Navbar } from "@/components/shared/Navbar";
+import { Footer } from "@/components/shared/Footer";
+
 export default function PublicLayout({
   children,
 }: {
@@ -5,9 +8,9 @@ export default function PublicLayout({
 }) {
   return (
     <>
-      {/* Navbar will be added in Phase 2 */}
+      <Navbar />
       <main className="min-h-screen">{children}</main>
-      {/* Footer will be added in Phase 2 */}
+      <Footer />
     </>
   );
 }

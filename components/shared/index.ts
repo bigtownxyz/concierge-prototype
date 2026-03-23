@@ -8,3 +8,5 @@ export {
   CardSkeleton,
   GridSkeleton,
 } from "./LoadingSkeleton";
+export { Navbar } from "./Navbar";
+export { Footer } from "./Footer";
