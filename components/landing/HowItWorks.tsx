@@ -1,196 +1,147 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useInView, type Variants } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Crosshair, MessageCircle, FileCheck, Award } from "lucide-react";
 
-// Cubic bezier ease shared across animations
-const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as [number, number, number, number];
+const EASE = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
-// ---------------------------------------------------------------------------
-// Data
-// ---------------------------------------------------------------------------
-
-interface Step {
-  number: string;
-  title: string;
-  description: string;
-}
-
-const STEPS: Step[] = [
+const steps = [
   {
     number: "01",
+    icon: Crosshair,
     title: "Qualification",
     description:
-      "Complete our smart matching tool to find programmes that fit your profile.",
+      "Complete our intelligent matching tool. In 2 minutes, discover which programmes align with your goals, budget, and nationality.",
+    accent: "from-primary/20 to-transparent",
   },
   {
     number: "02",
+    icon: MessageCircle,
     title: "Consultation",
     description:
-      "Speak with a dedicated advisor who specialises in your target programmes.",
+      "Your dedicated advisor — a specialist in your target programmes — builds a bespoke strategy for your citizenship journey.",
+    accent: "from-luxury/15 to-transparent",
   },
   {
     number: "03",
+    icon: FileCheck,
     title: "Application",
     description:
-      "We handle the paperwork, due diligence, and government submissions.",
+      "We handle everything: document preparation, due diligence coordination, and government submissions. You focus on your life.",
+    accent: "from-primary/20 to-transparent",
   },
   {
     number: "04",
+    icon: Award,
     title: "Approval",
     description:
-      "Receive your new citizenship or residency — typically within 3–12 months.",
+      "Receive your new citizenship or residency. Your second passport opens 150+ countries — and a world of possibilities.",
+    accent: "from-luxury/15 to-transparent",
   },
 ];
 
-// ---------------------------------------------------------------------------
-// Animation variants
-// ---------------------------------------------------------------------------
-
-const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 32 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: EASE_OUT_EXPO,
-      delay: i * 0.15,
-    },
-  }),
-};
-
-const headingVariants: Variants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: EASE_OUT_EXPO },
-  },
-};
-
-// ---------------------------------------------------------------------------
-// StepCard
-// ---------------------------------------------------------------------------
-
-interface StepCardProps {
-  step: Step;
-  index: number;
-  inView: boolean;
-}
-
-function StepCard({ step, index, inView }: StepCardProps) {
-  return (
-    <motion.div
-      className={cn(
-        "group relative flex-1",
-        "bg-glass-bg border border-glass-border rounded-2xl p-6",
-        "transition-[border-color,box-shadow] duration-300",
-        "hover:border-glass-border-hover hover:shadow-[0_4px_24px_rgba(0,0,0,0.35)]"
-      )}
-      custom={index}
-      initial="hidden"
-      animate={inView ? "visible" : "hidden"}
-      variants={cardVariants}
-    >
-      {/* Subtle inner glass highlight */}
-      <div
-        className="pointer-events-none absolute inset-0 rounded-2xl"
-        style={{
-          background:
-            "linear-gradient(135deg, rgba(255,255,255,0.025) 0%, transparent 50%)",
-        }}
-        aria-hidden="true"
-      />
-
-      <div className="relative z-10">
-        {/* Step number */}
-        <span
-          className={cn(
-            "heading-display block text-5xl leading-none select-none",
-            "text-primary/20",
-            "transition-[color,text-shadow] duration-300",
-            "group-hover:text-primary/40",
-            "group-hover:[text-shadow:0_0_24px_rgba(107,92,231,0.5)]"
-          )}
-          aria-hidden="true"
-        >
-          {step.number}
-        </span>
-
-        {/* Title */}
-        <h3 className="mt-4 text-lg font-semibold text-text-primary">
-          {step.title}
-        </h3>
-
-        {/* Description */}
-        <p className="mt-2 text-sm leading-relaxed text-text-muted">
-          {step.description}
-        </p>
-      </div>
-    </motion.div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Connector line (desktop only)
-// ---------------------------------------------------------------------------
-
-function Connector({ inView, delay }: { inView: boolean; delay: number }) {
-  return (
-    <motion.div
-      className="hidden lg:block w-8 shrink-0 self-center"
-      initial={{ opacity: 0, scaleX: 0 }}
-      animate={inView ? { opacity: 1, scaleX: 1 } : { opacity: 0, scaleX: 0 }}
-      transition={{ duration: 0.4, ease: "easeOut", delay }}
-      style={{ originX: 0 }}
-      aria-hidden="true"
-    >
-      <div
-        className="h-px w-full"
-        style={{ background: "rgba(107, 92, 231, 0.2)" }}
-      />
-    </motion.div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// HowItWorks
-// ---------------------------------------------------------------------------
-
 export function HowItWorks() {
   const sectionRef = useRef<HTMLElement>(null);
-  const inView = useInView(sectionRef, { once: true, margin: "-80px" });
+  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
   return (
-    <section ref={sectionRef} className="py-24 px-6">
-      <div className="mx-auto max-w-7xl">
-        {/* Heading block */}
-        <motion.div
-          className="mb-16 text-center"
-          initial="hidden"
-          animate={inView ? "visible" : "hidden"}
-          variants={headingVariants}
-        >
-          <h2 className="heading-display text-4xl text-text-primary">
-            How It Works
-          </h2>
-          <p className="mt-3 text-text-muted">
-            From first consultation to passport in hand
-          </p>
-        </motion.div>
+    <section ref={sectionRef} className="relative py-32 px-6 overflow-hidden">
+      {/* Subtle background asymmetric glow */}
+      <div
+        className="pointer-events-none absolute top-0 right-0 w-[600px] h-[600px] opacity-30"
+        style={{
+          background:
+            "radial-gradient(circle at center, rgba(107,92,231,0.06), transparent 70%)",
+        }}
+      />
 
-        {/* Steps row */}
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-stretch lg:gap-0">
-          {STEPS.map((step, i) => (
-            <div key={step.number} className="contents lg:flex lg:flex-1 lg:items-stretch">
-              <StepCard step={step} index={i} inView={inView} />
-              {/* Connector between cards — not after the last one */}
-              {i < STEPS.length - 1 && (
-                <Connector inView={inView} delay={i * 0.15 + 0.4} />
+      <div className="mx-auto max-w-6xl">
+        {/* Header — left-aligned for editorial feel */}
+        <div className="mb-20 max-w-xl">
+          <motion.p
+            className="text-[11px] font-medium uppercase tracking-[0.3em] text-luxury/70 mb-4"
+            initial={{ opacity: 0, x: -20 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.6, ease: EASE }}
+          >
+            The Process
+          </motion.p>
+          <motion.h2
+            className="heading-display text-4xl sm:text-5xl lg:text-6xl text-text-primary leading-[1.05]"
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.7, delay: 0.1, ease: EASE }}
+          >
+            Four steps to your{" "}
+            <span className="bg-gradient-to-r from-luxury via-[#E8D48B] to-luxury bg-clip-text text-transparent">
+              second passport
+            </span>
+          </motion.h2>
+        </div>
+
+        {/* Steps — staggered asymmetric grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+          {steps.map((step, i) => (
+            <motion.div
+              key={step.number}
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{
+                duration: 0.6,
+                delay: 0.2 + i * 0.15,
+                ease: EASE,
+              }}
+              className={cn(
+                "group relative rounded-2xl border border-white/[0.06] p-8 lg:p-10",
+                "bg-white/[0.02] backdrop-blur-sm",
+                "transition-all duration-500",
+                "hover:bg-white/[0.04] hover:border-white/[0.1]",
+                i % 2 === 1 && "md:mt-12"
               )}
-            </div>
+            >
+              {/* Corner gradient glow on hover */}
+              <div
+                className={cn(
+                  "pointer-events-none absolute top-0 left-0 h-32 w-32 rounded-tl-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100",
+                  `bg-gradient-to-br ${step.accent}`
+                )}
+              />
+
+              {/* Step number — large, ghosted */}
+              <div className="flex items-start justify-between mb-8">
+                <span className="heading-display text-6xl lg:text-7xl font-bold text-white/[0.04] leading-none transition-colors duration-500 group-hover:text-primary/10">
+                  {step.number}
+                </span>
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.06] transition-all duration-300 group-hover:bg-primary/10 group-hover:border-primary/20">
+                  <step.icon className="h-5 w-5 text-text-muted transition-colors group-hover:text-primary" />
+                </div>
+              </div>
+
+              <h3 className="text-xl font-semibold text-text-primary mb-3 tracking-tight">
+                {step.title}
+              </h3>
+
+              <p className="text-sm leading-relaxed text-text-muted/80">
+                {step.description}
+              </p>
+
+              {/* Animated accent line */}
+              <div className="mt-8 h-[1px] w-full overflow-hidden rounded-full bg-white/[0.04]">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-primary/40 to-luxury/30"
+                  initial={{ scaleX: 0 }}
+                  animate={isInView ? { scaleX: 1 } : {}}
+                  transition={{
+                    duration: 0.8,
+                    delay: 0.5 + i * 0.15,
+                    ease: EASE,
+                  }}
+                  style={{ transformOrigin: "left" }}
+                />
+              </div>
+            </motion.div>
           ))}
         </div>
       </div>

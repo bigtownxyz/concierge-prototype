@@ -1,6 +1,5 @@
 import {
   Hero,
-  TrustBar,
   HowItWorks,
   Benefits,
   ProgramsShowcase,
@@ -13,10 +12,9 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <TrustBar />
       <HowItWorks />
-      <Benefits />
       <ProgramsShowcase />
+      <Benefits />
       <Testimonials />
       <FAQ />
       <CTA />
