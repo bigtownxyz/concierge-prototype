@@ -60,10 +60,10 @@ export function Navbar() {
                   key={href}
                   href={href}
                   className={cn(
-                    "relative px-4 py-2 text-[13px] font-medium tracking-wide uppercase transition-colors duration-300",
+                    "relative px-4 py-2 text-sm font-medium transition-colors duration-200",
                     isActive
-                      ? "text-text-primary"
-                      : "text-text-muted hover:text-text-primary"
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
                   )}
                 >
                   {label}
@@ -88,16 +88,9 @@ export function Navbar() {
           <div className="hidden lg:block">
             <Link
               href="/qualify"
-              className={cn(
-                "inline-flex items-center gap-2",
-                "rounded-lg px-5 py-2",
-                "text-[13px] font-semibold tracking-wide",
-                "bg-luxury text-background",
-                "transition-all duration-300",
-                "hover:bg-luxury-hover hover:shadow-[0_0_20px_rgba(201,168,76,0.2)]"
-              )}
+              className="inline-flex items-center gap-2 rounded-full px-5 py-2 bg-foreground hover:bg-foreground/90 text-background text-sm font-medium transition-all duration-200"
             >
-              Get Started
+              Get Qualified
             </Link>
           </div>
 
