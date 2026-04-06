@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import { PROGRAMS } from "@/lib/constants";
 import { ProgramDetail } from "./program-detail";
 
+// Force dynamic rendering to avoid static generation issues
+export const dynamic = "force-dynamic";
+
 interface Props {
   params: Promise<{ slug: string }>;
 }
@@ -20,10 +23,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: program.marketingHook,
     },
   };
-}
-
-export function generateStaticParams() {
-  return PROGRAMS.map((p) => ({ slug: p.slug }));
 }
 
 export default async function ProgramDetailPage({ params }: Props) {
