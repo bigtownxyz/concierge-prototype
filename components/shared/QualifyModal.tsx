@@ -1336,18 +1336,64 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
     return active
       .map((p) => {
         let score = 0;
+
+        // Budget fit (30 points)
         if (p.minInvestment <= formData.investmentAmount) score += 30;
         else if (p.minInvestment <= formData.investmentAmount * 1.5) score += 10;
-        if (formData.strategicFocus.includes("mobility")) score += (p.radarScores.travel_score / 100) * 25;
-        if (formData.strategicFocus.includes("tax")) score += (p.radarScores.tax_score / 100) * 25;
-        if (formData.strategicFocus.includes("family")) score += (p.radarScores.lifestyle_score / 100) * 25;
-        if (formData.strategicFocus.includes("assets")) score += (p.radarScores.cost_score / 100) * 25;
-        if (p.featured) score += 5;
-        if (p.exclusive) score += 3;
-        return { program: p, score };
+
+        // Strategic focus alignment (up to 25 points each selected focus)
+        const focusCount = formData.strategicFocus.length || 1;
+        const focusWeight = 25 / focusCount; // distribute weight across selections
+        if (formData.strategicFocus.includes("mobility")) score += (p.radarScores.travel_score / 100) * focusWeight;
+        if (formData.strategicFocus.includes("tax")) score += (p.radarScores.tax_score / 100) * focusWeight;
+        if (formData.strategicFocus.includes("family")) score += (p.radarScores.lifestyle_score / 100) * focusWeight;
+        if (formData.strategicFocus.includes("assets")) score += (p.radarScores.cost_score / 100) * focusWeight;
+
+        // Timeline alignment (15 points)
+        if (formData.timeline === "immediate" && p.processingTimeMonths != null) {
+          if (p.processingTimeMonths <= 6) score += 15;
+          else if (p.processingTimeMonths <= 9) score += 8;
+          else score += 2;
+        } else if (formData.timeline === "strategic" && p.processingTimeMonths != null) {
+          if (p.processingTimeMonths <= 12) score += 12;
+          else score += 6;
+        } else if (formData.timeline === "long-term") {
+          // Long-term planners value lifestyle and passport strength
+          score += (p.radarScores.lifestyle_score / 100) * 8;
+          score += (p.radarScores.travel_score / 100) * 7;
+        }
+
+        // US citizen considerations (15 points)
+        if (formData.isUsCitizen) {
+          // US citizens need programs that:
+          // - Don't exclude US nationals
+          const excludesUS = p.excludedNationalities.includes("US");
+          if (excludesUS) {
+            score -= 50; // effectively disqualify
+          } else {
+            // Favour tax-friendly jurisdictions for US citizens
+            score += (p.radarScores.tax_score / 100) * 10;
+            // If considering renouncing, CBI programs are more valuable
+            if (formData.consideringRenouncing) {
+              if (p.type === "CBI") score += 15;
+              else if (p.type === "Golden Visa") score += 5;
+            }
+          }
+        } else if (formData.isUsCitizen === false) {
+          // Non-US citizens — tax optimization focus gets a boost on 0% tax jurisdictions
+          if (formData.strategicFocus.includes("tax") && p.radarScores.tax_score >= 80) {
+            score += 10;
+          }
+        }
+
+        // Featured/exclusive bonus
+        if (p.featured) score += 3;
+        if (p.exclusive) score += 2;
+
+        return { program: p, score: Math.max(0, Math.min(score, 100)) };
       })
       .sort((a, b) => b.score - a.score);
-  }, [formData.strategicFocus, formData.investmentAmount]);
+  }, [formData.strategicFocus, formData.investmentAmount, formData.timeline, formData.isUsCitizen, formData.consideringRenouncing]);
 
   const canAdvance =
     step === 1
