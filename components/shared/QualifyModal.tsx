@@ -17,10 +17,16 @@ export interface QualifyModalProps {
 }
 
 type StrategicFocus = "mobility" | "tax" | "family" | "assets";
+type Timeline = "immediate" | "strategic" | "long-term";
 
 interface FormData {
   strategicFocus: StrategicFocus[];
   investmentAmount: number;
+  timeline: Timeline | "";
+  dependants: number;
+  isUsCitizen: boolean | null;
+  consideringRenouncing: boolean | null;
+  constraints: string[];
   name: string;
   email: string;
   phone: string;
@@ -35,6 +41,11 @@ const DRAFT_KEY = "concierge_qualification_draft";
 const EMPTY_FORM: FormData = {
   strategicFocus: [],
   investmentAmount: 500_000,
+  timeline: "",
+  dependants: 0,
+  isUsCitizen: null,
+  consideringRenouncing: null,
+  constraints: [],
   name: "",
   email: "",
   phone: "",
@@ -43,6 +54,22 @@ const EMPTY_FORM: FormData = {
   situation: "",
   selectedPrograms: [],
 };
+
+const TIMELINE_OPTIONS: { id: Timeline; label: string; desc: string }[] = [
+  { id: "immediate", label: "Immediate", desc: "0-6 months \u2014 Priority processing and rapid capital deployment." },
+  { id: "strategic", label: "Strategic", desc: "6-18 months \u2014 Optimised tax planning and jurisdictional vetting." },
+  { id: "long-term", label: "Long-term Planning", desc: "Multigenerational wealth preservation and residency layering." },
+];
+
+const CONSTRAINT_OPTIONS = [
+  "Criminal record or legal proceedings",
+  "Politically exposed person (PEP)",
+  "Sanctioned country nationality",
+  "Dual citizenship restrictions",
+  "Tax residency complications",
+  "Health conditions affecting eligibility",
+  "None of the above",
+];
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -219,9 +246,29 @@ function StepStrategicFocus({
 function StepInvestment({
   amount,
   onChange,
+  timeline,
+  onTimelineChange,
+  dependants,
+  onDependantsChange,
+  isUsCitizen,
+  onUsCitizenChange,
+  consideringRenouncing,
+  onRenouncingChange,
+  constraints,
+  onConstraintsToggle,
 }: {
   amount: number;
   onChange: (v: number) => void;
+  timeline: Timeline | "";
+  onTimelineChange: (v: Timeline) => void;
+  dependants: number;
+  onDependantsChange: (v: number) => void;
+  isUsCitizen: boolean | null;
+  onUsCitizenChange: (v: boolean) => void;
+  consideringRenouncing: boolean | null;
+  onRenouncingChange: (v: boolean) => void;
+  constraints: string[];
+  onConstraintsToggle: (v: string) => void;
 }) {
   const pct = ((amount - SLIDER_MIN) / (SLIDER_MAX - SLIDER_MIN)) * 100;
 
@@ -333,6 +380,167 @@ function StepInvestment({
           Some programs require higher minimum investments. We&apos;ll help identify the best options within your budget during your consultation.
         </div>
       )}
+
+      {/* Timeline */}
+      <div className="pt-4" style={{ borderTop: "1px solid rgba(69,71,75,0.2)" }}>
+        <p className="text-xs font-semibold tracking-[0.12em] uppercase mb-1" style={{ color: "#8f9095" }}>
+          Preferred Timeline
+        </p>
+        <p className="text-sm mb-4" style={{ color: "#8f9095" }}>
+          Select the window that aligns with your objectives.
+        </p>
+        <div className="flex flex-col gap-2">
+          {TIMELINE_OPTIONS.map((opt) => (
+            <button
+              key={opt.id}
+              type="button"
+              onClick={() => onTimelineChange(opt.id)}
+              className="flex items-center justify-between rounded-xl px-5 py-4 text-left transition-all duration-200"
+              style={{
+                background: timeline === opt.id ? "rgba(187,196,247,0.08)" : "#0a0e14",
+                border: timeline === opt.id ? "1px solid rgba(187,196,247,0.4)" : "1px solid rgba(69,71,75,0.3)",
+              }}
+            >
+              <div>
+                <p className="text-sm font-semibold" style={{ color: "#dfe2eb" }}>{opt.label}</p>
+                <p className="text-xs mt-0.5" style={{ color: "#8f9095" }}>{opt.desc}</p>
+              </div>
+              <div
+                className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{
+                  border: timeline === opt.id ? "2px solid #bbc4f7" : "2px solid rgba(69,71,75,0.5)",
+                  background: timeline === opt.id ? "#bbc4f7" : "transparent",
+                }}
+              >
+                {timeline === opt.id && (
+                  <span className="material-symbols-outlined" style={{ fontSize: 14, color: "#242d58" }}>check</span>
+                )}
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Dependants */}
+      <div className="pt-4" style={{ borderTop: "1px solid rgba(69,71,75,0.2)" }}>
+        <p className="text-xs font-semibold tracking-[0.12em] uppercase mb-1" style={{ color: "#8f9095" }}>
+          Dependants
+        </p>
+        <p className="text-sm mb-3" style={{ color: "#8f9095" }}>
+          How many family members will be included in the application?
+        </p>
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => onDependantsChange(Math.max(0, dependants - 1))}
+            className="w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold"
+            style={{ background: "#0a0e14", border: "1px solid rgba(69,71,75,0.3)", color: "#bbc4f7" }}
+          >
+            -
+          </button>
+          <span className="text-xl font-semibold w-8 text-center" style={{ color: "#dfe2eb" }}>{dependants}</span>
+          <button
+            type="button"
+            onClick={() => onDependantsChange(dependants + 1)}
+            className="w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold"
+            style={{ background: "#0a0e14", border: "1px solid rgba(69,71,75,0.3)", color: "#bbc4f7" }}
+          >
+            +
+          </button>
+          <span className="text-xs" style={{ color: "#8f9095" }}>
+            {dependants === 0 ? "Just myself" : `${dependants} dependant${dependants > 1 ? "s" : ""}`}
+          </span>
+        </div>
+      </div>
+
+      {/* US Citizen */}
+      <div className="pt-4" style={{ borderTop: "1px solid rgba(69,71,75,0.2)" }}>
+        <p className="text-xs font-semibold tracking-[0.12em] uppercase mb-1" style={{ color: "#8f9095" }}>
+          US Citizenship
+        </p>
+        <p className="text-sm mb-3" style={{ color: "#8f9095" }}>
+          Are you a US citizen or permanent resident?
+        </p>
+        <div className="flex gap-3">
+          {[true, false].map((val) => (
+            <button
+              key={String(val)}
+              type="button"
+              onClick={() => onUsCitizenChange(val)}
+              className="flex-1 rounded-xl py-3 text-sm font-semibold transition-all duration-200"
+              style={{
+                background: isUsCitizen === val ? "rgba(187,196,247,0.1)" : "#0a0e14",
+                border: isUsCitizen === val ? "1px solid rgba(187,196,247,0.4)" : "1px solid rgba(69,71,75,0.3)",
+                color: isUsCitizen === val ? "#bbc4f7" : "#8f9095",
+              }}
+            >
+              {val ? "Yes" : "No"}
+            </button>
+          ))}
+        </div>
+        {isUsCitizen === true && (
+          <div className="mt-3">
+            <p className="text-sm mb-3" style={{ color: "#8f9095" }}>
+              Are you considering renouncing US citizenship?
+            </p>
+            <div className="flex gap-3">
+              {[true, false].map((val) => (
+                <button
+                  key={String(val)}
+                  type="button"
+                  onClick={() => onRenouncingChange(val)}
+                  className="flex-1 rounded-xl py-3 text-sm font-semibold transition-all duration-200"
+                  style={{
+                    background: consideringRenouncing === val ? "rgba(187,196,247,0.1)" : "#0a0e14",
+                    border: consideringRenouncing === val ? "1px solid rgba(187,196,247,0.4)" : "1px solid rgba(69,71,75,0.3)",
+                    color: consideringRenouncing === val ? "#bbc4f7" : "#8f9095",
+                  }}
+                >
+                  {val ? "Yes" : "No"}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Constraints */}
+      <div className="pt-4" style={{ borderTop: "1px solid rgba(69,71,75,0.2)" }}>
+        <p className="text-xs font-semibold tracking-[0.12em] uppercase mb-1" style={{ color: "#8f9095" }}>
+          Any Constraints?
+        </p>
+        <p className="text-sm mb-3" style={{ color: "#8f9095" }}>
+          Select any that apply so we can account for them.
+        </p>
+        <div className="flex flex-col gap-2">
+          {CONSTRAINT_OPTIONS.map((opt) => (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => onConstraintsToggle(opt)}
+              className="flex items-center gap-3 rounded-lg px-4 py-3 text-left text-sm transition-all duration-150"
+              style={{
+                background: constraints.includes(opt) ? "rgba(187,196,247,0.06)" : "rgba(10,14,20,0.6)",
+                border: constraints.includes(opt) ? "1px solid rgba(187,196,247,0.3)" : "1px solid rgba(69,71,75,0.2)",
+                color: "#c6c6cb",
+              }}
+            >
+              <div
+                className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0"
+                style={{
+                  border: constraints.includes(opt) ? "2px solid #bbc4f7" : "2px solid rgba(69,71,75,0.5)",
+                  background: constraints.includes(opt) ? "#bbc4f7" : "transparent",
+                }}
+              >
+                {constraints.includes(opt) && (
+                  <span className="material-symbols-outlined" style={{ fontSize: 12, color: "#242d58" }}>check</span>
+                )}
+              </div>
+              {opt}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -1372,6 +1580,23 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
                           amount={formData.investmentAmount}
                           onChange={(v) =>
                             setFormData((prev) => ({ ...prev, investmentAmount: v }))
+                          }
+                          timeline={formData.timeline}
+                          onTimelineChange={(v) => setFormData((prev) => ({ ...prev, timeline: v }))}
+                          dependants={formData.dependants}
+                          onDependantsChange={(v) => setFormData((prev) => ({ ...prev, dependants: v }))}
+                          isUsCitizen={formData.isUsCitizen}
+                          onUsCitizenChange={(v) => setFormData((prev) => ({ ...prev, isUsCitizen: v }))}
+                          consideringRenouncing={formData.consideringRenouncing}
+                          onRenouncingChange={(v) => setFormData((prev) => ({ ...prev, consideringRenouncing: v }))}
+                          constraints={formData.constraints}
+                          onConstraintsToggle={(v) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              constraints: prev.constraints.includes(v)
+                                ? prev.constraints.filter((c) => c !== v)
+                                : [...prev.constraints, v],
+                            }))
                           }
                         />
                       )}
