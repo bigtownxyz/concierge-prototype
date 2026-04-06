@@ -25,11 +25,14 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // Refresh the session — IMPORTANT: do not add code between createServerClient
-  // and supabase.auth.getUser(), as it may cause hard-to-debug issues.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Refresh the session
+  let user = null;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  } catch {
+    // Auth refresh failed — continue without user
+  }
 
   return { supabaseResponse, user };
 }

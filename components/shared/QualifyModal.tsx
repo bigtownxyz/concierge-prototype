@@ -440,10 +440,10 @@ function StepProfile({
         </div>
       </div>
 
-      {/* Dependants */}
+      {/* Family Members */}
       <div className="pt-4" style={{ borderTop: "1px solid rgba(69,71,75,0.2)" }}>
         <p className="text-xs font-semibold tracking-[0.12em] uppercase mb-1" style={{ color: "#8f9095" }}>
-          Dependants
+          Family Members
         </p>
         <p className="text-sm mb-3" style={{ color: "#8f9095" }}>
           How many family members will be included in the application?
@@ -467,7 +467,7 @@ function StepProfile({
             +
           </button>
           <span className="text-xs" style={{ color: "#8f9095" }}>
-            {dependants === 0 ? "Just myself" : `${dependants} dependant${dependants > 1 ? "s" : ""}`}
+            {dependants === 0 ? "Just myself" : `${dependants} family member${dependants > 1 ? "s" : ""}`}
           </span>
         </div>
       </div>
