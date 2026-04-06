@@ -199,12 +199,21 @@ export function Navbar() {
               </div>
             ) : !loading ? (
               /* Logged out state */
-              <button
-                onClick={() => window.dispatchEvent(new CustomEvent("open-qualify-modal"))}
-                className="inline-flex items-center gap-2 rounded-full px-5 py-2 bg-foreground hover:bg-foreground/90 text-background text-sm font-medium transition-all duration-200"
-              >
-                Get Qualified
-              </button>
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/login"
+                  className="text-sm font-medium transition-colors duration-200"
+                  style={{ color: "#b7c6ed", fontFamily: "var(--font-manrope, 'Manrope', sans-serif)" }}
+                >
+                  Sign In
+                </Link>
+                <button
+                  onClick={() => window.dispatchEvent(new CustomEvent("open-qualify-modal"))}
+                  className="inline-flex items-center gap-2 rounded-full px-5 py-2 bg-foreground hover:bg-foreground/90 text-background text-sm font-medium transition-all duration-200"
+                >
+                  Get Qualified
+                </button>
+              </div>
             ) : null}
           </div>
 
