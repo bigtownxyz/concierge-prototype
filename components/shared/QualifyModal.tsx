@@ -238,7 +238,7 @@ function StepInvestment({
           className="mt-2 text-xl font-semibold"
           style={{ color: "#dfe2eb", fontFamily: "var(--font-manrope, 'Manrope', sans-serif)" }}
         >
-          Planned Investment
+          Estimated Budget
         </h3>
         <p className="mt-1.5 text-sm" style={{ color: "#8f9095" }}>
           Indicate your anticipated investment threshold. This narrows viable programme options.
