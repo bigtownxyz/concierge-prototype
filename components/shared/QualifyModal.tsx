@@ -1185,20 +1185,26 @@ function SuccessState({ onClose }: { onClose: () => void }) {
 
 async function saveQualificationToDb(
   formData: FormData,
-  rankedPrograms: { program: Program; score: number }[]
+  rankedPrograms: { program: Program; score: number }[],
+  knownUserId?: string
 ) {
   const supabase = createClient();
 
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError) console.error("[QualifyModal] Auth error:", authError);
-  if (!user) throw new Error("Not authenticated — please try signing in again");
+  // Use provided userId (from useUser hook) if available, fall back to session
+  let userId = knownUserId;
+  if (!userId) {
+    const { data, error: authError } = await supabase.auth.getUser();
+    if (authError) console.error("[QualifyModal] Auth error:", authError);
+    if (!data.user) throw new Error("Not authenticated — please try signing in again");
+    userId = data.user.id;
+  }
 
   // 1. Upsert profile details
   const { error: profileError } = await supabase.from("profiles").upsert(
     {
-      id: user.id,
+      id: userId,
       full_name: formData.name || undefined,
-      email: formData.email || user.email,
+      email: formData.email || undefined,
       phone: formData.phone || undefined,
       country: formData.country || undefined,
       nationality: formData.nationality || undefined,
@@ -1212,7 +1218,7 @@ async function saveQualificationToDb(
   const { data: existingQual } = await supabase
     .from("qualifications")
     .select("id")
-    .eq("user_id", user.id)
+    .eq("user_id", userId)
     .maybeSingle();
 
   let qualId: string;
@@ -1238,7 +1244,7 @@ async function saveQualificationToDb(
     const { data: newQual, error } = await supabase
       .from("qualifications")
       .insert({
-        user_id: user.id,
+        user_id: userId,
         strategic_focus: formData.strategicFocus,
         investment_amount: formData.investmentAmount,
         situation: formData.situation || null,
@@ -1447,10 +1453,10 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
     setSaveError("");
 
     if (user) {
-      // Logged in — save directly
+      // Logged in — save directly, pass known user ID
       setIsSaving(true);
       try {
-        await saveQualificationToDb(formData, rankedPrograms);
+        await saveQualificationToDb(formData, rankedPrograms, user.id);
         // Clear draft from localStorage on successful save
         try { localStorage.removeItem(DRAFT_KEY); } catch { /* noop */ }
         setSubmitted(true);
