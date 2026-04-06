@@ -138,7 +138,7 @@ export function Navbar() {
             {!loading && user ? (
               /* Logged in state */
               <div className="flex items-center gap-2">
-                {/* My Results link */}
+                {/* My Application link */}
                 <Link
                   href="/results"
                   className="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition-all duration-200"
@@ -153,9 +153,9 @@ export function Navbar() {
                     style={{ fontSize: 15, color: pathname === "/results" ? "#bbc4f7" : "#8f9095" }}
                     aria-hidden="true"
                   >
-                    bar_chart_4_bars
+                    assignment_ind
                   </span>
-                  My Results
+                  My Application
                 </Link>
 
                 {/* User avatar with dropdown */}
@@ -295,7 +295,7 @@ export function Navbar() {
                 );
               })}
 
-              {/* My Results link — only when logged in */}
+              {/* My Application link — only when logged in */}
               {!loading && user && (
                 <Link
                   href="/results"
@@ -310,7 +310,7 @@ export function Navbar() {
                   {pathname === "/results" && (
                     <span className="h-1.5 w-1.5 rounded-full bg-primary" />
                   )}
-                  My Results
+                  My Application
                 </Link>
               )}
             </nav>
