@@ -19,7 +19,7 @@ export function ConfettiTrigger({ trigger, onComplete }: ConfettiTriggerProps) {
   const fire = useCallback(() => {
     const colors = [GOLD, GOLD_LIGHT, VIOLET, VIOLET_LIGHT];
 
-    // Center burst — stately, not chaotic
+    // Center burst  - stately, not chaotic
     confetti({
       particleCount: 60,
       spread: 70,
@@ -33,7 +33,7 @@ export function ConfettiTrigger({ trigger, onComplete }: ConfettiTriggerProps) {
       disableForReducedMotion: true,
     });
 
-    // Delayed side bursts — left
+    // Delayed side bursts  - left
     setTimeout(() => {
       confetti({
         particleCount: 30,
@@ -63,7 +63,7 @@ export function ConfettiTrigger({ trigger, onComplete }: ConfettiTriggerProps) {
       });
     }, 250);
 
-    // Final gold shimmer — a finishing touch
+    // Final gold shimmer  - a finishing touch
     setTimeout(() => {
       confetti({
         particleCount: 15,

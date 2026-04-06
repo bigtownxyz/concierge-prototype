@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 
 /**
- * Base shimmer animation — a traveling highlight across the glass surface
+ * Base shimmer animation  - a traveling highlight across the glass surface
  */
 function Shimmer({ className }: { className?: string }) {
   return (

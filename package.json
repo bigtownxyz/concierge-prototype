@@ -10,10 +10,13 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@supabase/ssr": "^0.10.0",
+    "@supabase/supabase-js": "^2.101.1",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.38.0",
+    "get-shit-done-cc": "github:gsd-build/get-shit-done",
     "lucide-react": "^1.0.1",
     "next": "15.5.14",
     "next-intl": "^4.8.3",

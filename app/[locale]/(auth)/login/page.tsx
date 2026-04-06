@@ -1,8 +1,357 @@
-export default function LoginPage() {
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Link } from "@/i18n/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { Logo } from "@/components/shared/Logo";
+
+// ─── Shared styles ────────────────────────────────────────────────────────────
+
+const inputStyle: React.CSSProperties = {
+  background: "#0a0e14",
+  border: "1px solid rgba(69,71,75,0.3)",
+  borderRadius: "0.625rem",
+  color: "#dfe2eb",
+  fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
+  fontSize: "0.875rem",
+  padding: "0.75rem 1rem",
+  width: "100%",
+  outline: "none",
+  transition: "border-color 0.15s",
+};
+
+function AuthInput({
+  label,
+  type = "text",
+  value,
+  onChange,
+  placeholder,
+  error,
+}: {
+  label: string;
+  type?: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  error?: string;
+}) {
   return (
-    <div>
-      <h2 className="text-2xl font-semibold text-text-primary mb-6">Log In</h2>
-      <p className="text-text-muted">Login form will be implemented in Phase 5.</p>
+    <div className="flex flex-col gap-1.5">
+      <label
+        className="text-xs font-semibold uppercase tracking-wider"
+        style={{ color: "#8f9095", fontFamily: "var(--font-manrope, 'Manrope', sans-serif)" }}
+      >
+        {label}
+      </label>
+      <input
+        type={type}
+        value={value}
+        placeholder={placeholder}
+        autoComplete={type === "password" ? "current-password" : type === "email" ? "email" : "off"}
+        onChange={(e) => onChange(e.target.value)}
+        style={{
+          ...inputStyle,
+          borderColor: error ? "rgba(184,92,107,0.6)" : "rgba(69,71,75,0.3)",
+        }}
+        onFocus={(e) => {
+          (e.currentTarget as HTMLInputElement).style.borderColor = error
+            ? "rgba(184,92,107,0.8)"
+            : "rgba(187,196,247,0.4)";
+        }}
+        onBlur={(e) => {
+          (e.currentTarget as HTMLInputElement).style.borderColor = error
+            ? "rgba(184,92,107,0.6)"
+            : "rgba(69,71,75,0.3)";
+        }}
+      />
+      {error && (
+        <p className="text-xs" style={{ color: "#b85c6b" }}>
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
+
+export default function LoginPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next") ?? "/portal";
+  const urlError = searchParams.get("error");
+
+  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [serverError, setServerError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+
+  useEffect(() => {
+    if (urlError === "auth") {
+      setServerError("Authentication failed. Please try again.");
+    }
+  }, [urlError]);
+
+  const validate = () => {
+    const errs: Record<string, string> = {};
+    if (mode === "signup" && !fullName.trim()) {
+      errs.fullName = "Full name is required.";
+    }
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errs.email = "A valid email address is required.";
+    }
+    if (!password || password.length < 8) {
+      errs.password = "Password must be at least 8 characters.";
+    }
+    return errs;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setServerError("");
+    setSuccessMessage("");
+
+    const errs = validate();
+    setErrors(errs);
+    if (Object.keys(errs).length > 0) return;
+
+    setLoading(true);
+    const supabase = createClient();
+
+    if (mode === "login") {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        setServerError(error.message);
+        setLoading(false);
+        return;
+      }
+      router.push(next);
+      router.refresh();
+    } else {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { full_name: fullName },
+          emailRedirectTo: `${window.location.origin}/callback`,
+        },
+      });
+      if (error) {
+        setServerError(error.message);
+        setLoading(false);
+        return;
+      }
+      setSuccessMessage(
+        "Account created. Check your inbox to confirm your email, then sign in."
+      );
+    }
+
+    setLoading(false);
+  };
+
+  const switchMode = (m: "login" | "signup") => {
+    setMode(m);
+    setErrors({});
+    setServerError("");
+    setSuccessMessage("");
+  };
+
+  return (
+    <div
+      className="flex min-h-screen items-center justify-center px-4 py-12"
+      style={{ background: "#10141a" }}
+    >
+      <div className="w-full max-w-md">
+        {/* Brand */}
+        <div className="mb-8 flex flex-col items-center gap-4">
+          <Link href="/" aria-label="Home">
+            <Logo size="sm" />
+          </Link>
+          <p
+            className="text-sm"
+            style={{ color: "#8f9095", fontFamily: "var(--font-manrope, 'Manrope', sans-serif)" }}
+          >
+            Sovereign wealth management, personalised.
+          </p>
+        </div>
+
+        {/* Card */}
+        <div
+          className="rounded-2xl p-8"
+          style={{
+            background: "rgba(28,32,38,0.8)",
+            border: "1px solid rgba(69,71,75,0.3)",
+            backdropFilter: "blur(12px)",
+          }}
+        >
+          {/* Mode tabs */}
+          <div
+            className="mb-8 flex rounded-xl p-1"
+            style={{ background: "#0a0e14", border: "1px solid rgba(69,71,75,0.3)" }}
+          >
+            {(["login", "signup"] as const).map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => switchMode(m)}
+                className="flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all duration-200"
+                style={{
+                  background: mode === m ? "#bbc4f7" : "transparent",
+                  color: mode === m ? "#242d58" : "#8f9095",
+                  fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
+                }}
+              >
+                {m === "login" ? "Sign In" : "Create Account"}
+              </button>
+            ))}
+          </div>
+
+          {/* Success message */}
+          {successMessage && (
+            <div
+              className="mb-6 rounded-xl p-4 text-sm"
+              style={{
+                background: "rgba(62,143,120,0.12)",
+                border: "1px solid rgba(62,143,120,0.3)",
+                color: "#3e8f78",
+                fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
+              }}
+            >
+              {successMessage}
+            </div>
+          )}
+
+          {/* Server error */}
+          {serverError && (
+            <div
+              className="mb-6 rounded-xl p-4 text-sm"
+              style={{
+                background: "rgba(184,92,107,0.1)",
+                border: "1px solid rgba(184,92,107,0.3)",
+                color: "#b85c6b",
+                fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
+              }}
+            >
+              {serverError}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
+            {mode === "signup" && (
+              <AuthInput
+                label="Full Name"
+                value={fullName}
+                onChange={setFullName}
+                placeholder="Your legal name"
+                error={errors.fullName}
+              />
+            )}
+
+            <AuthInput
+              label="Email Address"
+              type="email"
+              value={email}
+              onChange={setEmail}
+              placeholder="you@domain.com"
+              error={errors.email}
+            />
+
+            <AuthInput
+              label="Password"
+              type="password"
+              value={password}
+              onChange={setPassword}
+              placeholder={mode === "signup" ? "At least 8 characters" : "Your password"}
+              error={errors.password}
+            />
+
+            {mode === "login" && (
+              <div className="flex justify-end">
+                <Link
+                  href="/forgot-password"
+                  className="text-xs transition-colors"
+                  style={{
+                    color: "#8f9095",
+                    fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
+                  }}
+                >
+                  Forgot password?
+                </Link>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="mt-2 w-full rounded-xl py-3 text-sm font-semibold transition-all duration-200 disabled:opacity-60"
+              style={{
+                background: "#bbc4f7",
+                color: "#242d58",
+                fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
+              }}
+              onMouseEnter={(e) => {
+                if (!loading)
+                  (e.currentTarget as HTMLButtonElement).style.background = "#cdd4fa";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = "#bbc4f7";
+              }}
+            >
+              {loading
+                ? mode === "login"
+                  ? "Signing in..."
+                  : "Creating account..."
+                : mode === "login"
+                ? "Sign In"
+                : "Create Account"}
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="mt-8 flex items-center gap-3">
+            <div className="h-px flex-1" style={{ background: "rgba(69,71,75,0.3)" }} />
+            <span className="text-xs" style={{ color: "#8f9095" }}>
+              or
+            </span>
+            <div className="h-px flex-1" style={{ background: "rgba(69,71,75,0.3)" }} />
+          </div>
+
+          <p
+            className="mt-6 text-center text-sm"
+            style={{ color: "#8f9095", fontFamily: "var(--font-manrope, 'Manrope', sans-serif)" }}
+          >
+            {mode === "login" ? "Don't have an account?" : "Already have an account?"}{" "}
+            <button
+              type="button"
+              onClick={() => switchMode(mode === "login" ? "signup" : "login")}
+              className="font-semibold transition-colors"
+              style={{ color: "#bbc4f7" }}
+            >
+              {mode === "login" ? "Create one" : "Sign in"}
+            </button>
+          </p>
+        </div>
+
+        <p
+          className="mt-6 text-center text-xs"
+          style={{ color: "rgba(143,144,149,0.5)", fontFamily: "var(--font-manrope, 'Manrope', sans-serif)" }}
+        >
+          By continuing you agree to our{" "}
+          <Link href="/terms" style={{ color: "#8f9095" }}>
+            Terms
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy" style={{ color: "#8f9095" }}>
+            Privacy Policy
+          </Link>
+          .
+        </p>
+      </div>
     </div>
   );
 }

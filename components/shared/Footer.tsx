@@ -52,8 +52,7 @@ export function Footer() {
                     href={`/programs/${program.slug}`}
                     className="text-sm text-text-muted transition-colors duration-200 hover:text-text-primary"
                   >
-                    {program.flagEmoji}{" "}
-                    <span className="ml-1">{program.name}</span>
+                    {program.name}
                   </Link>
                 </li>
               ))}

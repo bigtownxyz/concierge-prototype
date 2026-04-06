@@ -83,6 +83,24 @@
   --font-display: var(--font-cormorant);
   --font-sans: var(--font-inter);
   --font-mono: var(--font-jetbrains);
+  --font-serif: var(--font-noto-serif);
+  --font-body: var(--font-manrope);
+  --color-obsidian-bg: #10141a;
+  --color-obsidian-surface: #10141a;
+  --color-obsidian-surface-low: #181c22;
+  --color-obsidian-surface-container: #1c2026;
+  --color-obsidian-surface-high: #262a31;
+  --color-obsidian-surface-highest: #31353c;
+  --color-obsidian-surface-lowest: #0a0e14;
+  --color-obsidian-primary: #bbc4f7;
+  --color-obsidian-on-primary: #242d58;
+  --color-obsidian-on-surface: #dfe2eb;
+  --color-obsidian-on-surface-variant: #c6c6cb;
+  --color-obsidian-outline-variant: #45474b;
+  --color-obsidian-tertiary: #d6c3b7;
+  --color-obsidian-tertiary-container: #180f08;
+  --color-obsidian-primary-container: #020c37;
+  --color-obsidian-secondary-container: #374667;
 }
 
 /* Base */
@@ -122,6 +140,26 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-mono, 'JetBrains Mono', monospace);
   font-size: 0.8125rem;
   letter-spacing: -0.01em;
+}
+
+/* Material Symbols baseline */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  user-select: none;
 }
 
 /* Shimmer */

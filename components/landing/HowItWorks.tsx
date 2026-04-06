@@ -2,15 +2,35 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Crosshair, MessageCircle, FileCheck, Award } from "lucide-react";
+import { Search, Scale, KeyRound } from "lucide-react";
 
 const EASE = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
 const steps = [
-  { icon: Crosshair, title: "Qualification", description: "Complete our smart matching tool to find programmes that fit your profile, budget, and timeline." },
-  { icon: MessageCircle, title: "Consultation", description: "Speak with a dedicated advisor who specialises in your target programmes and builds a bespoke strategy." },
-  { icon: FileCheck, title: "Application", description: "We handle the paperwork, due diligence coordination, and government submissions. You focus on your life." },
-  { icon: Award, title: "Approval", description: "Receive your new citizenship or residency — typically within 3–12 months. Passport in hand." },
+  {
+    icon: Search,
+    phase: "Phase 01",
+    title: "Eligibility Audit",
+    description: "A comprehensive review of your financial standing, background check compliance, and strategic objectives to determine the optimal jurisdiction.",
+    iconBg: "#020c37",
+    iconColor: "#bbc4f7",
+  },
+  {
+    icon: Scale,
+    phase: "Phase 02",
+    title: "Legal Synthesis",
+    description: "Our elite legal team handles all documentation, local governmental liaisons, and investment structuring to ensure a frictionless application process.",
+    iconBg: "#374667",
+    iconColor: "#b7c6ed",
+  },
+  {
+    icon: KeyRound,
+    phase: "Phase 03",
+    title: "Final Issuance",
+    description: "Secure delivery of your residency credentials or passport, followed by full orientation into your new jurisdiction's fiscal and social infrastructure.",
+    iconBg: "#180f08",
+    iconColor: "#d6c3b7",
+  },
 ];
 
 export function HowItWorks() {
@@ -18,51 +38,77 @@ export function HowItWorks() {
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section ref={ref} className="py-24 bg-secondary/50">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Header — mixed-weight italic style */}
+    <section ref={ref} className="py-32 px-6 lg:px-10" style={{ backgroundColor: "#10141a" }}>
+      <div className="max-w-7xl mx-auto">
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-24"
           initial={{ opacity: 0, y: 16 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, ease: EASE }}
         >
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl tracking-tight">
-            <span className="font-semibold text-foreground">How It</span>{" "}
-            <span className="font-light text-foreground/50 italic">Works</span>
+          <h2
+            className="text-4xl mb-6"
+            style={{ fontFamily: "var(--font-noto-serif, 'Noto Serif', serif)", color: "#dfe2eb" }}
+          >
+            The Three-Step Protocol
           </h2>
+          <p
+            className="text-lg max-w-xl mx-auto"
+            style={{ fontFamily: "var(--font-manrope, 'Manrope', sans-serif)", color: "#c6c6cb" }}
+          >
+            A rigorous, confidential methodology designed to transition you to your new sovereign state with surgical precision.
+          </p>
         </motion.div>
 
-        {/* Steps — 4 column grid with connector line */}
-        <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
-          {/* Desktop connector line */}
-          <div className="hidden lg:block absolute top-12 left-[12.5%] right-[12.5%] h-0.5 bg-border" />
+        <div className="relative">
+          {/* Connector line */}
+          <div
+            className="hidden lg:block absolute top-1/2 left-0 w-full h-px -translate-y-1/2"
+            style={{
+              background: "linear-gradient(to right, transparent, rgba(69, 71, 75, 0.3), transparent)",
+            }}
+          />
 
-          {steps.map((step, i) => (
-            <motion.div
-              key={step.title}
-              className="relative flex flex-col items-center text-center"
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.1 + i * 0.1, duration: 0.5, ease: EASE }}
-            >
-              {/* Icon box */}
-              <div className="relative z-10 mb-4 flex h-24 w-24 items-center justify-center rounded-2xl bg-card border border-border">
-                <step.icon className="h-10 w-10 text-foreground/70" />
-                {/* Step number badge */}
-                <span className="absolute -top-2 -right-2 flex h-7 w-7 items-center justify-center rounded-full bg-accent text-white text-xs font-bold">
-                  {i + 1}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            {steps.map((step, i) => (
+              <motion.div
+                key={step.title}
+                className="relative z-10 p-10 rounded-3xl transition-transform duration-300 hover:-translate-y-2"
+                style={{
+                  backgroundColor: "#10141a",
+                  border: "1px solid rgba(69, 71, 75, 0.1)",
+                }}
+                initial={{ opacity: 0, y: 24 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: 0.15 + i * 0.12, duration: 0.6, ease: EASE }}
+              >
+                <div
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center mb-8"
+                  style={{ backgroundColor: step.iconBg }}
+                >
+                  <step.icon className="h-8 w-8" style={{ color: step.iconColor }} />
+                </div>
+                <span
+                  className="text-[10px] font-bold uppercase tracking-[0.3em] mb-4 block"
+                  style={{ fontFamily: "var(--font-manrope, 'Manrope', sans-serif)", color: "#d6c3b7" }}
+                >
+                  {step.phase}
                 </span>
-              </div>
-
-              <h3 className="text-base font-semibold text-foreground mb-2">
-                {step.title}
-              </h3>
-              <p className="text-sm font-light text-muted-foreground leading-relaxed">
-                {step.description}
-              </p>
-            </motion.div>
-          ))}
+                <h3
+                  className="text-2xl mb-4"
+                  style={{ fontFamily: "var(--font-noto-serif, 'Noto Serif', serif)", color: "#dfe2eb" }}
+                >
+                  {step.title}
+                </h3>
+                <p
+                  className="leading-relaxed"
+                  style={{ fontFamily: "var(--font-manrope, 'Manrope', sans-serif)", color: "#c6c6cb" }}
+                >
+                  {step.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

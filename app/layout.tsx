@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { cormorant, inter, jetbrainsMono } from "@/lib/fonts";
+import { cormorant, inter, jetbrainsMono, notoSerif, manrope } from "@/lib/fonts";
 import "./globals.css";
+// Material Symbols Outlined - loaded via next/head equivalent (metadata link)
+// injected as a <link> in the <head> via the layout JSX below
 
 export const metadata: Metadata = {
   title: {
@@ -17,6 +19,15 @@ export const metadata: Metadata = {
     locale: "en_US",
     siteName: "Concierge",
   },
+  // TEMPORARY: Prevent indexing until we have a dedicated domain
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
 };
 
 export default function RootLayout({
@@ -26,8 +37,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        />
+      </head>
       <body
-        className={`${cormorant.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased`}
+        className={`${cormorant.variable} ${inter.variable} ${jetbrainsMono.variable} ${notoSerif.variable} ${manrope.variable} antialiased`}
       >
         {children}
       </body>

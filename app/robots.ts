@@ -1,14 +1,12 @@
 import type { MetadataRoute } from "next";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://concierge.app";
-
+// TEMPORARY: Block all crawlers until we have a dedicated domain.
+// Remove this block and restore allow rules when ready.
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",
-      allow: "/",
-      disallow: ["/portal/", "/admin/", "/api/"],
+      disallow: "/",
     },
-    sitemap: `${BASE_URL}/sitemap.xml`,
   };
 }

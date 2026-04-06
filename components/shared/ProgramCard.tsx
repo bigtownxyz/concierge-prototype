@@ -32,8 +32,7 @@ export function ProgramCard({ program, className }: ProgramCardProps) {
       {/* Header */}
       <div className="flex items-start justify-between mb-5">
         <div className="flex items-center gap-3">
-          <span className="text-3xl leading-none">{program.flagEmoji}</span>
-          <div>
+                    <div>
             <h3 className="text-base font-semibold text-text-primary group-hover:text-white transition-colors">
               {program.name}
             </h3>
@@ -82,7 +81,7 @@ export function ProgramCard({ program, className }: ProgramCardProps) {
         )}
       </div>
 
-      {/* Radar mini chart — 5 labeled bars */}
+      {/* Radar mini chart  - 5 labeled bars */}
       <div className="space-y-1.5 mb-5">
         {Object.entries(program.radarScores).map(([key, value]) => (
           <div key={key} className="flex items-center gap-2">

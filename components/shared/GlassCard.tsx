@@ -10,7 +10,7 @@ interface GlassCardProps extends Omit<HTMLMotionProps<"div">, "children"> {
   children: ReactNode;
   variant?: GlassVariant;
   className?: string;
-  /** Optional glow color override — defaults to violet for highlighted */
+  /** Optional glow color override  - defaults to violet for highlighted */
   glowColor?: string;
 }
 
@@ -66,7 +66,7 @@ export function GlassCard({
         : {})}
       {...motionProps}
     >
-      {/* Subtle inner highlight — catches the light like beveled glass */}
+      {/* Subtle inner highlight  - catches the light like beveled glass */}
       <div
         className="pointer-events-none absolute inset-0 rounded-2xl"
         style={{

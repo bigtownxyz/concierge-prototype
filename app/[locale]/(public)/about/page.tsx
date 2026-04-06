@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "About",
-  description: "Learn about Concierge — expert second citizenship and residency advisory for high-net-worth individuals.",
+  description: "Learn about Concierge  - expert second citizenship and residency advisory for high-net-worth individuals.",
 };
 
 export default function AboutPage() {
@@ -21,7 +21,7 @@ export default function AboutPage() {
           <p>
             Founded on the principle that global mobility is the ultimate form of
             freedom, we guide our clients through every step of the second
-            citizenship journey — from initial qualification to passport in hand.
+            citizenship journey  - from initial qualification to passport in hand.
           </p>
           <p>
             Our team of dedicated advisors has deep expertise across 15+
@@ -39,7 +39,7 @@ export default function AboutPage() {
             experience from start to finish.
           </p>
           <p>
-            We believe in transparency — no hidden fees, no false promises. Our
+            We believe in transparency  - no hidden fees, no false promises. Our
             qualification tool gives you an honest assessment of your options
             before any commitment.
           </p>

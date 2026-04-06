@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { motion, useMotionValueEvent, useScroll } from "framer-motion";
-import { Menu } from "lucide-react";
-import { Link, usePathname } from "@/i18n/navigation";
+import { Menu, LogOut, LayoutDashboard } from "lucide-react";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { NAV_LINKS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/shared/Logo";
@@ -13,16 +13,66 @@ import {
   SheetTrigger,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { useUser } from "@/hooks/useUser";
+
+// ─── User Avatar / Initials ───────────────────────────────────────────────────
+
+function UserInitials({ name, email }: { name?: string; email?: string }) {
+  const display = name || email || "?";
+  const initials = display
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  return (
+    <span
+      className="flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold flex-shrink-0"
+      style={{
+        background: "rgba(187,196,247,0.15)",
+        border: "1px solid rgba(187,196,247,0.3)",
+        color: "#bbc4f7",
+        fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
+      }}
+    >
+      {initials}
+    </span>
+  );
+}
+
+// ─── Navbar ───────────────────────────────────────────────────────────────────
 
 export function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { scrollY } = useScroll();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const { user, loading, signOut } = useUser();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     setScrolled(latest > 20);
   });
+
+  // Close user menu on outside click
+  useEffect(() => {
+    if (!userMenuOpen) return;
+    const handler = () => setUserMenuOpen(false);
+    document.addEventListener("click", handler);
+    return () => document.removeEventListener("click", handler);
+  }, [userMenuOpen]);
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/");
+    router.refresh();
+  };
+
+  const userName =
+    user?.user_metadata?.full_name as string | undefined;
+  const userEmail = user?.email;
 
   return (
     <>
@@ -67,7 +117,6 @@ export function Navbar() {
                   )}
                 >
                   {label}
-                  {/* Active dot indicator */}
                   {isActive && (
                     <motion.span
                       layoutId="nav-dot"
@@ -84,17 +133,96 @@ export function Navbar() {
             })}
           </div>
 
-          {/* CTA — desktop only */}
-          <div className="hidden lg:block">
-            <Link
-              href="/qualify"
-              className="inline-flex items-center gap-2 rounded-full px-5 py-2 bg-foreground hover:bg-foreground/90 text-background text-sm font-medium transition-all duration-200"
-            >
-              Get Qualified
-            </Link>
+          {/* Right CTA — desktop only */}
+          <div className="hidden lg:flex items-center gap-3">
+            {!loading && user ? (
+              /* Logged in state */
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/portal"
+                  className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200"
+                  style={{
+                    background: "rgba(187,196,247,0.1)",
+                    border: "1px solid rgba(187,196,247,0.2)",
+                    color: "#bbc4f7",
+                    fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
+                  }}
+                >
+                  <LayoutDashboard className="h-3.5 w-3.5" />
+                  Portal
+                </Link>
+
+                {/* User avatar with dropdown */}
+                <div className="relative">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setUserMenuOpen((v) => !v);
+                    }}
+                    className="flex items-center gap-2 rounded-full px-3 py-1.5 transition-all duration-200"
+                    style={{
+                      background: userMenuOpen
+                        ? "rgba(69,71,75,0.3)"
+                        : "rgba(69,71,75,0.15)",
+                      border: "1px solid rgba(69,71,75,0.3)",
+                    }}
+                    aria-label="User menu"
+                  >
+                    <UserInitials name={userName} email={userEmail} />
+                    <span
+                      className="max-w-[120px] truncate text-sm font-medium"
+                      style={{ color: "#c6c6cb", fontFamily: "var(--font-manrope, 'Manrope', sans-serif)" }}
+                    >
+                      {userName || userEmail?.split("@")[0] || "Account"}
+                    </span>
+                  </button>
+
+                  {/* Dropdown */}
+                  {userMenuOpen && (
+                    <div
+                      className="absolute right-0 top-full mt-2 w-48 rounded-xl py-2"
+                      style={{
+                        background: "rgba(28,32,38,0.98)",
+                        border: "1px solid rgba(69,71,75,0.4)",
+                        backdropFilter: "blur(20px)",
+                        boxShadow: "0 16px 48px rgba(0,0,0,0.5)",
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="px-4 py-2 border-b" style={{ borderColor: "rgba(69,71,75,0.3)" }}>
+                        <p className="text-xs font-semibold truncate" style={{ color: "#dfe2eb" }}>
+                          {userName || "Account"}
+                        </p>
+                        <p className="text-xs truncate mt-0.5" style={{ color: "#8f9095" }}>
+                          {userEmail}
+                        </p>
+                      </div>
+                      <button
+                        onClick={handleSignOut}
+                        className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm transition-colors"
+                        style={{ color: "#c6c6cb", fontFamily: "var(--font-manrope, 'Manrope', sans-serif)" }}
+                        onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "rgba(184,92,107,0.1)")}
+                        onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "transparent")}
+                      >
+                        <LogOut className="h-3.5 w-3.5" style={{ color: "#b85c6b" }} />
+                        Sign Out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : !loading ? (
+              /* Logged out state */
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent("open-qualify-modal"))}
+                className="inline-flex items-center gap-2 rounded-full px-5 py-2 bg-foreground hover:bg-foreground/90 text-background text-sm font-medium transition-all duration-200"
+              >
+                Get Qualified
+              </button>
+            ) : null}
           </div>
 
-          {/* Mobile placeholder — keeps spacing, actual trigger is the fixed bottom button */}
+          {/* Mobile placeholder — keeps spacing */}
           <div className="lg:hidden w-8" />
         </nav>
       </motion.header>
@@ -151,16 +279,61 @@ export function Navbar() {
                   </Link>
                 );
               })}
+
+              {/* Portal link in mobile menu when logged in */}
+              {!loading && user && (
+                <Link
+                  href="/portal"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 rounded-xl px-4 py-3.5 text-base font-medium transition-colors text-text-muted hover:bg-glass-bg hover:text-text-primary"
+                >
+                  <LayoutDashboard className="h-4 w-4" />
+                  Portal
+                </Link>
+              )}
             </nav>
 
-            <div className="mt-6">
-              <Link
-                href="/qualify"
-                onClick={() => setMobileOpen(false)}
-                className="flex items-center justify-center rounded-xl bg-luxury py-3.5 text-base font-semibold text-background transition-colors hover:bg-luxury-hover"
-              >
-                Get Started
-              </Link>
+            <div className="mt-6 flex flex-col gap-3">
+              {!loading && user ? (
+                <>
+                  <div
+                    className="flex items-center gap-3 rounded-xl px-4 py-3"
+                    style={{
+                      background: "rgba(10,14,20,0.6)",
+                      border: "1px solid rgba(69,71,75,0.3)",
+                    }}
+                  >
+                    <UserInitials name={userName} email={userEmail} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold truncate" style={{ color: "#dfe2eb" }}>
+                        {userName || userEmail?.split("@")[0]}
+                      </p>
+                      <p className="text-xs truncate" style={{ color: "#8f9095" }}>
+                        {userEmail}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => { setMobileOpen(false); handleSignOut(); }}
+                    className="flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold transition-colors"
+                    style={{
+                      background: "rgba(184,92,107,0.1)",
+                      border: "1px solid rgba(184,92,107,0.2)",
+                      color: "#b85c6b",
+                    }}
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sign Out
+                  </button>
+                </>
+              ) : !loading ? (
+                <button
+                  onClick={() => { setMobileOpen(false); window.dispatchEvent(new CustomEvent("open-qualify-modal")); }}
+                  className="flex items-center justify-center rounded-xl bg-luxury py-3.5 text-base font-semibold text-background transition-colors hover:bg-luxury-hover w-full"
+                >
+                  Get Started
+                </button>
+              ) : null}
             </div>
           </SheetContent>
         </Sheet>

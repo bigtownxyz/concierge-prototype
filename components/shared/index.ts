@@ -10,3 +10,5 @@ export {
 } from "./LoadingSkeleton";
 export { Navbar } from "./Navbar";
 export { Footer } from "./Footer";
+export { QualifyModal } from "./QualifyModal";
+export type { QualifyModalProps } from "./QualifyModal";
