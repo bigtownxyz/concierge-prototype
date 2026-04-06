@@ -1365,24 +1365,24 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
 
         // US citizen considerations (15 points)
         if (formData.isUsCitizen) {
-          // US citizens need programs that:
-          // - Don't exclude US nationals
-          const excludesUS = p.excludedNationalities.includes("US");
-          if (excludesUS) {
-            score -= 50; // effectively disqualify
-          } else {
-            // Favour tax-friendly jurisdictions for US citizens
+          if (formData.consideringRenouncing) {
+            // Considering renouncing — CBI programs are most valuable (new citizenship)
+            if (p.type === "CBI") score += 15;
+            else if (p.type === "Golden Visa") score += 8;
+            // Tax-friendly jurisdictions matter post-renunciation
             score += (p.radarScores.tax_score / 100) * 10;
-            // If considering renouncing, CBI programs are more valuable
-            if (formData.consideringRenouncing) {
-              if (p.type === "CBI") score += 15;
-              else if (p.type === "Golden Visa") score += 5;
-            }
+          } else {
+            // US citizen NOT renouncing — can't get tax benefits anywhere
+            // Focus on strategic value: mobility, lifestyle, asset diversification
+            score += (p.radarScores.travel_score / 100) * 8;
+            score += (p.radarScores.lifestyle_score / 100) * 7;
+            // Deprioritise tax score since it won't help them
+            // Pick the best strategic option instead
           }
         } else if (formData.isUsCitizen === false) {
-          // Non-US citizens — tax optimization focus gets a boost on 0% tax jurisdictions
+          // Non-US citizens — tax optimization focus gets a full boost
           if (formData.strategicFocus.includes("tax") && p.radarScores.tax_score >= 80) {
-            score += 10;
+            score += 15;
           }
         }
 

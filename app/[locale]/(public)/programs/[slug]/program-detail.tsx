@@ -2,7 +2,6 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef, useState } from "react";
-import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { type Program, STAGES } from "@/lib/constants";
 import { formatCurrency } from "@/lib/utils";
@@ -287,13 +286,11 @@ export function ProgramDetail({ program }: { program: Program }) {
           className="absolute inset-0"
           style={{ scale: heroScale, opacity: heroOpacity }}
         >
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src={`/images/programs/${program.slug}.jpg`}
             alt={program.country}
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
+            className="absolute inset-0 w-full h-full object-cover"
           />
           {/* Dark overlay for text legibility */}
           <div className="absolute inset-0 bg-black/50" />
