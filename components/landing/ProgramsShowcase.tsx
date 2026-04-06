@@ -60,7 +60,7 @@ function ProgramCard({ program, index }: { program: typeof programs[0]; index: n
           <div>
             <h3
               className="text-2xl"
-              style={{ fontFamily: "var(--font-noto-serif, 'Noto Serif', serif)", color: "#dfe2eb" }}
+              style={{ fontFamily: "var(--font-manrope, 'Manrope', sans-serif)", color: "#dfe2eb" }}
             >
               {program.title}
             </h3>
@@ -147,7 +147,7 @@ export function ProgramsShowcase() {
           >
             <h2
               className="text-4xl mb-6"
-              style={{ fontFamily: "var(--font-noto-serif, 'Noto Serif', serif)", color: "#dfe2eb" }}
+              style={{ fontFamily: "var(--font-manrope, 'Manrope', sans-serif)", color: "#dfe2eb" }}
             >
               Curated Portfolio
             </h2>

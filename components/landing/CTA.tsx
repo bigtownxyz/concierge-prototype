@@ -34,7 +34,7 @@ export function CTA() {
           >
             <h2
               className="text-4xl md:text-5xl mb-8"
-              style={{ fontFamily: "var(--font-noto-serif, 'Noto Serif', serif)", color: "#dfe2eb" }}
+              style={{ fontFamily: "var(--font-manrope, 'Manrope', sans-serif)", color: "#dfe2eb" }}
             >
               Confidential Consultation
             </h2>

@@ -48,7 +48,7 @@ export function HowItWorks() {
         >
           <h2
             className="text-4xl mb-6"
-            style={{ fontFamily: "var(--font-noto-serif, 'Noto Serif', serif)", color: "#dfe2eb" }}
+            style={{ fontFamily: "var(--font-manrope, 'Manrope', sans-serif)", color: "#dfe2eb" }}
           >
             The Three-Step Protocol
           </h2>
@@ -96,7 +96,7 @@ export function HowItWorks() {
                 </span>
                 <h3
                   className="text-2xl mb-4"
-                  style={{ fontFamily: "var(--font-noto-serif, 'Noto Serif', serif)", color: "#dfe2eb" }}
+                  style={{ fontFamily: "var(--font-manrope, 'Manrope', sans-serif)", color: "#dfe2eb" }}
                 >
                   {step.title}
                 </h3>

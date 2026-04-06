@@ -186,7 +186,7 @@ function ProgramCard({
             className="text-xl font-bold leading-tight"
             style={{
               color: "#dfe2eb",
-              fontFamily: "var(--font-noto-serif, 'Noto Serif', serif)",
+              fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
             }}
           >
             {program.country}
@@ -196,7 +196,7 @@ function ProgramCard({
             style={{
               color: "#8f9095",
               fontStyle: "italic",
-              fontFamily: "var(--font-noto-serif, 'Noto Serif', serif)",
+              fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
             }}
           >
             {typeLabel}
@@ -425,7 +425,7 @@ function ComparisonSection() {
             className="text-3xl sm:text-4xl font-bold"
             style={{
               color: "#dfe2eb",
-              fontFamily: "var(--font-noto-serif, 'Noto Serif', serif)",
+              fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
             }}
           >
             Precision Comparison
@@ -480,7 +480,7 @@ function ComparisonSection() {
               className="text-xl font-bold"
               style={{
                 color: "#dfe2eb",
-                fontFamily: "var(--font-noto-serif, 'Noto Serif', serif)",
+                fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
               }}
             >
               {mostPopular.name}
@@ -489,7 +489,7 @@ function ComparisonSection() {
               className="text-sm mt-0.5 italic"
               style={{
                 color: "#8f9095",
-                fontFamily: "var(--font-noto-serif, 'Noto Serif', serif)",
+                fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
               }}
             >
               {TYPE_LABELS[mostPopular.type]}
@@ -564,7 +564,7 @@ function ComparisonSection() {
               className="text-xl font-bold"
               style={{
                 color: "#dfe2eb",
-                fontFamily: "var(--font-noto-serif, 'Noto Serif', serif)",
+                fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
               }}
             >
               {bestValue.name}
@@ -573,7 +573,7 @@ function ComparisonSection() {
               className="text-sm mt-0.5 italic"
               style={{
                 color: "#8f9095",
-                fontFamily: "var(--font-noto-serif, 'Noto Serif', serif)",
+                fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
               }}
             >
               {TYPE_LABELS[bestValue.type]}

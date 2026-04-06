@@ -85,7 +85,7 @@ export default function ProgramsPage() {
               className="text-5xl sm:text-6xl md:text-7xl font-bold leading-tight tracking-tight"
               style={{
                 color: "#dfe2eb",
-                fontFamily: "var(--font-noto-serif, 'Noto Serif', serif)",
+                fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
               }}
             >
               The Global
@@ -94,7 +94,7 @@ export default function ProgramsPage() {
               className="text-5xl sm:text-6xl md:text-7xl font-bold leading-tight tracking-tight italic"
               style={{
                 color: "#bbc4f7",
-                fontFamily: "var(--font-noto-serif, 'Noto Serif', serif)",
+                fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
               }}
             >
               Program Directory
