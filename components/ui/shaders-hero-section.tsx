@@ -66,7 +66,7 @@ export function ShaderBackground({ children }: ShaderBackgroundProps) {
 
 export function PulsingCircle() {
   return (
-    <div className="absolute bottom-16 right-10 z-30">
+    <div className="absolute bottom-24 right-10 z-30">
       <div className="relative w-20 h-20 flex items-center justify-center">
         <PulsingBorder
           colors={["#5A6397", "#B8BAC7", "#F5F5F6", "#424975", "#8D90A3", "#353A63", "#A0A8CC"]}
