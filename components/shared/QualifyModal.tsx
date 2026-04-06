@@ -1937,32 +1937,41 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
                   className="flex shrink-0 items-center justify-between gap-3 px-6 py-4"
                   style={{ borderTop: "1px solid rgba(69,71,75,0.25)" }}
                 >
-                  {step > 1 ? (
-                    <button
-                      type="button"
-                      onClick={() => setStep((s) => s - 1)}
-                      className="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-150"
-                      style={{
-                        background: "rgba(69,71,75,0.15)",
-                        border: "1px solid rgba(69,71,75,0.3)",
-                        color: "#c6c6cb",
-                        fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
-                      }}
-                      onMouseEnter={(e) =>
-                        ((e.currentTarget as HTMLButtonElement).style.background = "rgba(69,71,75,0.28)")
-                      }
-                      onMouseLeave={(e) =>
-                        ((e.currentTarget as HTMLButtonElement).style.background = "rgba(69,71,75,0.15)")
-                      }
-                    >
-                      <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-                        arrow_back
-                      </span>
-                      Previous Phase
-                    </button>
-                  ) : (
-                    <div />
-                  )}
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    {step > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => setStep((s) => s - 1)}
+                        className="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-150 flex-shrink-0"
+                        style={{
+                          background: "rgba(69,71,75,0.15)",
+                          border: "1px solid rgba(69,71,75,0.3)",
+                          color: "#c6c6cb",
+                          fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
+                        }}
+                        onMouseEnter={(e) =>
+                          ((e.currentTarget as HTMLButtonElement).style.background = "rgba(69,71,75,0.28)")
+                        }
+                        onMouseLeave={(e) =>
+                          ((e.currentTarget as HTMLButtonElement).style.background = "rgba(69,71,75,0.15)")
+                        }
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
+                          arrow_back
+                        </span>
+                        Previous Phase
+                      </button>
+                    )}
+                    {!canAdvance && !isSaving && (
+                      <p className="text-xs truncate" style={{ color: "#b85c6b" }}>
+                        {step === 1 && "Select at least one objective"}
+                        {step === 3 && !formData.timeline && "Select a preferred timeline"}
+                        {step === 3 && formData.timeline && formData.isUsCitizen === null && "Answer the US citizenship question"}
+                        {step === 4 && "Fill in all required fields (*)"}
+                        {step === 5 && "Select at least one programme"}
+                      </p>
+                    )}
+                  </div>
 
                   <button
                     type="button"
@@ -1989,15 +1998,6 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
                       {step === 5 ? "check" : "arrow_forward"}
                     </span>
                   </button>
-                  {!canAdvance && !isSaving && (
-                    <p className="text-xs mt-2 text-right" style={{ color: "#b85c6b" }}>
-                      {step === 1 && "Select at least one objective"}
-                      {step === 3 && !formData.timeline && "Select a preferred timeline"}
-                      {step === 3 && formData.timeline && formData.isUsCitizen === null && "Answer the US citizenship question"}
-                      {step === 4 && "Please fill in all required fields (*)"}
-                      {step === 5 && "Select at least one programme"}
-                    </p>
-                  )}
                 </div>
               )}
 
