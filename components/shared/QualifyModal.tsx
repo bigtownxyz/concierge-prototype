@@ -122,7 +122,7 @@ function formatTickLabel(n: number): string {
   return `$${n / 1_000}K`;
 }
 
-const STEP_LABELS = ["Strategic Focus", "Target Deployment", "Contact Details", "Recommendations"];
+const STEP_LABELS = ["Strategic Focus", "Estimated Budget", "Your Profile", "Contact Details", "Recommendations"];
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -246,29 +246,9 @@ function StepStrategicFocus({
 function StepInvestment({
   amount,
   onChange,
-  timeline,
-  onTimelineChange,
-  dependants,
-  onDependantsChange,
-  isUsCitizen,
-  onUsCitizenChange,
-  consideringRenouncing,
-  onRenouncingChange,
-  constraints,
-  onConstraintsToggle,
 }: {
   amount: number;
   onChange: (v: number) => void;
-  timeline: Timeline | "";
-  onTimelineChange: (v: Timeline) => void;
-  dependants: number;
-  onDependantsChange: (v: number) => void;
-  isUsCitizen: boolean | null;
-  onUsCitizenChange: (v: boolean) => void;
-  consideringRenouncing: boolean | null;
-  onRenouncingChange: (v: boolean) => void;
-  constraints: string[];
-  onConstraintsToggle: (v: string) => void;
 }) {
   const pct = ((amount - SLIDER_MIN) / (SLIDER_MAX - SLIDER_MIN)) * 100;
 
@@ -381,8 +361,47 @@ function StepInvestment({
         </div>
       )}
 
+    </div>
+  );
+}
+
+// ─── Step 3: Profile ─────────────────────────────────────────────────────────
+
+function StepProfile({
+  timeline,
+  onTimelineChange,
+  dependants,
+  onDependantsChange,
+  isUsCitizen,
+  onUsCitizenChange,
+  consideringRenouncing,
+  onRenouncingChange,
+}: {
+  timeline: Timeline | "";
+  onTimelineChange: (v: Timeline) => void;
+  dependants: number;
+  onDependantsChange: (v: number) => void;
+  isUsCitizen: boolean | null;
+  onUsCitizenChange: (v: boolean) => void;
+  consideringRenouncing: boolean | null;
+  onRenouncingChange: (v: boolean) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-8">
+      <div>
+        <p className="text-xs font-semibold tracking-[0.12em] uppercase" style={{ color: "#bbc4f7" }}>
+          Your Profile
+        </p>
+        <h3 className="mt-2 text-xl font-semibold" style={{ color: "#dfe2eb", fontFamily: "var(--font-manrope, 'Manrope', sans-serif)" }}>
+          Tell us about your situation
+        </h3>
+        <p className="mt-1.5 text-sm" style={{ color: "#8f9095" }}>
+          This helps us match you with the right programmes.
+        </p>
+      </div>
+
       {/* Timeline */}
-      <div className="pt-4" style={{ borderTop: "1px solid rgba(69,71,75,0.2)" }}>
+      <div>
         <p className="text-xs font-semibold tracking-[0.12em] uppercase mb-1" style={{ color: "#8f9095" }}>
           Preferred Timeline
         </p>
@@ -504,43 +523,6 @@ function StepInvestment({
         )}
       </div>
 
-      {/* Constraints */}
-      <div className="pt-4" style={{ borderTop: "1px solid rgba(69,71,75,0.2)" }}>
-        <p className="text-xs font-semibold tracking-[0.12em] uppercase mb-1" style={{ color: "#8f9095" }}>
-          Any Constraints?
-        </p>
-        <p className="text-sm mb-3" style={{ color: "#8f9095" }}>
-          Select any that apply so we can account for them.
-        </p>
-        <div className="flex flex-col gap-2">
-          {CONSTRAINT_OPTIONS.map((opt) => (
-            <button
-              key={opt}
-              type="button"
-              onClick={() => onConstraintsToggle(opt)}
-              className="flex items-center gap-3 rounded-lg px-4 py-3 text-left text-sm transition-all duration-150"
-              style={{
-                background: constraints.includes(opt) ? "rgba(187,196,247,0.06)" : "rgba(10,14,20,0.6)",
-                border: constraints.includes(opt) ? "1px solid rgba(187,196,247,0.3)" : "1px solid rgba(69,71,75,0.2)",
-                color: "#c6c6cb",
-              }}
-            >
-              <div
-                className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0"
-                style={{
-                  border: constraints.includes(opt) ? "2px solid #bbc4f7" : "2px solid rgba(69,71,75,0.5)",
-                  background: constraints.includes(opt) ? "#bbc4f7" : "transparent",
-                }}
-              >
-                {constraints.includes(opt) && (
-                  <span className="material-symbols-outlined" style={{ fontSize: 12, color: "#242d58" }}>check</span>
-                )}
-              </div>
-              {opt}
-            </button>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
@@ -601,9 +583,13 @@ function FormInput({
 function StepContact({
   data,
   onChange,
+  constraints,
+  onConstraintsToggle,
 }: {
   data: Pick<FormData, "name" | "email" | "phone" | "country" | "nationality" | "situation">;
   onChange: <K extends keyof typeof data>(key: K, value: string) => void;
+  constraints: string[];
+  onConstraintsToggle: (v: string) => void;
 }) {
   return (
     <div className="flex flex-col gap-5">
@@ -687,11 +673,49 @@ function StepContact({
           }}
         />
       </div>
+
+      {/* Constraints */}
+      <div className="pt-4" style={{ borderTop: "1px solid rgba(69,71,75,0.2)" }}>
+        <p className="text-xs font-semibold tracking-[0.12em] uppercase mb-1" style={{ color: "#8f9095" }}>
+          Any Constraints We Should Know About?
+        </p>
+        <p className="text-sm mb-3" style={{ color: "#8f9095" }}>
+          Select any that apply so we can account for them.
+        </p>
+        <div className="flex flex-col gap-2">
+          {CONSTRAINT_OPTIONS.map((opt) => (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => onConstraintsToggle(opt)}
+              className="flex items-center gap-3 rounded-lg px-4 py-3 text-left text-sm transition-all duration-150"
+              style={{
+                background: constraints.includes(opt) ? "rgba(187,196,247,0.06)" : "rgba(10,14,20,0.6)",
+                border: constraints.includes(opt) ? "1px solid rgba(187,196,247,0.3)" : "1px solid rgba(69,71,75,0.2)",
+                color: "#c6c6cb",
+              }}
+            >
+              <div
+                className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0"
+                style={{
+                  border: constraints.includes(opt) ? "2px solid #bbc4f7" : "2px solid rgba(69,71,75,0.5)",
+                  background: constraints.includes(opt) ? "#bbc4f7" : "transparent",
+                }}
+              >
+                {constraints.includes(opt) && (
+                  <span className="material-symbols-outlined" style={{ fontSize: 12, color: "#242d58" }}>check</span>
+                )}
+              </div>
+              {opt}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
 
-// ─── Step 4 ───────────────────────────────────────────────────────────────────
+// ─── Step 5 ───────────────────────────────────────────────────────────────────
 
 function StepRecommendations({
   ranked,
@@ -1247,16 +1271,18 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
       : step === 2
       ? true
       : step === 3
+      ? true
+      : step === 4
       ? formData.name.trim() !== "" && formData.email.trim() !== ""
       : formData.selectedPrograms.length > 0;
 
   const handleNext = async () => {
-    if (step < 4) {
+    if (step < 5) {
       setStep((s) => s + 1);
       return;
     }
 
-    // Step 4: final submission
+    // Step 5: final submission
     setSaveError("");
 
     if (user) {
@@ -1295,16 +1321,18 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
 
   const nextLabel =
     step === 1
-      ? "Continue to Investment"
+      ? "Continue to Budget"
       : step === 2
-      ? "Continue to Contact"
+      ? "Continue to Profile"
       : step === 3
+      ? "Continue to Contact"
+      : step === 4
       ? "View Recommendations"
       : isSaving
       ? "Saving..."
       : "Submit Qualification";
 
-  const progress = (step / 4) * 100;
+  const progress = (step / 5) * 100;
 
   return (
     <AnimatePresence>
@@ -1483,7 +1511,7 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
                           fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
                         }}
                       >
-                        Step {step} of 4
+                        Step {step} of 5
                       </span>
                       <div
                         className="h-1 w-28 overflow-hidden rounded-full"
@@ -1581,6 +1609,10 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
                           onChange={(v) =>
                             setFormData((prev) => ({ ...prev, investmentAmount: v }))
                           }
+                        />
+                      )}
+                      {step === 3 && (
+                        <StepProfile
                           timeline={formData.timeline}
                           onTimelineChange={(v) => setFormData((prev) => ({ ...prev, timeline: v }))}
                           dependants={formData.dependants}
@@ -1589,6 +1621,19 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
                           onUsCitizenChange={(v) => setFormData((prev) => ({ ...prev, isUsCitizen: v }))}
                           consideringRenouncing={formData.consideringRenouncing}
                           onRenouncingChange={(v) => setFormData((prev) => ({ ...prev, consideringRenouncing: v }))}
+                        />
+                      )}
+                      {step === 4 && (
+                        <StepContact
+                          data={{
+                            name: formData.name,
+                            email: formData.email,
+                            phone: formData.phone,
+                            country: formData.country,
+                            nationality: formData.nationality,
+                            situation: formData.situation,
+                          }}
+                          onChange={updateContact}
                           constraints={formData.constraints}
                           onConstraintsToggle={(v) =>
                             setFormData((prev) => ({
@@ -1600,20 +1645,7 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
                           }
                         />
                       )}
-                      {step === 3 && (
-                        <StepContact
-                          data={{
-                            name: formData.name,
-                            email: formData.email,
-                            phone: formData.phone,
-                            country: formData.country,
-                            nationality: formData.nationality,
-                            situation: formData.situation,
-                          }}
-                          onChange={updateContact}
-                        />
-                      )}
-                      {step === 4 && (
+                      {step === 5 && (
                         <>
                           <StepRecommendations
                             ranked={rankedPrograms}
@@ -1694,7 +1726,7 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
                   >
                     {nextLabel}
                     <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-                      {step === 4 ? "check" : "arrow_forward"}
+                      {step === 5 ? "check" : "arrow_forward"}
                     </span>
                   </button>
                 </div>
