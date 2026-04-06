@@ -63,6 +63,29 @@ const TIMELINE_OPTIONS: { id: Timeline; label: string; desc: string }[] = [
   { id: "long-term", label: "Long-term Planning", desc: "Multigenerational wealth preservation and residency layering." },
 ];
 
+const COUNTRIES = [
+  "Afghanistan","Albania","Algeria","Andorra","Angola","Antigua and Barbuda","Argentina","Armenia","Australia","Austria",
+  "Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bhutan","Bolivia",
+  "Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria","Burkina Faso","Burundi","Cambodia","Cameroon",
+  "Canada","Cape Verde","Central African Republic","Chad","Chile","China","Colombia","Comoros","Congo","Costa Rica",
+  "Croatia","Cuba","Cyprus","Czech Republic","Denmark","Djibouti","Dominica","Dominican Republic","East Timor",
+  "Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Eswatini","Ethiopia","Fiji","Finland",
+  "France","Gabon","Gambia","Georgia","Germany","Ghana","Greece","Grenada","Guatemala","Guinea","Guinea-Bissau",
+  "Guyana","Haiti","Honduras","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Israel","Italy",
+  "Ivory Coast","Jamaica","Japan","Jordan","Kazakhstan","Kenya","Kiribati","Kuwait","Kyrgyzstan","Laos","Latvia",
+  "Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Madagascar","Malawi","Malaysia",
+  "Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco",
+  "Mongolia","Montenegro","Morocco","Mozambique","Myanmar","Namibia","Nauru","Nepal","Netherlands","New Zealand",
+  "Nicaragua","Niger","Nigeria","North Korea","North Macedonia","Norway","Oman","Pakistan","Palau","Palestine",
+  "Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Qatar","Romania","Russia",
+  "Rwanda","Saint Kitts and Nevis","Saint Lucia","Saint Vincent","Samoa","San Marino","Sao Tome","Saudi Arabia",
+  "Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia",
+  "South Africa","South Korea","South Sudan","Spain","Sri Lanka","Sudan","Suriname","Sweden","Switzerland",
+  "Syria","Taiwan","Tajikistan","Tanzania","Thailand","Togo","Tonga","Trinidad and Tobago","Tunisia","Turkey",
+  "Turkmenistan","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States","Uruguay",
+  "Uzbekistan","Vanuatu","Vatican City","Venezuela","Vietnam","Yemen","Zambia","Zimbabwe",
+];
+
 const CONSTRAINT_OPTIONS = [
   "Budget",
   "Timeline",
@@ -636,19 +659,53 @@ function StepContact({
           onChange={(v) => onChange("phone", v)}
           placeholder="+1 555 000 0000"
         />
-        <FormInput
-          label="Country of Residence"
-          value={data.country}
-          onChange={(v) => onChange("country", v)}
-          placeholder="Current residence"
-        />
-        <div className="sm:col-span-2">
-          <FormInput
-            label="Current Nationality"
-            value={data.nationality}
-            onChange={(v) => onChange("nationality", v)}
-            placeholder="e.g. British, American, UAE"
-          />
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8f9095" }}>
+            Country of Residence *
+          </label>
+          <select
+            value={data.country}
+            onChange={(e) => onChange("country", e.target.value)}
+            style={{
+              ...inputStyle,
+              appearance: "none",
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238f9095' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`,
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "right 1rem center",
+              paddingRight: "2.5rem",
+            }}
+          >
+            <option value="" style={{ background: "#0a0e14" }}>Select country...</option>
+            {COUNTRIES.map((c) => (
+              <option key={c} value={c} style={{ background: "#0a0e14" }}>{c}</option>
+            ))}
+          </select>
+        </div>
+        <div className="sm:col-span-2 flex flex-col gap-1.5">
+          <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8f9095" }}>
+            Current Nationality * <span className="normal-case font-normal">(select all that apply)</span>
+          </label>
+          <select
+            multiple
+            value={data.nationality.split(",").map((s) => s.trim()).filter(Boolean)}
+            onChange={(e) => {
+              const selected = Array.from(e.target.selectedOptions).map((o) => o.value);
+              onChange("nationality", selected.join(", "));
+            }}
+            style={{
+              ...inputStyle,
+              height: "7rem",
+            }}
+          >
+            {COUNTRIES.map((c) => (
+              <option key={c} value={c} style={{ background: "#0a0e14", padding: "4px 8px" }}>{c}</option>
+            ))}
+          </select>
+          {data.nationality && (
+            <p className="text-xs mt-1" style={{ color: "#bbc4f7" }}>
+              Selected: {data.nationality}
+            </p>
+          )}
         </div>
       </div>
 
@@ -657,7 +714,7 @@ function StepContact({
           className="text-xs font-semibold"
           style={{ color: "#8f9095", letterSpacing: "0.04em", textTransform: "uppercase" }}
         >
-          Tell us about your situation
+          Tell us a bit about your situation *
         </label>
         <textarea
           rows={4}
@@ -1298,9 +1355,13 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
       : step === 2
       ? true
       : step === 3
-      ? true
+      ? formData.timeline !== "" && formData.isUsCitizen !== null
       : step === 4
-      ? formData.name.trim() !== "" && formData.email.trim() !== ""
+      ? formData.name.trim() !== "" &&
+        formData.email.trim() !== "" &&
+        formData.country.trim() !== "" &&
+        formData.nationality.trim() !== "" &&
+        formData.situation.trim() !== ""
       : formData.selectedPrograms.length > 0;
 
   const handleNext = async () => {
