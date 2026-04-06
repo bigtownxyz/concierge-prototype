@@ -640,13 +640,13 @@ function StepContact({
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormInput
-          label="Full Name"
+          label="Full Name *"
           value={data.name}
           onChange={(v) => onChange("name", v)}
           placeholder="Your legal name"
         />
         <FormInput
-          label="Email Address"
+          label="Email Address *"
           type="email"
           value={data.email}
           onChange={(v) => onChange("email", v)}
@@ -1904,6 +1904,15 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
                       {step === 5 ? "check" : "arrow_forward"}
                     </span>
                   </button>
+                  {!canAdvance && !isSaving && (
+                    <p className="text-xs mt-2 text-right" style={{ color: "#b85c6b" }}>
+                      {step === 1 && "Select at least one objective"}
+                      {step === 3 && !formData.timeline && "Select a preferred timeline"}
+                      {step === 3 && formData.timeline && formData.isUsCitizen === null && "Answer the US citizenship question"}
+                      {step === 4 && "Please fill in all required fields (*)"}
+                      {step === 5 && "Select at least one programme"}
+                    </p>
+                  )}
                 </div>
               )}
 
