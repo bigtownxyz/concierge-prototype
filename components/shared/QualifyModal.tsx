@@ -27,6 +27,7 @@ interface FormData {
   isUsCitizen: boolean | null;
   consideringRenouncing: boolean | null;
   constraints: string[];
+  constraintDetail: string;
   name: string;
   email: string;
   phone: string;
@@ -46,6 +47,7 @@ const EMPTY_FORM: FormData = {
   isUsCitizen: null,
   consideringRenouncing: null,
   constraints: [],
+  constraintDetail: "",
   name: "",
   email: "",
   phone: "",
@@ -62,13 +64,11 @@ const TIMELINE_OPTIONS: { id: Timeline; label: string; desc: string }[] = [
 ];
 
 const CONSTRAINT_OPTIONS = [
-  "Criminal record or legal proceedings",
-  "Politically exposed person (PEP)",
-  "Sanctioned country nationality",
-  "Dual citizenship restrictions",
-  "Tax residency complications",
-  "Health conditions affecting eligibility",
-  "None of the above",
+  "Budget",
+  "Timeline",
+  "Family situation",
+  "Current citizenship limitations",
+  "Other",
 ];
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -585,11 +585,15 @@ function StepContact({
   onChange,
   constraints,
   onConstraintsToggle,
+  constraintDetail,
+  onConstraintDetailChange,
 }: {
   data: Pick<FormData, "name" | "email" | "phone" | "country" | "nationality" | "situation">;
   onChange: <K extends keyof typeof data>(key: K, value: string) => void;
   constraints: string[];
   onConstraintsToggle: (v: string) => void;
+  constraintDetail: string;
+  onConstraintDetailChange: (v: string) => void;
 }) {
   return (
     <div className="flex flex-col gap-5">
@@ -710,6 +714,29 @@ function StepContact({
             </button>
           ))}
         </div>
+        {constraints.length > 0 && (
+          <textarea
+            rows={3}
+            value={constraintDetail}
+            placeholder="Please share more detail about your constraints..."
+            onChange={(e) => onConstraintDetailChange(e.target.value)}
+            className="mt-3 w-full"
+            style={{
+              background: "#0a0e14",
+              border: "1px solid rgba(69,71,75,0.3)",
+              borderRadius: "0.625rem",
+              color: "#dfe2eb",
+              fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
+              fontSize: "0.875rem",
+              padding: "0.75rem 1rem",
+              outline: "none",
+              resize: "vertical",
+              minHeight: "4.5rem",
+            }}
+            onFocus={(e) => { (e.currentTarget as HTMLTextAreaElement).style.borderColor = "rgba(187,196,247,0.4)"; }}
+            onBlur={(e) => { (e.currentTarget as HTMLTextAreaElement).style.borderColor = "rgba(69,71,75,0.3)"; }}
+          />
+        )}
       </div>
     </div>
   );
@@ -1643,6 +1670,8 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
                                 : [...prev.constraints, v],
                             }))
                           }
+                          constraintDetail={formData.constraintDetail}
+                          onConstraintDetailChange={(v) => setFormData((prev) => ({ ...prev, constraintDetail: v }))}
                         />
                       )}
                       {step === 5 && (
