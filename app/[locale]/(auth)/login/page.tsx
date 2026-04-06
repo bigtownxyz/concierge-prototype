@@ -79,17 +79,14 @@ function AuthInput({
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") ?? "/portal";
+  const next = searchParams.get("next") ?? "/programs";
   const urlError = searchParams.get("error");
 
-  const [mode, setMode] = useState<"login" | "signup">("login");
-  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [serverError, setServerError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     if (urlError === "auth") {
@@ -99,9 +96,6 @@ export default function LoginPage() {
 
   const validate = () => {
     const errs: Record<string, string> = {};
-    if (mode === "signup" && !fullName.trim()) {
-      errs.fullName = "Full name is required.";
-    }
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       errs.email = "A valid email address is required.";
     }
@@ -123,43 +117,18 @@ export default function LoginPage() {
     setLoading(true);
     const supabase = createClient();
 
-    if (mode === "login") {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        setServerError(error.message);
-        setLoading(false);
-        return;
-      }
-      router.push(next);
-      router.refresh();
-    } else {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { full_name: fullName },
-          emailRedirectTo: `${window.location.origin}/callback`,
-        },
-      });
-      if (error) {
-        setServerError(error.message);
-        setLoading(false);
-        return;
-      }
-      setSuccessMessage(
-        "Account created. Check your inbox to confirm your email, then sign in."
-      );
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      setServerError(error.message);
+      setLoading(false);
+      return;
     }
+    router.push(next);
+    router.refresh();
 
     setLoading(false);
   };
 
-  const switchMode = (m: "login" | "signup") => {
-    setMode(m);
-    setErrors({});
-    setServerError("");
-    setSuccessMessage("");
-  };
 
   return (
     <div
@@ -189,42 +158,12 @@ export default function LoginPage() {
             backdropFilter: "blur(12px)",
           }}
         >
-          {/* Mode tabs */}
-          <div
-            className="mb-8 flex rounded-xl p-1"
-            style={{ background: "#0a0e14", border: "1px solid rgba(69,71,75,0.3)" }}
+          <h2
+            className="text-xl font-semibold mb-6"
+            style={{ color: "#dfe2eb", fontFamily: "var(--font-manrope, 'Manrope', sans-serif)" }}
           >
-            {(["login", "signup"] as const).map((m) => (
-              <button
-                key={m}
-                type="button"
-                onClick={() => switchMode(m)}
-                className="flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all duration-200"
-                style={{
-                  background: mode === m ? "#bbc4f7" : "transparent",
-                  color: mode === m ? "#242d58" : "#8f9095",
-                  fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
-                }}
-              >
-                {m === "login" ? "Sign In" : "Create Account"}
-              </button>
-            ))}
-          </div>
-
-          {/* Success message */}
-          {successMessage && (
-            <div
-              className="mb-6 rounded-xl p-4 text-sm"
-              style={{
-                background: "rgba(62,143,120,0.12)",
-                border: "1px solid rgba(62,143,120,0.3)",
-                color: "#3e8f78",
-                fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
-              }}
-            >
-              {successMessage}
-            </div>
-          )}
+            Sign In
+          </h2>
 
           {/* Server error */}
           {serverError && (
@@ -242,16 +181,6 @@ export default function LoginPage() {
           )}
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
-            {mode === "signup" && (
-              <AuthInput
-                label="Full Name"
-                value={fullName}
-                onChange={setFullName}
-                placeholder="Your legal name"
-                error={errors.fullName}
-              />
-            )}
-
             <AuthInput
               label="Email Address"
               type="email"
@@ -266,12 +195,11 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={setPassword}
-              placeholder={mode === "signup" ? "At least 8 characters" : "Your password"}
+              placeholder="Your password"
               error={errors.password}
             />
 
-            {mode === "login" && (
-              <div className="flex justify-end">
+            <div className="flex justify-end">
                 <Link
                   href="/forgot-password"
                   className="text-xs transition-colors"
@@ -283,7 +211,6 @@ export default function LoginPage() {
                   Forgot password?
                 </Link>
               </div>
-            )}
 
             <button
               type="submit"
@@ -302,13 +229,7 @@ export default function LoginPage() {
                 (e.currentTarget as HTMLButtonElement).style.background = "#bbc4f7";
               }}
             >
-              {loading
-                ? mode === "login"
-                  ? "Signing in..."
-                  : "Creating account..."
-                : mode === "login"
-                ? "Sign In"
-                : "Create Account"}
+              {loading ? "Signing in..." : "Sign In"}
             </button>
           </form>
 
@@ -325,14 +246,14 @@ export default function LoginPage() {
             className="mt-6 text-center text-sm"
             style={{ color: "#8f9095", fontFamily: "var(--font-manrope, 'Manrope', sans-serif)" }}
           >
-            {mode === "login" ? "Don't have an account?" : "Already have an account?"}{" "}
+            Don&apos;t have an account?{" "}
             <button
               type="button"
-              onClick={() => switchMode(mode === "login" ? "signup" : "login")}
+              onClick={() => window.dispatchEvent(new CustomEvent("open-qualify-modal"))}
               className="font-semibold transition-colors"
               style={{ color: "#bbc4f7" }}
             >
-              {mode === "login" ? "Create one" : "Sign in"}
+              Get Qualified
             </button>
           </p>
         </div>
