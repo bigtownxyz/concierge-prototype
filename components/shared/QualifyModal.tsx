@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { PROGRAMS, type Program } from "@/lib/constants";
 import { useUser } from "@/hooks/useUser";
 import { createClient } from "@/lib/supabase/client";
@@ -1118,6 +1118,16 @@ function CreateAccountForm({
 // ─── Success State ────────────────────────────────────────────────────────────
 
 function SuccessState({ onClose }: { onClose: () => void }) {
+  const router = useRouter();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+      router.push("/results");
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [onClose, router]);
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.96 }}
@@ -1144,23 +1154,21 @@ function SuccessState({ onClose }: { onClose: () => void }) {
           Qualification Received
         </h3>
         <p className="mt-2 text-sm leading-relaxed" style={{ color: "#8f9095" }}>
-          A senior advisor will review your profile and contact you within 24 hours via your preferred channel.
+          Redirecting to your results...
         </p>
       </div>
-      <button
-        type="button"
-        onClick={onClose}
-        className="mt-2 rounded-xl px-8 py-3 text-sm font-semibold transition-all duration-200"
-        style={{
-          background: "#bbc4f7",
-          color: "#242d58",
-          fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
-        }}
-        onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "#cdd4fa")}
-        onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "#bbc4f7")}
-      >
-        Close
-      </button>
+      {/* Progress dots to indicate loading */}
+      <div className="flex items-center gap-1.5" aria-hidden="true">
+        {[0, 1, 2].map((i) => (
+          <motion.span
+            key={i}
+            className="h-1.5 w-1.5 rounded-full"
+            style={{ background: "#bbc4f7" }}
+            animate={{ opacity: [0.3, 1, 0.3] }}
+            transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2 }}
+          />
+        ))}
+      </div>
     </motion.div>
   );
 }

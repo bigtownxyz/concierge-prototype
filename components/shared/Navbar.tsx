@@ -138,6 +138,26 @@ export function Navbar() {
             {!loading && user ? (
               /* Logged in state */
               <div className="flex items-center gap-2">
+                {/* My Results link */}
+                <Link
+                  href="/results"
+                  className="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition-all duration-200"
+                  style={{
+                    color: pathname === "/results" ? "#bbc4f7" : "#c6c6cb",
+                    background: pathname === "/results" ? "rgba(187,196,247,0.1)" : "transparent",
+                    fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
+                  }}
+                >
+                  <span
+                    className="material-symbols-outlined"
+                    style={{ fontSize: 15, color: pathname === "/results" ? "#bbc4f7" : "#8f9095" }}
+                    aria-hidden="true"
+                  >
+                    bar_chart_4_bars
+                  </span>
+                  My Results
+                </Link>
+
                 {/* User avatar with dropdown */}
                 <div className="relative">
                   <button
@@ -275,7 +295,24 @@ export function Navbar() {
                 );
               })}
 
-              {/* Portal link in mobile menu when logged in */}
+              {/* My Results link — only when logged in */}
+              {!loading && user && (
+                <Link
+                  href="/results"
+                  onClick={() => setMobileOpen(false)}
+                  className={cn(
+                    "flex items-center gap-3 rounded-xl px-4 py-3.5 text-base font-medium transition-colors",
+                    pathname === "/results"
+                      ? "bg-primary-muted text-primary"
+                      : "text-text-muted hover:bg-glass-bg hover:text-text-primary"
+                  )}
+                >
+                  {pathname === "/results" && (
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                  )}
+                  My Results
+                </Link>
+              )}
             </nav>
 
             <div className="mt-6 flex flex-col gap-3">
