@@ -1032,8 +1032,16 @@ function CreateAccountForm({
       return;
     }
 
-    // Small delay to ensure session propagates
-    await new Promise((r) => setTimeout(r, 500));
+    // Wait for session to fully propagate before saving data
+    await new Promise((r) => setTimeout(r, 1500));
+
+    // Verify the session is actually ready
+    const { data: { user: verifiedUser } } = await supabase.auth.getUser();
+    if (!verifiedUser) {
+      // Session not ready — try one more time
+      await new Promise((r) => setTimeout(r, 2000));
+    }
+
     onSuccess();
     setLoading(false);
   };
@@ -1181,11 +1189,12 @@ async function saveQualificationToDb(
 ) {
   const supabase = createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError) console.error("[QualifyModal] Auth error:", authError);
+  if (!user) throw new Error("Not authenticated — please try signing in again");
 
   // 1. Upsert profile details
-  await supabase.from("profiles").upsert(
+  const { error: profileError } = await supabase.from("profiles").upsert(
     {
       id: user.id,
       full_name: formData.name || undefined,
@@ -1197,6 +1206,7 @@ async function saveQualificationToDb(
     },
     { onConflict: "id" }
   );
+  if (profileError) console.error("[QualifyModal] Profile upsert error:", profileError);
 
   // 2. Upsert qualification (one per user — replace existing)
   const { data: existingQual } = await supabase
