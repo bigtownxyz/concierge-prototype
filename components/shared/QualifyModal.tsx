@@ -1199,22 +1199,24 @@ async function saveQualificationToDb(
     userId = data.user.id;
   }
 
-  // 1. Upsert profile details
-  const { error: profileError } = await supabase.from("profiles").upsert(
-    {
-      id: userId,
-      full_name: formData.name || undefined,
-      email: formData.email || undefined,
-      phone: formData.phone || undefined,
-      country: formData.country || undefined,
-      nationality: formData.nationality || undefined,
-      updated_at: new Date().toISOString(),
-    },
-    { onConflict: "id" }
-  );
-  if (profileError) console.error("[QualifyModal] Profile upsert error:", profileError);
+  // 1. Update profile details (profile already created by trigger)
+  const profileUpdate: Record<string, string> = { updated_at: new Date().toISOString() };
+  if (formData.name) profileUpdate.full_name = formData.name;
+  if (formData.email) profileUpdate.email = formData.email;
+  if (formData.phone) profileUpdate.phone = formData.phone;
+  if (formData.country) profileUpdate.country = formData.country;
+  if (formData.nationality) profileUpdate.nationality = formData.nationality;
 
-  // 2. Upsert qualification (one per user — replace existing)
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .update(profileUpdate)
+    .eq("id", userId);
+  if (profileError) {
+    console.error("[QualifyModal] Profile update error:", profileError);
+    throw new Error("Failed to update profile: " + profileError.message);
+  }
+
+  // 2. Delete any existing qualification and create fresh
   const { data: existingQual } = await supabase
     .from("qualifications")
     .select("id")
@@ -1224,37 +1226,37 @@ async function saveQualificationToDb(
   let qualId: string;
 
   if (existingQual) {
-    await supabase
-      .from("qualifications")
-      .update({
-        strategic_focus: formData.strategicFocus,
-        investment_amount: formData.investmentAmount,
-        situation: formData.situation || null,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", existingQual.id);
-    qualId = existingQual.id;
-
-    // Remove old program matches
+    // Delete old program matches first (FK constraint)
     await supabase
       .from("qualification_programs")
       .delete()
-      .eq("qualification_id", qualId);
-  } else {
-    const { data: newQual, error } = await supabase
-      .from("qualifications")
-      .insert({
-        user_id: userId,
-        strategic_focus: formData.strategicFocus,
-        investment_amount: formData.investmentAmount,
-        situation: formData.situation || null,
-      })
-      .select("id")
-      .single();
+      .eq("qualification_id", existingQual.id);
 
-    if (error || !newQual) throw error ?? new Error("Failed to create qualification");
-    qualId = newQual.id;
+    // Delete old qualification
+    await supabase
+      .from("qualifications")
+      .delete()
+      .eq("id", existingQual.id);
   }
+
+  // Create new qualification
+  const { data: newQual, error: qualError } = await supabase
+    .from("qualifications")
+    .insert({
+      user_id: userId,
+      strategic_focus: formData.strategicFocus,
+      investment_amount: formData.investmentAmount,
+      situation: formData.situation || null,
+    })
+    .select("id")
+    .single();
+
+  if (qualError) {
+    console.error("[QualifyModal] Qualification insert error:", qualError);
+    throw new Error("Failed to save qualification: " + qualError.message);
+  }
+  if (!newQual) throw new Error("Failed to create qualification — no data returned");
+  qualId = newQual.id;
 
   // 3. Save ALL ranked programmes as recommendations (not just selected ones)
   // The user's explicit selections are marked with higher scores
@@ -1276,7 +1278,11 @@ async function saveQualificationToDb(
       .from("qualification_programs")
       .delete()
       .eq("qualification_id", qualId);
-    await supabase.from("qualification_programs").insert(programRows);
+    const { error: progError } = await supabase.from("qualification_programs").insert(programRows);
+    if (progError) {
+      console.error("[QualifyModal] Programs insert error:", progError);
+      // Don't throw — qualification was saved, programs are secondary
+    }
   }
 }
 
