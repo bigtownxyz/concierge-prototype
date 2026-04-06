@@ -574,7 +574,8 @@ export default function ResultsPage() {
             )}
           </div>
 
-          {/* ── Right: Consultation (40%) ────────────────────────────────── */}
+          {/* ── Right: Consultation (40%) — only after form is filled ──── */}
+          {qualification && (
           <motion.div
             initial={{ opacity: 0, x: 16 }}
             animate={{ opacity: 1, x: 0 }}
@@ -643,6 +644,7 @@ export default function ResultsPage() {
               </div>
             </div>
           </motion.div>
+          )}
         </div>
       </div>
     </div>
