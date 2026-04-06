@@ -2,9 +2,10 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Check, Lock } from "lucide-react";
+import { Check } from "lucide-react";
 
 const EASE = [0.16, 1, 0.3, 1] as [number, number, number, number];
+const font = "var(--font-manrope, 'Manrope', sans-serif)";
 
 export function CTA() {
   const ref = useRef<HTMLElement>(null);
@@ -25,160 +26,75 @@ export function CTA() {
           style={{ background: "#bbc4f7", opacity: 0.05, filter: "blur(120px)" }}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center relative z-10">
-          {/* Left content */}
+        <div className="flex flex-col items-center text-center relative z-10 max-w-2xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.7, ease: EASE }}
           >
+            <span className="material-symbols-outlined mb-6 block" style={{ fontSize: 40, color: "#bbc4f7" }}>
+              call
+            </span>
             <h2
-              className="text-4xl md:text-5xl mb-8"
-              style={{ fontFamily: "var(--font-manrope, 'Manrope', sans-serif)", color: "#dfe2eb" }}
+              className="text-4xl md:text-5xl font-semibold mb-6"
+              style={{ fontFamily: font, color: "#dfe2eb" }}
             >
-              Confidential Consultation
+              Ready to speak with an advisor?
             </h2>
             <p
-              className="text-xl mb-10 leading-relaxed"
-              style={{ fontFamily: "var(--font-manrope, 'Manrope', sans-serif)", color: "#c6c6cb" }}
+              className="text-lg mb-10 leading-relaxed"
+              style={{ fontFamily: font, color: "#c6c6cb" }}
             >
-              The journey to global freedom begins with a private conversation. Connect with our principal advisors to explore your possibilities under strict non-disclosure terms.
+              Book a free, no-obligation consultation with a senior concierge. We&apos;ll review your goals, match you with the right programmes, and lay out a clear path forward.
             </p>
 
-            <div className="space-y-6">
+            <div className="flex flex-wrap justify-center gap-6 mb-12">
               {[
-                { title: "End-to-End Encryption", desc: "All communications are routed through secure, military-grade channels." },
-                { title: "Dedicated Case Officer", desc: "A single point of contact for the duration of your global transition." },
+                "Free 30-minute consultation",
+                "Personalised programme shortlist",
+                "No commitment required",
               ].map((item) => (
-                <div key={item.title} className="flex items-start gap-5">
+                <div key={item} className="flex items-center gap-2">
                   <div
-                    className="mt-1 w-6 h-6 rounded-full flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: "rgba(187, 196, 247, 0.2)" }}
+                    className="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
+                    style={{ backgroundColor: "rgba(187, 196, 247, 0.15)" }}
                   >
                     <Check className="h-3 w-3" style={{ color: "#bbc4f7" }} strokeWidth={3} />
                   </div>
-                  <div>
-                    <h4
-                      className="font-bold"
-                      style={{ fontFamily: "var(--font-manrope, 'Manrope', sans-serif)", color: "#dfe2eb" }}
-                    >
-                      {item.title}
-                    </h4>
-                    <p
-                      className="text-sm"
-                      style={{ fontFamily: "var(--font-manrope, 'Manrope', sans-serif)", color: "#c6c6cb" }}
-                    >
-                      {item.desc}
-                    </p>
-                  </div>
+                  <span className="text-sm" style={{ color: "#c6c6cb", fontFamily: font }}>{item}</span>
                 </div>
               ))}
             </div>
-          </motion.div>
 
-          {/* Right form */}
-          <motion.div
-            className="p-10 rounded-3xl shadow-2xl"
-            style={{ backgroundColor: "#0a0e14" }}
-            initial={{ opacity: 0, y: 24 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.2, duration: 0.7, ease: EASE }}
-          >
-            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label
-                    className="text-[10px] font-bold uppercase tracking-widest ml-1"
-                    style={{ fontFamily: "var(--font-manrope, 'Manrope', sans-serif)", color: "#c6c6cb" }}
-                  >
-                    Legal Full Name
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="E.g. Alexander Sterling"
-                    className="w-full p-4 rounded-lg border-none focus:ring-1 focus:outline-none"
-                    style={{
-                      fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
-                      backgroundColor: "#1c2026",
-                      color: "#dfe2eb",
-                      boxShadow: "none",
-                    }}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label
-                    className="text-[10px] font-bold uppercase tracking-widest ml-1"
-                    style={{ fontFamily: "var(--font-manrope, 'Manrope', sans-serif)", color: "#c6c6cb" }}
-                  >
-                    Primary Citizenship
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="United Kingdom"
-                    className="w-full p-4 rounded-lg border-none focus:ring-1 focus:outline-none"
-                    style={{
-                      fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
-                      backgroundColor: "#1c2026",
-                      color: "#dfe2eb",
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label
-                  className="text-[10px] font-bold uppercase tracking-widest ml-1"
-                  style={{ fontFamily: "var(--font-manrope, 'Manrope', sans-serif)", color: "#c6c6cb" }}
-                >
-                  Secure Email
-                </label>
-                <input
-                  type="email"
-                  placeholder="office@sterling-group.private"
-                  className="w-full p-4 rounded-lg border-none focus:ring-1 focus:outline-none"
-                  style={{
-                    fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
-                    backgroundColor: "#1c2026",
-                    color: "#dfe2eb",
-                  }}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label
-                  className="text-[10px] font-bold uppercase tracking-widest ml-1"
-                  style={{ fontFamily: "var(--font-manrope, 'Manrope', sans-serif)", color: "#c6c6cb" }}
-                >
-                  Preferred Protocol
-                </label>
-                <select
-                  className="w-full p-4 rounded-lg border-none focus:ring-1 focus:outline-none"
-                  style={{
-                    fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
-                    backgroundColor: "#1c2026",
-                    color: "#dfe2eb",
-                  }}
-                >
-                  <option>Citizenship by Investment</option>
-                  <option>Residency by Real Estate</option>
-                  <option>Corporate Residency Transfer</option>
-                  <option>General Inquiry</option>
-                </select>
-              </div>
-
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
-                type="submit"
-                className="w-full text-lg py-5 rounded-lg font-extrabold transition-all flex items-center justify-center gap-3 hover:brightness-110"
+                onClick={() => window.dispatchEvent(new CustomEvent("open-qualify-modal"))}
+                className="px-10 py-4 rounded-xl text-base font-semibold transition-all duration-200 hover:shadow-[0_0_30px_rgba(187,196,247,0.2)]"
                 style={{
-                  fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
+                  fontFamily: font,
                   backgroundColor: "#bbc4f7",
                   color: "#242d58",
                 }}
               >
-                <Lock className="h-5 w-5" fill="currentColor" />
-                Request Advisor Access
+                Get Qualified &amp; Book a Call
               </button>
-            </form>
+              <button
+                onClick={() => window.location.href = "/en/programs"}
+                className="px-10 py-4 rounded-xl text-base font-semibold transition-all duration-200"
+                style={{
+                  fontFamily: font,
+                  backgroundColor: "rgba(69,71,75,0.2)",
+                  border: "1px solid rgba(69,71,75,0.3)",
+                  color: "#c6c6cb",
+                }}
+              >
+                Explore Programmes First
+              </button>
+            </div>
+
+            <p className="mt-8 text-xs" style={{ color: "#8f9095", fontFamily: font }}>
+              Complete the qualification form to receive your personalised recommendations. Your advisor will reach out within 24 hours.
+            </p>
           </motion.div>
         </div>
       </div>
