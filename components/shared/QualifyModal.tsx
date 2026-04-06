@@ -1240,17 +1240,26 @@ async function saveQualificationToDb(
     qualId = newQual.id;
   }
 
-  // 3. Insert selected program matches (with scores from ranked list)
-  const programRows = formData.selectedPrograms.map((slug) => {
-    const match = rankedPrograms.find((r) => r.program.slug === slug);
-    return {
+  // 3. Save ALL ranked programmes as recommendations (not just selected ones)
+  // The user's explicit selections are marked with higher scores
+  const programRows = rankedPrograms
+    .filter(({ score }) => score > 0)
+    .map(({ program, score }) => ({
       qualification_id: qualId,
-      program_slug: slug,
-      match_score: match ? Math.round(match.score) : 0,
-    };
-  });
+      program_slug: program.slug,
+      match_score: Math.round(
+        formData.selectedPrograms.includes(program.slug)
+          ? Math.min(score + 10, 100) // boost explicitly selected ones
+          : score
+      ),
+    }));
 
   if (programRows.length > 0) {
+    // Clear any existing recommendations first
+    await supabase
+      .from("qualification_programs")
+      .delete()
+      .eq("qualification_id", qualId);
     await supabase.from("qualification_programs").insert(programRows);
   }
 }
