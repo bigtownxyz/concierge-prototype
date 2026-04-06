@@ -603,6 +603,108 @@ function FormInput({
   );
 }
 
+function CitizenshipSelector({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [search, setSearch] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const selected = value.split(",").map((s) => s.trim()).filter(Boolean);
+
+  const filtered = search.trim()
+    ? COUNTRIES.filter((c) => c.toLowerCase().includes(search.toLowerCase()) && !selected.includes(c))
+    : COUNTRIES.filter((c) => !selected.includes(c));
+
+  const addCountry = (country: string) => {
+    const next = [...selected, country].join(", ");
+    onChange(next);
+    setSearch("");
+  };
+
+  const removeCountry = (country: string) => {
+    const next = selected.filter((s) => s !== country).join(", ");
+    onChange(next);
+  };
+
+  return (
+    <div className="relative">
+      {/* Tags */}
+      {selected.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-2">
+          {selected.map((c) => (
+            <span
+              key={c}
+              className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium"
+              style={{ background: "rgba(187,196,247,0.1)", border: "1px solid rgba(187,196,247,0.25)", color: "#bbc4f7" }}
+            >
+              {c}
+              <button
+                type="button"
+                onClick={() => removeCountry(c)}
+                className="hover:opacity-70"
+                style={{ color: "#bbc4f7" }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 14 }}>close</span>
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Search input */}
+      <div className="relative">
+        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2" style={{ fontSize: 18, color: "#8f9095" }}>
+          search
+        </span>
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setOpen(true); }}
+          onFocus={() => setOpen(true)}
+          placeholder={selected.length > 0 ? "Add another citizenship..." : "Search countries..."}
+          style={{
+            ...inputStyle,
+            paddingLeft: "2.5rem",
+          }}
+          onBlur={() => setTimeout(() => setOpen(false), 200)}
+        />
+      </div>
+
+      {/* Dropdown */}
+      {open && filtered.length > 0 && (
+        <div
+          className="absolute z-50 mt-1 w-full max-h-40 overflow-y-auto rounded-xl py-1"
+          style={{
+            background: "#0a0e14",
+            border: "1px solid rgba(69,71,75,0.3)",
+            boxShadow: "0 16px 48px rgba(0,0,0,0.5)",
+            scrollbarWidth: "thin",
+            scrollbarColor: "rgba(69,71,75,0.4) transparent",
+          }}
+        >
+          {filtered.slice(0, 20).map((c) => (
+            <button
+              key={c}
+              type="button"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => addCountry(c)}
+              className="w-full text-left px-4 py-2 text-sm transition-colors"
+              style={{ color: "#c6c6cb" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(187,196,247,0.08)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+            >
+              {c}
+            </button>
+          ))}
+          {filtered.length > 20 && (
+            <p className="px-4 py-2 text-xs" style={{ color: "#8f9095" }}>
+              Type to narrow results...
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function StepContact({
   data,
   onChange,
@@ -683,29 +785,12 @@ function StepContact({
         </div>
         <div className="sm:col-span-2 flex flex-col gap-1.5">
           <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8f9095" }}>
-            Current Nationality * <span className="normal-case font-normal">(select all that apply)</span>
+            Current Citizenships * <span className="normal-case font-normal">(search and select)</span>
           </label>
-          <select
-            multiple
-            value={data.nationality.split(",").map((s) => s.trim()).filter(Boolean)}
-            onChange={(e) => {
-              const selected = Array.from(e.target.selectedOptions).map((o) => o.value);
-              onChange("nationality", selected.join(", "));
-            }}
-            style={{
-              ...inputStyle,
-              height: "7rem",
-            }}
-          >
-            {COUNTRIES.map((c) => (
-              <option key={c} value={c} style={{ background: "#0a0e14", padding: "4px 8px" }}>{c}</option>
-            ))}
-          </select>
-          {data.nationality && (
-            <p className="text-xs mt-1" style={{ color: "#bbc4f7" }}>
-              Selected: {data.nationality}
-            </p>
-          )}
+          <CitizenshipSelector
+            value={data.nationality}
+            onChange={(v) => onChange("nationality", v)}
+          />
         </div>
       </div>
 
