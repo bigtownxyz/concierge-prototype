@@ -320,6 +320,19 @@ function StepInvestment({
         </span>{" "}
         tier programmes across {amount < 300_000 ? "3" : amount < 1_000_000 ? "8" : "14"}+ jurisdictions.
       </div>
+
+      {amount <= 100_000 && (
+        <div
+          className="rounded-xl p-4 text-sm"
+          style={{
+            background: "rgba(214,195,110,0.08)",
+            border: "1px solid rgba(214,195,110,0.25)",
+            color: "#d6c36e",
+          }}
+        >
+          Some programs require higher minimum investments. We&apos;ll help identify the best options within your budget during your consultation.
+        </div>
+      )}
     </div>
   );
 }
