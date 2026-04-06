@@ -82,11 +82,13 @@ export default function LoginPage() {
   const next = searchParams.get("next") ?? "/programs";
   const urlError = searchParams.get("error");
 
+  const [mode, setMode] = useState<"password" | "magic">("password");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [serverError, setServerError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     if (urlError === "auth") {
@@ -99,7 +101,7 @@ export default function LoginPage() {
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       errs.email = "A valid email address is required.";
     }
-    if (!password || password.length < 8) {
+    if (mode === "password" && (!password || password.length < 8)) {
       errs.password = "Password must be at least 8 characters.";
     }
     return errs;
@@ -117,6 +119,22 @@ export default function LoginPage() {
     setLoading(true);
     const supabase = createClient();
 
+    if (mode === "magic") {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `https://concierge-proto1231.vercel.app/en/programs`,
+        },
+      });
+      if (error) {
+        setServerError(error.message);
+      } else {
+        setSuccessMessage("Magic link sent! Check your email and click the link to sign in.");
+      }
+      setLoading(false);
+      return;
+    }
+
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       setServerError(error.message);
@@ -125,7 +143,6 @@ export default function LoginPage() {
     }
     router.push(next);
     router.refresh();
-
     setLoading(false);
   };
 
@@ -165,6 +182,21 @@ export default function LoginPage() {
             Sign In
           </h2>
 
+          {/* Success message */}
+          {successMessage && (
+            <div
+              className="mb-6 rounded-xl p-4 text-sm"
+              style={{
+                background: "rgba(187,196,247,0.1)",
+                border: "1px solid rgba(187,196,247,0.3)",
+                color: "#bbc4f7",
+                fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
+              }}
+            >
+              {successMessage}
+            </div>
+          )}
+
           {/* Server error */}
           {serverError && (
             <div
@@ -190,27 +222,31 @@ export default function LoginPage() {
               error={errors.email}
             />
 
-            <AuthInput
-              label="Password"
-              type="password"
-              value={password}
-              onChange={setPassword}
-              placeholder="Your password"
-              error={errors.password}
-            />
+            {mode === "password" && (
+              <>
+                <AuthInput
+                  label="Password"
+                  type="password"
+                  value={password}
+                  onChange={setPassword}
+                  placeholder="Your password"
+                  error={errors.password}
+                />
 
-            <div className="flex justify-end">
-                <Link
-                  href="/forgot-password"
-                  className="text-xs transition-colors"
-                  style={{
-                    color: "#8f9095",
-                    fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
-                  }}
-                >
-                  Forgot password?
-                </Link>
-              </div>
+                <div className="flex justify-end">
+                  <Link
+                    href="/forgot-password"
+                    className="text-xs transition-colors"
+                    style={{
+                      color: "#8f9095",
+                      fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
+                    }}
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+              </>
+            )}
 
             <button
               type="submit"
@@ -229,7 +265,7 @@ export default function LoginPage() {
                 (e.currentTarget as HTMLButtonElement).style.background = "#bbc4f7";
               }}
             >
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? (mode === "magic" ? "Sending link..." : "Signing in...") : (mode === "magic" ? "Send Magic Link" : "Sign In")}
             </button>
           </form>
 
@@ -241,6 +277,23 @@ export default function LoginPage() {
             </span>
             <div className="h-px flex-1" style={{ background: "rgba(69,71,75,0.3)" }} />
           </div>
+
+          <button
+            type="button"
+            onClick={() => { setMode(mode === "password" ? "magic" : "password"); setErrors({}); setServerError(""); setSuccessMessage(""); }}
+            className="mt-4 w-full flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold transition-all duration-200"
+            style={{
+              background: "rgba(69,71,75,0.15)",
+              border: "1px solid rgba(69,71,75,0.3)",
+              color: "#b7c6ed",
+              fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
+              {mode === "password" ? "mail" : "lock"}
+            </span>
+            {mode === "password" ? "Sign in with Magic Link" : "Sign in with Password"}
+          </button>
 
           <p
             className="mt-6 text-center text-sm"
