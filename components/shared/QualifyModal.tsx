@@ -657,11 +657,13 @@ function CreateAccountForm({
   defaultName,
   onSuccess,
   onError,
+  onInfo,
 }: {
   defaultEmail: string;
   defaultName: string;
   onSuccess: () => void;
   onError: (msg: string) => void;
+  onInfo: (msg: string) => void;
 }) {
   const [name, setName] = useState(defaultName);
   const [email, setEmail] = useState(defaultEmail);
@@ -695,8 +697,8 @@ function CreateAccountForm({
     // Sign in immediately so we have a session for saving data
     const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
     if (signInError) {
-      // Email confirmation likely required — tell user
-      onError("Account created! Please check your email to confirm, then come back and log in to see your results.");
+      // Email confirmation likely required — show as info, not error
+      onInfo("Account created! Please check your email to confirm, then come back and log in to see your results.");
       setLoading(false);
       return;
     }
@@ -924,6 +926,7 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
   const [submitted, setSubmitted] = useState(false);
   const [showCreateAccount, setShowCreateAccount] = useState(false);
   const [saveError, setSaveError] = useState("");
+  const [saveInfo, setSaveInfo] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
   const [formData, setFormData] = useState<FormData>({ ...EMPTY_FORM });
@@ -1294,6 +1297,18 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
                       transition={{ duration: 0.3 }}
                     >
                       <div className="flex flex-col gap-6">
+                        {saveInfo && (
+                          <div
+                            className="rounded-xl p-4 text-sm"
+                            style={{
+                              background: "rgba(187,196,247,0.1)",
+                              border: "1px solid rgba(187,196,247,0.3)",
+                              color: "#bbc4f7",
+                            }}
+                          >
+                            {saveInfo}
+                          </div>
+                        )}
                         {saveError && (
                           <div
                             className="rounded-xl p-4 text-sm"
@@ -1311,6 +1326,7 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
                           defaultName={formData.name}
                           onSuccess={handleAccountCreated}
                           onError={setSaveError}
+                          onInfo={setSaveInfo}
                         />
                         <p className="text-center text-xs" style={{ color: "#8f9095" }}>
                           Already have an account?{" "}
