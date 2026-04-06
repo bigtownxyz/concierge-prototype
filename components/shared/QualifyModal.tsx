@@ -684,7 +684,7 @@ function CreateAccountForm({
       password,
       options: {
         data: { full_name: name },
-        emailRedirectTo: `${window.location.origin}/callback`,
+        emailRedirectTo: `${window.location.origin}/en/programs`,
       },
     });
 

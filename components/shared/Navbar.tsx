@@ -138,20 +138,6 @@ export function Navbar() {
             {!loading && user ? (
               /* Logged in state */
               <div className="flex items-center gap-2">
-                <Link
-                  href="/portal"
-                  className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200"
-                  style={{
-                    background: "rgba(187,196,247,0.1)",
-                    border: "1px solid rgba(187,196,247,0.2)",
-                    color: "#bbc4f7",
-                    fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
-                  }}
-                >
-                  <LayoutDashboard className="h-3.5 w-3.5" />
-                  Portal
-                </Link>
-
                 {/* User avatar with dropdown */}
                 <div className="relative">
                   <button
@@ -281,16 +267,6 @@ export function Navbar() {
               })}
 
               {/* Portal link in mobile menu when logged in */}
-              {!loading && user && (
-                <Link
-                  href="/portal"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3 rounded-xl px-4 py-3.5 text-base font-medium transition-colors text-text-muted hover:bg-glass-bg hover:text-text-primary"
-                >
-                  <LayoutDashboard className="h-4 w-4" />
-                  Portal
-                </Link>
-              )}
             </nav>
 
             <div className="mt-6 flex flex-col gap-3">

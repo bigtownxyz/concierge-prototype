@@ -8,7 +8,7 @@ export async function GET(
   const { locale } = await params;
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? `/${locale}/portal`;
+  const next = searchParams.get("next") ?? `/${locale}/programs`;
 
   if (code) {
     const supabase = await createClient();
