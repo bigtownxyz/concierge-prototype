@@ -23,7 +23,7 @@ export default function ForgotPasswordPage() {
     setLoading(true);
     const supabase = createClient();
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/en/reset-password`,
+      redirectTo: `https://concierge-proto1231.vercel.app/en/reset-password`,
     });
 
     if (resetError) {
