@@ -86,6 +86,17 @@ function MatchScoreBar({ score }: { score: number }) {
 
 // ─── Programme Card ───────────────────────────────────────────────────────────
 
+function getBenefitPills(program: Program): { icon: string; label: string }[] {
+  const pills: { icon: string; label: string }[] = [];
+  if (program.radarScores.travel_score >= 70) pills.push({ icon: "flight", label: program.visaFreeCount ? `${program.visaFreeCount} Countries` : "Global Access" });
+  if (program.radarScores.tax_score >= 70) pills.push({ icon: "account_balance", label: "Tax Friendly" });
+  if (program.radarScores.speed_score >= 60) pills.push({ icon: "bolt", label: program.processingTimeMonths ? `${program.processingTimeMonths}mo Speed` : "Fast Track" });
+  if (program.radarScores.lifestyle_score >= 60) pills.push({ icon: "villa", label: "High Lifestyle" });
+  if (program.type === "CBI") pills.push({ icon: "badge", label: "Full Citizenship" });
+  if (program.region === "europe") pills.push({ icon: "euro", label: "EU Access" });
+  return pills.slice(0, 3);
+}
+
 function ProgramCard({
   program,
   matchScore,
@@ -95,117 +106,93 @@ function ProgramCard({
   matchScore: number;
   rank: number;
 }) {
-  const processingText = program.processingTimeMonths
-    ? `${program.processingTimeMonths} months`
-    : "Varies";
+  const sym = program.currency === "USD" ? "$" : program.currency === "EUR" ? "\u20ac" : program.currency + " ";
+  const investmentDisplay = program.minInvestment === 0
+    ? "No minimum"
+    : `${sym}${program.minInvestment.toLocaleString()}`;
+  const pills = getBenefitPills(program);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: rank * 0.07 }}
-      className="rounded-2xl p-5"
+      className="rounded-2xl overflow-hidden"
       style={{
         background: "#1c2026",
         border: "1px solid rgba(69,71,75,0.15)",
         fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
       }}
     >
-      {/* Header */}
-      <div className="flex items-start justify-between gap-3 mb-4">
-        <div className="flex items-center gap-3 min-w-0">
-          <span className="text-2xl flex-shrink-0" aria-hidden="true">
-            {program.flagEmoji}
-          </span>
-          <div className="min-w-0">
-            <h3
-              className="text-sm font-semibold truncate"
-              style={{ color: "#dfe2eb" }}
-            >
-              {program.country}
-            </h3>
-            <span
-              className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium mt-0.5"
-              style={{
-                background: "rgba(187,196,247,0.1)",
-                color: "#bbc4f7",
-                border: "1px solid rgba(187,196,247,0.2)",
-              }}
-            >
-              {program.type}
-            </span>
+      {/* Image area */}
+      <div className="relative h-44 overflow-hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={`/images/programs/${program.slug}.jpg`}
+          alt={program.country}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1c2026] via-transparent to-transparent" />
+
+        {/* Country badge top-left */}
+        <span
+          className="absolute top-3 left-3 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider"
+          style={{ background: "rgba(187,196,247,0.15)", backdropFilter: "blur(8px)", color: "#dfe2eb" }}
+        >
+          {program.country}
+        </span>
+
+        {/* Match score badge bottom-right */}
+        <div
+          className="absolute bottom-3 right-3 rounded-xl px-3 py-2 text-center"
+          style={{ background: "rgba(10,14,20,0.85)", backdropFilter: "blur(8px)", border: "1px solid rgba(69,71,75,0.3)" }}
+        >
+          <p className="text-[9px] uppercase tracking-widest" style={{ color: "#8f9095" }}>Match Score</p>
+          <p className="text-xl font-bold" style={{ color: "#bbc4f7" }}>{matchScore}%</p>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-5">
+        {/* Title row */}
+        <div className="flex items-start justify-between gap-3 mb-1">
+          <h3 className="text-base font-semibold" style={{ color: "#dfe2eb" }}>
+            {program.name.replace(program.country, "").trim() || program.type} Program
+          </h3>
+          <div className="text-right flex-shrink-0">
+            <p className="text-base font-bold" style={{ color: "#dfe2eb" }}>{investmentDisplay}</p>
+            <p className="text-[9px] uppercase tracking-widest" style={{ color: "#8f9095" }}>Minimum Entry</p>
           </div>
         </div>
-        {rank === 0 && (
-          <span
-            className="flex-shrink-0 flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold"
-            style={{
-              background: "rgba(187,196,247,0.12)",
-              color: "#bbc4f7",
-              border: "1px solid rgba(187,196,247,0.25)",
-            }}
-          >
-            <span
-              className="material-symbols-outlined"
-              style={{ fontSize: 12, fontVariationSettings: "'FILL' 1" }}
-            >
-              star
-            </span>
-            Top Match
-          </span>
-        )}
-      </div>
-
-      {/* Match Score */}
-      <div className="mb-4">
-        <p className="text-xs font-medium mb-1.5" style={{ color: "#8f9095" }}>
-          Match Score
+        <p className="text-xs mb-4" style={{ color: "#8f9095" }}>
+          {program.marketingHook.length > 80 ? program.marketingHook.slice(0, 80) + "..." : program.marketingHook}
         </p>
-        <MatchScoreBar score={matchScore} />
-      </div>
 
-      {/* Meta row */}
-      <div className="flex items-center gap-4 mb-4">
-        <div>
-          <p className="text-xs" style={{ color: "#8f9095" }}>
-            Min Investment
-          </p>
-          <p className="text-sm font-semibold mt-0.5" style={{ color: "#c6c6cb" }}>
-            {program.currency === "USD"
-              ? `$${program.minInvestment.toLocaleString()}`
-              : `${program.currency} ${program.minInvestment.toLocaleString()}`}
-          </p>
-        </div>
-        <div
-          className="w-px self-stretch"
-          style={{ background: "rgba(69,71,75,0.3)" }}
-          aria-hidden="true"
-        />
-        <div>
-          <p className="text-xs" style={{ color: "#8f9095" }}>
-            Processing
-          </p>
-          <p className="text-sm font-semibold mt-0.5" style={{ color: "#c6c6cb" }}>
-            {processingText}
-          </p>
-        </div>
-      </div>
+        {/* Benefit pills */}
+        {pills.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-5">
+            {pills.map((pill) => (
+              <span
+                key={pill.label}
+                className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[10px] font-medium"
+                style={{ background: "rgba(69,71,75,0.2)", color: "#c6c6cb", border: "1px solid rgba(69,71,75,0.15)" }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 13, color: "#8f9095" }}>{pill.icon}</span>
+                {pill.label}
+              </span>
+            ))}
+          </div>
+        )}
 
-      {/* View Details */}
-      <Link
-        href={`/programs/${program.slug}` as "/programs/[slug]"}
-        className="inline-flex items-center gap-1.5 text-xs font-semibold transition-colors duration-200"
-        style={{ color: "#bbc4f7" }}
-      >
-        View Details
-        <span
-          className="material-symbols-outlined"
-          style={{ fontSize: 14 }}
-          aria-hidden="true"
+        {/* CTA */}
+        <Link
+          href={`/programs/${program.slug}` as "/programs/[slug]"}
+          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm font-semibold transition-all duration-200"
+          style={{ background: "rgba(69,71,75,0.15)", border: "1px solid rgba(69,71,75,0.25)", color: "#dfe2eb" }}
         >
-          arrow_forward
-        </span>
-      </Link>
+          View Full Prospectus
+        </Link>
+      </div>
     </motion.div>
   );
 }
@@ -618,22 +605,29 @@ export default function ResultsPage() {
                 <QualificationSummary qual={qualification} profile={profile} />
               </div>
             )}
+            {/* Section header */}
+            <div className="flex items-center gap-2 mb-2">
+              <span className="material-symbols-outlined" style={{ fontSize: 16, color: "#d6c3b7" }}>verified</span>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em]" style={{ color: "#d6c3b7" }}>Curated Recommendations</p>
+            </div>
             <h2
-              className="text-base font-semibold mb-5"
+              className="text-2xl sm:text-3xl font-semibold mb-2"
               style={{ color: "#dfe2eb" }}
             >
-              Your Selected Programmes
+              Your Strategic <em style={{ color: "#bbc4f7" }}>Global Path</em>
             </h2>
+            <p className="text-sm mb-8" style={{ color: "#8f9095" }}>
+              Based on your portfolio profile and jurisdictional preferences, these programs offer the highest alignment with your sovereign goals.
+            </p>
 
             {loadingData ? (
-              <div className="flex flex-col gap-4">
-                <CardSkeleton />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <CardSkeleton />
                 <CardSkeleton />
               </div>
             ) : matchedPrograms.length > 0 ? (
               <>
-                <div className="flex flex-col gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {matchedPrograms.map(({ program, matchScore }, index) => (
                     <ProgramCard
                       key={program.slug}
