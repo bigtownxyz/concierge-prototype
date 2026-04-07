@@ -611,8 +611,13 @@ export default function ResultsPage() {
 
         {/* Two-column layout */}
         <div className="flex flex-col lg:flex-row gap-8 lg:items-start">
-          {/* ── Left: Recommendations (60%) ────────────────────────────── */}
+          {/* ── Left: Profile + Recommendations (60%) ──────────────────── */}
           <div className="w-full lg:w-[60%]">
+            {qualification && (
+              <div className="mb-8">
+                <QualificationSummary qual={qualification} profile={profile} />
+              </div>
+            )}
             <h2
               className="text-base font-semibold mb-5"
               style={{ color: "#dfe2eb" }}
@@ -654,13 +659,6 @@ export default function ResultsPage() {
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
             className="w-full lg:w-[40%] lg:sticky lg:top-24"
           >
-            {/* Profile summary */}
-            {qualification && (
-              <div className="mb-6">
-                <QualificationSummary qual={qualification} profile={profile} />
-              </div>
-            )}
-
             {/* Calendly — only after form is filled */}
             {qualification && (
             <div
