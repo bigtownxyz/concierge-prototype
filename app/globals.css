@@ -80,7 +80,7 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-destructive: var(--destructive);
-  --font-display: var(--font-cormorant);
+  --font-display: var(--font-manrope);
   --font-sans: var(--font-inter);
   --font-mono: var(--font-jetbrains);
   --font-serif: var(--font-manrope);
@@ -130,7 +130,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Heading display — Cormorant Garamond serif */
 .heading-display {
-  font-family: var(--font-display, 'Cormorant Garamond', serif);
+  font-family: var(--font-manrope, 'Manrope', sans-serif);
   font-weight: 600;
   letter-spacing: -0.02em;
 }

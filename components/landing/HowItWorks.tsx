@@ -1,7 +1,9 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
+import { useUser } from "@/hooks/useUser";
+import { createClient } from "@/lib/supabase/client";
 
 const EASE = [0.16, 1, 0.3, 1] as [number, number, number, number];
 const font = "var(--font-manrope, 'Manrope', sans-serif)";
@@ -9,6 +11,19 @@ const font = "var(--font-manrope, 'Manrope', sans-serif)";
 export function HowItWorks() {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const { user } = useUser();
+  const [hasQualification, setHasQualification] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    const supabase = createClient();
+    supabase
+      .from("qualifications")
+      .select("id")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => { if (data) setHasQualification(true); });
+  }, [user]);
 
   const anim = (delay: number) => ({
     initial: { opacity: 0, y: 20 } as const,
@@ -97,14 +112,16 @@ export function HowItWorks() {
                 Access up to 180+ visa-free destinations. We help you pick the passport that unlocks the travel freedom you actually need.
               </p>
             </div>
-            <button
-              className="relative z-10 mt-6 flex items-center gap-1.5 text-sm font-semibold self-start transition-opacity hover:opacity-80"
-              style={{ color: "#bbc4f7", fontFamily: font }}
-              onClick={() => window.dispatchEvent(new CustomEvent("open-qualify-modal"))}
-            >
-              Start Qualifying
-              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_forward</span>
-            </button>
+            {!hasQualification && (
+              <button
+                className="relative z-10 mt-6 flex items-center gap-1.5 text-sm font-semibold self-start transition-opacity hover:opacity-80"
+                style={{ color: "#bbc4f7", fontFamily: font }}
+                onClick={() => window.dispatchEvent(new CustomEvent("open-qualify-modal"))}
+              >
+                Start Qualifying
+                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_forward</span>
+              </button>
+            )}
           </motion.div>
 
           {/* Card 3 — Tax Strategy */}

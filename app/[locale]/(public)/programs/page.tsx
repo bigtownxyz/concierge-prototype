@@ -82,22 +82,14 @@ export default function ProgramsPage() {
           {/* Headline */}
           <div>
             <h1
-              className="text-5xl sm:text-6xl md:text-7xl font-bold leading-tight tracking-tight"
+              className="text-5xl sm:text-6xl md:text-7xl font-bold leading-[1.1] tracking-tight"
               style={{
-                color: "#dfe2eb",
                 fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
               }}
             >
-              The Global
-            </h1>
-            <h1
-              className="text-5xl sm:text-6xl md:text-7xl font-bold leading-tight tracking-tight italic"
-              style={{
-                color: "#bbc4f7",
-                fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
-              }}
-            >
-              Program Directory
+              <span style={{ color: "#dfe2eb" }}>The Global</span>
+              <br />
+              <span className="italic" style={{ color: "#bbc4f7" }}>Program Directory</span>
             </h1>
           </div>
 
