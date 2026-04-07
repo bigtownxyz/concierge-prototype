@@ -203,6 +203,17 @@ export function Navbar() {
                           {userEmail}
                         </p>
                       </div>
+                      <Link
+                        href="/profile"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm transition-colors"
+                        style={{ color: "#c6c6cb", fontFamily: "var(--font-manrope, 'Manrope', sans-serif)" }}
+                        onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "rgba(187,196,247,0.08)")}
+                        onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "transparent")}
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: 15, color: "#8f9095" }}>person</span>
+                        Profile
+                      </Link>
                       <button
                         onClick={handleSignOut}
                         className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm transition-colors"

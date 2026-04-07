@@ -600,11 +600,6 @@ export default function ResultsPage() {
         <div className="flex flex-col lg:flex-row gap-8 lg:items-start">
           {/* ── Left: Profile + Recommendations (60%) ──────────────────── */}
           <div className="w-full lg:w-[60%]">
-            {qualification && (
-              <div className="mb-8">
-                <QualificationSummary qual={qualification} profile={profile} />
-              </div>
-            )}
             {/* Section header */}
             <div className="flex items-center gap-2 mb-2">
               <span className="material-symbols-outlined" style={{ fontSize: 16, color: "#d6c3b7" }}>verified</span>
