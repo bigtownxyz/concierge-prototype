@@ -79,7 +79,7 @@ function AuthInput({
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") ?? "/programs";
+  const next = searchParams.get("next") ?? "/results";
   const urlError = searchParams.get("error");
 
   const [mode, setMode] = useState<"password" | "magic">("password");
