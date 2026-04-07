@@ -746,23 +746,36 @@ export function ProgramsGrid() {
     { program_slug: string; match_score: number }[]
   >([]);
 
-  // Fetch qualification programs when user is logged in
+  // Fetch qualification data and compute recommendations client-side
   useEffect(() => {
     if (!user) return;
     import("@/lib/supabase/client").then(({ createClient }) => {
       const supabase = createClient();
       supabase
         .from("qualifications")
-        .select("id, qualification_programs(program_slug, match_score)")
+        .select("strategic_focus, investment_amount")
         .eq("user_id", user.id)
-        .order("updated_at", { ascending: false })
         .maybeSingle()
-        .then(({ data }) => {
-          if (data?.qualification_programs) {
-            setQualPrograms(
-              data.qualification_programs as { program_slug: string; match_score: number }[]
-            );
-          }
+        .then(({ data: qual }) => {
+          if (!qual) return;
+          const focus = (qual.strategic_focus || []) as string[];
+          const budget = qual.investment_amount || 500000;
+          // Score programs using same logic as the form
+          const scored = PROGRAMS.filter((p) => p.isActive)
+            .map((p) => {
+              let score = 0;
+              if (p.minInvestment <= budget) score += 30;
+              else if (p.minInvestment <= budget * 1.5) score += 10;
+              if (focus.includes("mobility")) score += (p.radarScores.travel_score / 100) * 25;
+              if (focus.includes("tax")) score += (p.radarScores.tax_score / 100) * 25;
+              if (focus.includes("family")) score += (p.radarScores.lifestyle_score / 100) * 25;
+              if (focus.includes("assets")) score += (p.radarScores.cost_score / 100) * 25;
+              if (p.featured) score += 3;
+              return { program_slug: p.slug, match_score: Math.round(Math.min(score, 100)) };
+            })
+            .sort((a, b) => b.match_score - a.match_score)
+            .slice(0, 3);
+          setQualPrograms(scored);
         });
     });
   }, [user]);
