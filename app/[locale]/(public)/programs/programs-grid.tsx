@@ -79,10 +79,12 @@ function ProgramCard({
   program,
   index,
   onInquire,
+  hasQualification,
 }: {
   program: Program;
   index: number;
   onInquire: () => void;
+  hasQualification: boolean;
 }) {
   const gradient = REGION_GRADIENTS[program.region] ?? REGION_GRADIENTS.global;
   const accent = REGION_ACCENT[program.region] ?? REGION_ACCENT.global;
@@ -357,27 +359,29 @@ function ProgramCard({
             </span>
             Breakdown
           </Link>
-          <button
-            type="button"
-            onClick={onInquire}
-            className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200"
-            style={{
-              background: "#bbc4f7",
-              color: "#242d58",
-              fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = "#cdd4fa";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = "#bbc4f7";
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-              mail
-            </span>
-            Inquire
-          </button>
+          {!hasQualification && (
+            <button
+              type="button"
+              onClick={onInquire}
+              className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200"
+              style={{
+                background: "#bbc4f7",
+                color: "#242d58",
+                fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = "#cdd4fa";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = "#bbc4f7";
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
+                mail
+              </span>
+              Inquire
+            </button>
+          )}
         </div>
       </div>
     </motion.div>
@@ -1030,6 +1034,7 @@ export function ProgramsGrid() {
                   program={program}
                   index={i}
                   onInquire={() => setQualifyOpen(true)}
+                  hasQualification={!!(user && qualPrograms.length > 0)}
                 />
               ))}
             </motion.div>
