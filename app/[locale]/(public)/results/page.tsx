@@ -308,98 +308,85 @@ function EmptyState() {
 
 // ─── Qualification Summary ────────────────────────────────────────────────────
 
-function QualificationSummary({ qual }: { qual: Qualification }) {
+function QualificationSummary({ qual, profile }: { qual: Qualification; profile: { full_name: string | null; email: string | null; phone: string | null; country: string | null; nationality: string | null } | null }) {
   const focusLabels = formatFocus(qual.strategic_focus ?? []);
+
+  const rows: { label: string; value: string; icon: string }[] = [];
+  if (profile?.full_name) rows.push({ label: "Name", value: profile.full_name, icon: "person" });
+  if (profile?.email) rows.push({ label: "Email", value: profile.email, icon: "mail" });
+  if (profile?.phone) rows.push({ label: "Phone", value: profile.phone, icon: "call" });
+  if (profile?.country) rows.push({ label: "Residence", value: profile.country, icon: "location_on" });
+  if (profile?.nationality) rows.push({ label: "Citizenships", value: profile.nationality, icon: "public" });
+  rows.push({ label: "Budget", value: formatInvestment(qual.investment_amount), icon: "payments" });
+  if (qual.timeline) rows.push({ label: "Timeline", value: formatTimeline(qual.timeline), icon: "schedule" });
+  if (qual.dependants != null) rows.push({ label: "Family Members", value: String(qual.dependants), icon: "group" });
 
   return (
     <div
-      className="rounded-2xl p-5 mt-4"
+      className="rounded-2xl p-6"
       style={{
         background: "#1c2026",
         border: "1px solid rgba(69,71,75,0.15)",
         fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
       }}
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-5">
         <h3 className="text-xs font-semibold tracking-widest uppercase" style={{ color: "#8f9095" }}>
-          Your Profile Summary
+          Your Profile
         </h3>
         <button
           type="button"
-          onClick={() =>
-            window.dispatchEvent(new CustomEvent("open-qualify-modal"))
-          }
+          onClick={() => window.dispatchEvent(new CustomEvent("open-qualify-modal"))}
           className="flex items-center gap-1.5 text-xs font-semibold transition-colors duration-200"
           style={{ color: "#bbc4f7" }}
         >
-          <span
-            className="material-symbols-outlined"
-            style={{ fontSize: 14 }}
-            aria-hidden="true"
-          >
-            edit
-          </span>
+          <span className="material-symbols-outlined" style={{ fontSize: 14 }}>edit</span>
           Edit
         </button>
       </div>
 
-      <div className="flex flex-col gap-3">
-        {/* Strategic Focus Tags */}
-        {focusLabels.length > 0 && (
-          <div>
-            <p className="text-xs mb-2" style={{ color: "#8f9095" }}>
-              Strategic Focus
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {focusLabels.map((label) => (
-                <span
-                  key={label}
-                  className="rounded-full px-3 py-1 text-xs font-medium"
-                  style={{
-                    background: "rgba(187,196,247,0.08)",
-                    border: "1px solid rgba(187,196,247,0.2)",
-                    color: "#bbc4f7",
-                  }}
-                >
-                  {label}
-                </span>
-              ))}
+      {/* Detail rows */}
+      <div className="flex flex-col gap-3 mb-5">
+        {rows.map((row) => (
+          <div key={row.label} className="flex items-center gap-3">
+            <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 16, color: "#8f9095" }}>{row.icon}</span>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] uppercase tracking-wider" style={{ color: "#8f9095" }}>{row.label}</p>
+              <p className="text-sm font-medium truncate" style={{ color: "#c6c6cb" }}>{row.value}</p>
             </div>
           </div>
-        )}
-
-        {/* Budget & Timeline */}
-        <div className="flex flex-wrap gap-4 pt-1">
-          <div>
-            <p className="text-xs" style={{ color: "#8f9095" }}>
-              Budget
-            </p>
-            <p className="text-sm font-semibold mt-0.5" style={{ color: "#c6c6cb" }}>
-              {formatInvestment(qual.investment_amount)}
-            </p>
-          </div>
-          {qual.timeline && (
-            <div>
-              <p className="text-xs" style={{ color: "#8f9095" }}>
-                Timeline
-              </p>
-              <p className="text-sm font-semibold mt-0.5" style={{ color: "#c6c6cb" }}>
-                {formatTimeline(qual.timeline)}
-              </p>
-            </div>
-          )}
-          {qual.dependants !== null && qual.dependants !== undefined && (
-            <div>
-              <p className="text-xs" style={{ color: "#8f9095" }}>
-                Dependants
-              </p>
-              <p className="text-sm font-semibold mt-0.5" style={{ color: "#c6c6cb" }}>
-                {qual.dependants}
-              </p>
-            </div>
-          )}
-        </div>
+        ))}
       </div>
+
+      {/* Strategic Focus Tags */}
+      {focusLabels.length > 0 && (
+        <div className="pt-4" style={{ borderTop: "1px solid rgba(69,71,75,0.15)" }}>
+          <p className="text-[10px] uppercase tracking-wider mb-2" style={{ color: "#8f9095" }}>Strategic Focus</p>
+          <div className="flex flex-wrap gap-2">
+            {focusLabels.map((label) => (
+              <span
+                key={label}
+                className="rounded-full px-3 py-1 text-xs font-medium"
+                style={{
+                  background: "rgba(187,196,247,0.08)",
+                  border: "1px solid rgba(187,196,247,0.2)",
+                  color: "#bbc4f7",
+                }}
+              >
+                {label}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Situation */}
+      {qual.situation && (
+        <div className="pt-4 mt-3" style={{ borderTop: "1px solid rgba(69,71,75,0.15)" }}>
+          <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "#8f9095" }}>Situation</p>
+          <p className="text-sm leading-relaxed" style={{ color: "#c6c6cb" }}>{qual.situation}</p>
+        </div>
+      )}
     </div>
   );
 }
@@ -411,6 +398,7 @@ export default function ResultsPage() {
   const [loadingAuth, setLoadingAuth] = useState(true);
   const [loadingData, setLoadingData] = useState(true);
   const [qualification, setQualification] = useState<Qualification | null>(null);
+  const [profile, setProfile] = useState<{ full_name: string | null; email: string | null; phone: string | null; country: string | null; nationality: string | null } | null>(null);
   const [matchedPrograms, setMatchedPrograms] = useState<
     { program: Program; matchScore: number }[]
   >([]);
@@ -429,6 +417,14 @@ export default function ResultsPage() {
       }
 
       setLoadingAuth(false);
+
+      // Fetch profile
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("full_name, email, phone, country, nationality")
+        .eq("id", user.id)
+        .maybeSingle();
+      setProfile(profileData ?? null);
 
       // Fetch qualification
       const { data: qual } = await supabase
@@ -530,13 +526,20 @@ export default function ResultsPage() {
 
         {/* Two-column layout */}
         <div className="flex flex-col lg:flex-row gap-8 lg:items-start">
-          {/* ── Left: Recommendations (60%) ─────────────────────────────── */}
+          {/* ── Left: Profile + Recommendations (60%) ──────────────────── */}
           <div className="w-full lg:w-[60%]">
+            {/* Profile summary at the top */}
+            {qualification && (
+              <div className="mb-8">
+                <QualificationSummary qual={qualification} profile={profile} />
+              </div>
+            )}
+
             <h2
               className="text-base font-semibold mb-5"
               style={{ color: "#dfe2eb" }}
             >
-              Your Recommendations
+              Your Selected Programmes
             </h2>
 
             {loadingData ? (
@@ -558,18 +561,10 @@ export default function ResultsPage() {
                   ))}
                 </div>
 
-                {/* Qualification Summary below cards */}
-                {qualification && (
-                  <QualificationSummary qual={qualification} />
-                )}
               </>
             ) : (
               <>
                 <EmptyState />
-                {/* Still show summary if qualification exists but no program rows yet */}
-                {qualification && !loadingData && (
-                  <QualificationSummary qual={qualification} />
-                )}
               </>
             )}
           </div>
