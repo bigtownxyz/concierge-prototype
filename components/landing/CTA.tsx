@@ -1,13 +1,28 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
 import { Check } from "lucide-react";
+import { useUser } from "@/hooks/useUser";
+import { createClient } from "@/lib/supabase/client";
 
 const EASE = [0.16, 1, 0.3, 1] as [number, number, number, number];
 const font = "var(--font-manrope, 'Manrope', sans-serif)";
 
 export function CTA() {
+  const { user } = useUser();
+  const [hasQualification, setHasQualification] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    const supabase = createClient();
+    supabase
+      .from("qualifications")
+      .select("id")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => { if (data) setHasQualification(true); });
+  }, [user]);
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-60px" });
 
@@ -68,7 +83,13 @@ export function CTA() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
-                onClick={() => window.dispatchEvent(new CustomEvent("open-qualify-modal"))}
+                onClick={() => {
+                  if (hasQualification) {
+                    window.location.href = "/en/results";
+                  } else {
+                    window.dispatchEvent(new CustomEvent("open-qualify-modal"));
+                  }
+                }}
                 className="px-10 py-4 rounded-xl text-base font-semibold transition-all duration-200 hover:shadow-[0_0_30px_rgba(187,196,247,0.2)]"
                 style={{
                   fontFamily: font,
@@ -76,7 +97,7 @@ export function CTA() {
                   color: "#242d58",
                 }}
               >
-                Get Qualified &amp; Book a Call
+                {hasQualification ? "View My Application" : "Get Qualified & Book a Call"}
               </button>
               <button
                 onClick={() => window.location.href = "/en/programs"}
