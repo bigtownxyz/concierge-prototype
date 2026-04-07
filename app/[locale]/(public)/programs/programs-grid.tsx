@@ -678,7 +678,7 @@ function RecommendedForYou({
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-xl">{program.flagEmoji}</span>
+                <span className="material-symbols-outlined" style={{ fontSize: 20, color: "#bbc4f7" }}>public</span>
                 <div>
                   <p
                     className="text-sm font-semibold"
@@ -783,11 +783,6 @@ export function ProgramsGrid() {
 
   return (
     <>
-      {/* ── Recommended for You (logged-in users with a qualification) ──── */}
-      {user && qualPrograms.length > 0 && (
-        <RecommendedForYou qualPrograms={qualPrograms} />
-      )}
-
       {/* ── Filter bar ──────────────────────────────────────────────────── */}
       <div className="relative z-20 -mt-20 mx-auto max-w-7xl px-6">
         <div
@@ -1011,6 +1006,11 @@ export function ProgramsGrid() {
           )}
         </div>
       </div>
+
+      {/* ── Recommended for You (after filter bar) ──────────────────────── */}
+      {user && qualPrograms.length > 0 && (
+        <RecommendedForYou qualPrograms={qualPrograms} />
+      )}
 
       {/* ── Programs grid ────────────────────────────────────────────────── */}
       <div className="mx-auto max-w-7xl px-6 py-24">
