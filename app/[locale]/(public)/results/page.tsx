@@ -309,17 +309,64 @@ function EmptyState() {
 // ─── Qualification Summary ────────────────────────────────────────────────────
 
 function QualificationSummary({ qual, profile }: { qual: Qualification; profile: { full_name: string | null; email: string | null; phone: string | null; country: string | null; nationality: string | null } | null }) {
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({
+    full_name: profile?.full_name || "",
+    phone: profile?.phone || "",
+    country: profile?.country || "",
+    nationality: profile?.nationality || "",
+    situation: qual.situation || "",
+  });
+
   const focusLabels = formatFocus(qual.strategic_focus ?? []);
 
-  const rows: { label: string; value: string; icon: string }[] = [];
-  if (profile?.full_name) rows.push({ label: "Name", value: profile.full_name, icon: "person" });
-  if (profile?.email) rows.push({ label: "Email", value: profile.email, icon: "mail" });
-  if (profile?.phone) rows.push({ label: "Phone", value: profile.phone, icon: "call" });
-  if (profile?.country) rows.push({ label: "Residence", value: profile.country, icon: "location_on" });
-  if (profile?.nationality) rows.push({ label: "Citizenships", value: profile.nationality, icon: "public" });
-  rows.push({ label: "Budget", value: formatInvestment(qual.investment_amount), icon: "payments" });
-  if (qual.timeline) rows.push({ label: "Timeline", value: formatTimeline(qual.timeline), icon: "schedule" });
-  if (qual.dependants != null) rows.push({ label: "Family Members", value: String(qual.dependants), icon: "group" });
+  const inputStyle: React.CSSProperties = {
+    background: "#0a0e14",
+    border: "1px solid rgba(69,71,75,0.3)",
+    borderRadius: "0.5rem",
+    color: "#dfe2eb",
+    fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
+    fontSize: "0.8125rem",
+    padding: "0.5rem 0.75rem",
+    width: "100%",
+    outline: "none",
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setSaving(false); return; }
+
+    await supabase.from("profiles").update({
+      full_name: form.full_name || null,
+      phone: form.phone || null,
+      country: form.country || null,
+      nationality: form.nationality || null,
+      updated_at: new Date().toISOString(),
+    }).eq("id", user.id);
+
+    await supabase.from("qualifications").update({
+      situation: form.situation || null,
+      updated_at: new Date().toISOString(),
+    }).eq("user_id", user.id);
+
+    setSaving(false);
+    setEditing(false);
+    window.location.reload();
+  };
+
+  const rows: { label: string; value: string; icon: string; field?: keyof typeof form }[] = [
+    { label: "Name", value: profile?.full_name || "—", icon: "person", field: "full_name" },
+    { label: "Email", value: profile?.email || "—", icon: "mail" },
+    { label: "Phone", value: profile?.phone || "—", icon: "call", field: "phone" },
+    { label: "Residence", value: profile?.country || "—", icon: "location_on", field: "country" },
+    { label: "Citizenships", value: profile?.nationality || "—", icon: "public", field: "nationality" },
+    { label: "Budget", value: formatInvestment(qual.investment_amount), icon: "payments" },
+    { label: "Timeline", value: qual.timeline ? formatTimeline(qual.timeline) : "—", icon: "schedule" },
+    { label: "Family Members", value: qual.dependants != null ? String(qual.dependants) : "—", icon: "group" },
+  ];
 
   return (
     <div
@@ -334,25 +381,56 @@ function QualificationSummary({ qual, profile }: { qual: Qualification; profile:
         <h3 className="text-xs font-semibold tracking-widest uppercase" style={{ color: "#8f9095" }}>
           Your Profile
         </h3>
-        <button
-          type="button"
-          onClick={() => window.dispatchEvent(new CustomEvent("open-qualify-modal"))}
-          className="flex items-center gap-1.5 text-xs font-semibold transition-colors duration-200"
-          style={{ color: "#bbc4f7" }}
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: 14 }}>edit</span>
-          Edit
-        </button>
+        {editing ? (
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setEditing(false)}
+              className="text-xs font-semibold px-3 py-1 rounded-lg transition-colors"
+              style={{ color: "#8f9095" }}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={saving}
+              className="text-xs font-semibold px-3 py-1 rounded-lg transition-colors"
+              style={{ background: "#bbc4f7", color: "#242d58" }}
+            >
+              {saving ? "Saving..." : "Save"}
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            className="flex items-center gap-1.5 text-xs font-semibold transition-colors duration-200"
+            style={{ color: "#bbc4f7" }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>edit</span>
+            Edit
+          </button>
+        )}
       </div>
 
       {/* Detail rows */}
       <div className="flex flex-col gap-3 mb-5">
         {rows.map((row) => (
-          <div key={row.label} className="flex items-center gap-3">
-            <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 16, color: "#8f9095" }}>{row.icon}</span>
+          <div key={row.label} className="flex items-start gap-3">
+            <span className="material-symbols-outlined flex-shrink-0 mt-1" style={{ fontSize: 16, color: "#8f9095" }}>{row.icon}</span>
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] uppercase tracking-wider" style={{ color: "#8f9095" }}>{row.label}</p>
-              <p className="text-sm font-medium truncate" style={{ color: "#c6c6cb" }}>{row.value}</p>
+              <p className="text-[10px] uppercase tracking-wider mb-0.5" style={{ color: "#8f9095" }}>{row.label}</p>
+              {editing && row.field ? (
+                <input
+                  type="text"
+                  value={form[row.field]}
+                  onChange={(e) => setForm((prev) => ({ ...prev, [row.field!]: e.target.value }))}
+                  style={inputStyle}
+                />
+              ) : (
+                <p className="text-sm font-medium truncate" style={{ color: "#c6c6cb" }}>{row.value}</p>
+              )}
             </div>
           </div>
         ))}
@@ -381,12 +459,19 @@ function QualificationSummary({ qual, profile }: { qual: Qualification; profile:
       )}
 
       {/* Situation */}
-      {qual.situation && (
-        <div className="pt-4 mt-3" style={{ borderTop: "1px solid rgba(69,71,75,0.15)" }}>
-          <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "#8f9095" }}>Situation</p>
-          <p className="text-sm leading-relaxed" style={{ color: "#c6c6cb" }}>{qual.situation}</p>
-        </div>
-      )}
+      <div className="pt-4 mt-3" style={{ borderTop: "1px solid rgba(69,71,75,0.15)" }}>
+        <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "#8f9095" }}>Situation</p>
+        {editing ? (
+          <textarea
+            value={form.situation}
+            onChange={(e) => setForm((prev) => ({ ...prev, situation: e.target.value }))}
+            rows={3}
+            style={{ ...inputStyle, resize: "vertical" }}
+          />
+        ) : (
+          <p className="text-sm leading-relaxed" style={{ color: "#c6c6cb" }}>{qual.situation || "—"}</p>
+        )}
+      </div>
     </div>
   );
 }
@@ -526,15 +611,8 @@ export default function ResultsPage() {
 
         {/* Two-column layout */}
         <div className="flex flex-col lg:flex-row gap-8 lg:items-start">
-          {/* ── Left: Profile + Recommendations (60%) ──────────────────── */}
+          {/* ── Left: Recommendations (60%) ────────────────────────────── */}
           <div className="w-full lg:w-[60%]">
-            {/* Profile summary at the top */}
-            {qualification && (
-              <div className="mb-8">
-                <QualificationSummary qual={qualification} profile={profile} />
-              </div>
-            )}
-
             <h2
               className="text-base font-semibold mb-5"
               style={{ color: "#dfe2eb" }}
@@ -569,14 +647,22 @@ export default function ResultsPage() {
             )}
           </div>
 
-          {/* ── Right: Consultation (40%) — only after form is filled ──── */}
-          {qualification && (
+          {/* ── Right: Profile + Consultation (40%) ────────────────────── */}
           <motion.div
             initial={{ opacity: 0, x: 16 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
             className="w-full lg:w-[40%] lg:sticky lg:top-24"
           >
+            {/* Profile summary */}
+            {qualification && (
+              <div className="mb-6">
+                <QualificationSummary qual={qualification} profile={profile} />
+              </div>
+            )}
+
+            {/* Calendly — only after form is filled */}
+            {qualification && (
             <div
               className="rounded-2xl overflow-hidden"
               style={{
@@ -638,8 +724,8 @@ export default function ResultsPage() {
                 </p>
               </div>
             </div>
+            )}
           </motion.div>
-          )}
         </div>
       </div>
     </div>
