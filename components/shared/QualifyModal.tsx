@@ -1343,19 +1343,15 @@ async function saveQualificationToDb(
   if (!newQual) throw new Error("Failed to create qualification — no data returned");
   qualId = newQual.id;
 
-  // 3. Save ALL ranked programmes as recommendations (not just selected ones)
-  // The user's explicit selections are marked with higher scores
-  const programRows = rankedPrograms
-    .filter(({ score }) => score > 0)
-    .map(({ program, score }) => ({
+  // 3. Save only the programmes the user explicitly selected in step 5
+  const programRows = formData.selectedPrograms.map((slug) => {
+    const match = rankedPrograms.find((r) => r.program.slug === slug);
+    return {
       qualification_id: qualId,
-      program_slug: program.slug,
-      match_score: Math.round(
-        formData.selectedPrograms.includes(program.slug)
-          ? Math.min(score + 10, 100) // boost explicitly selected ones
-          : score
-      ),
-    }));
+      program_slug: slug,
+      match_score: match ? Math.round(match.score) : 50,
+    };
+  });
 
   if (programRows.length > 0) {
     // Clear any existing recommendations first

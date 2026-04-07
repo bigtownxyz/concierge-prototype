@@ -1,7 +1,9 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
+import { useUser } from "@/hooks/useUser";
+import { createClient } from "@/lib/supabase/client";
 import { Link } from "@/i18n/navigation";
 import { type Program, STAGES } from "@/lib/constants";
 import { formatCurrency } from "@/lib/utils";
@@ -251,6 +253,43 @@ function GlassCard({
 
 export function ProgramDetail({ program }: { program: Program }) {
   const [qualifyOpen, setQualifyOpen] = useState(false);
+  const { user } = useUser();
+  const [hasQualification, setHasQualification] = useState(false);
+  const [qualId, setQualId] = useState<string | null>(null);
+  const [addedToApp, setAddedToApp] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    const supabase = createClient();
+    supabase
+      .from("qualifications")
+      .select("id")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => { if (data) { setHasQualification(true); setQualId(data.id); } });
+  }, [user]);
+
+  const handleAddToApplication = async () => {
+    if (!qualId || !user) return;
+    const supabase = createClient();
+    // Check if already added
+    const { data: existing } = await supabase
+      .from("qualification_programs")
+      .select("id")
+      .eq("qualification_id", qualId)
+      .eq("program_slug", program.slug)
+      .maybeSingle();
+    if (existing) {
+      setAddedToApp(true);
+      return;
+    }
+    await supabase.from("qualification_programs").insert({
+      qualification_id: qualId,
+      program_slug: program.slug,
+      match_score: 80,
+    });
+    setAddedToApp(true);
+  };
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -537,15 +576,16 @@ export function ProgramDetail({ program }: { program: Program }) {
                 {/* CTA button */}
                 <button
                   type="button"
-                  onClick={() => setQualifyOpen(true)}
+                  onClick={hasQualification ? handleAddToApplication : () => setQualifyOpen(true)}
                   className="flex items-center justify-center gap-2 w-full rounded-xl py-3.5 text-sm font-semibold transition-all"
                   style={{
-                    background: "var(--color-obsidian-primary)",
-                    color: "var(--color-obsidian-on-primary)",
+                    background: addedToApp ? "rgba(62,143,120,0.2)" : "var(--color-obsidian-primary)",
+                    color: addedToApp ? "#3e8f78" : "var(--color-obsidian-on-primary)",
+                    border: addedToApp ? "1px solid rgba(62,143,120,0.3)" : "none",
                   }}
                 >
-                  Check Eligibility
-                  <ArrowRight className="h-4 w-4" />
+                  {addedToApp ? "Added to Application" : hasQualification ? "Add to Application" : "Check Eligibility"}
+                  {addedToApp ? <span className="material-symbols-outlined" style={{ fontSize: 16 }}>check</span> : <ArrowRight className="h-4 w-4" />}
                 </button>
               </GlassCard>
             </motion.div>
@@ -1125,7 +1165,7 @@ export function ProgramDetail({ program }: { program: Program }) {
                     <span className="material-symbols-outlined text-[16px]">
                       checklist
                     </span>
-                    Check Qualification
+                    {hasQualification ? "Add to Application" : "Check Qualification"}
                   </button>
                   <Link
                     href="/contact"
