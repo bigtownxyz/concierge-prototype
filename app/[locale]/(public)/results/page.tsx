@@ -157,7 +157,7 @@ function ProgramCard({
         {/* Title row */}
         <div className="flex items-start justify-between gap-3 mb-1">
           <h3 className="text-base font-semibold" style={{ color: "#dfe2eb" }}>
-            {program.name.replace(program.country, "").trim() || program.type} Program
+            {program.country}
           </h3>
           <div className="text-right flex-shrink-0">
             <p className="text-base font-bold" style={{ color: "#dfe2eb" }}>{investmentDisplay}</p>
@@ -572,29 +572,6 @@ export default function ResultsPage() {
       />
 
       <div className="mx-auto max-w-7xl">
-        {/* Page header */}
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="mb-10"
-        >
-          <p
-            className="text-xs font-semibold tracking-[0.12em] uppercase mb-2"
-            style={{ color: "#bbc4f7" }}
-          >
-            Your Results
-          </p>
-          <h1
-            className="text-2xl lg:text-3xl font-semibold"
-            style={{ color: "#dfe2eb" }}
-          >
-            Personalised Programme Matches
-          </h1>
-          <p className="mt-1.5 text-sm" style={{ color: "#8f9095" }}>
-            Based on your qualification answers, here are the programmes best suited to your goals.
-          </p>
-        </motion.div>
 
         {/* Two-column layout */}
         <div className="flex flex-col lg:flex-row gap-8 lg:items-start">
