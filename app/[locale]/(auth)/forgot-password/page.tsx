@@ -24,20 +24,26 @@ export default function ForgotPasswordPage() {
     }
 
     setLoading(true);
-    const supabase = createClient();
-    const resetPath = `/${locale}/reset-password`;
-    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: buildAbsoluteUrl(resetPath),
-    });
+    try {
+      const supabase = createClient();
+      const resetPath = `/${locale}/reset-password`;
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: buildAbsoluteUrl(resetPath),
+      });
 
-    if (resetError) {
-      setError(resetError.message);
+      if (resetError) {
+        setError(resetError.message);
+        return;
+      }
+
+      setSent(true);
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "Unable to send reset email right now."
+      );
+    } finally {
       setLoading(false);
-      return;
     }
-
-    setSent(true);
-    setLoading(false);
   };
 
   return (

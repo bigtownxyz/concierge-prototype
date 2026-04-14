@@ -28,20 +28,26 @@ export default function ResetPasswordPage() {
     }
 
     setLoading(true);
-    const supabase = createClient();
-    const { error: updateError } = await supabase.auth.updateUser({ password });
+    try {
+      const supabase = createClient();
+      const { error: updateError } = await supabase.auth.updateUser({ password });
 
-    if (updateError) {
-      setError(updateError.message);
+      if (updateError) {
+        setError(updateError.message);
+        return;
+      }
+
+      setSuccess(true);
+      setTimeout(() => {
+        router.push("/programs");
+      }, 2000);
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "Unable to update your password right now."
+      );
+    } finally {
       setLoading(false);
-      return;
     }
-
-    setSuccess(true);
-    setLoading(false);
-    setTimeout(() => {
-      router.push("/programs");
-    }, 2000);
   };
 
   return (

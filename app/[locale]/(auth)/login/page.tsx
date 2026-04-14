@@ -120,34 +120,40 @@ export default function LoginPage() {
     if (Object.keys(errs).length > 0) return;
 
     setLoading(true);
-    const supabase = createClient();
+    try {
+      const supabase = createClient();
 
-    if (mode === "magic") {
-      const callbackPath = `/${locale}/callback?next=${encodeURIComponent(next)}`;
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          emailRedirectTo: buildAbsoluteUrl(callbackPath),
-        },
-      });
+      if (mode === "magic") {
+        const callbackPath = `/${locale}/callback?next=${encodeURIComponent(next)}`;
+        const { error } = await supabase.auth.signInWithOtp({
+          email,
+          options: {
+            emailRedirectTo: buildAbsoluteUrl(callbackPath),
+          },
+        });
+        if (error) {
+          setServerError(error.message);
+        } else {
+          setSuccessMessage("Magic link sent! Check your email and click the link to sign in.");
+        }
+        return;
+      }
+
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
         setServerError(error.message);
-      } else {
-        setSuccessMessage("Magic link sent! Check your email and click the link to sign in.");
+        return;
       }
-      setLoading(false);
-      return;
-    }
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      setServerError(error.message);
+      router.push(next);
+      router.refresh();
+    } catch (error) {
+      setServerError(
+        error instanceof Error ? error.message : "Authentication failed. Please try again."
+      );
+    } finally {
       setLoading(false);
-      return;
     }
-    router.push(next);
-    router.refresh();
-    setLoading(false);
   };
 
 

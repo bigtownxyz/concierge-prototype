@@ -15,30 +15,49 @@ export function useUser(): UseUserReturn {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const supabase = createClient();
+    let subscription: { unsubscribe: () => void } | null = null;
 
-    // Get initial session
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
-      setLoading(false);
-    });
+    try {
+      const supabase = createClient();
 
-    // Listen for auth state changes (login, logout, token refresh)
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      // Get initial session without letting auth setup crash the whole page.
+      supabase.auth
+        .getUser()
+        .then(({ data: { user } }) => {
+          setUser(user);
+        })
+        .catch((error) => {
+          console.error("Failed to fetch current user", error);
+          setUser(null);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+
+      const result = supabase.auth.onAuthStateChange((_event, session) => {
+        setUser(session?.user ?? null);
+        setLoading(false);
+      });
+
+      subscription = result.data.subscription;
+    } catch (error) {
+      console.error("Failed to initialize Supabase client", error);
+      setUser(null);
       setLoading(false);
-    });
+    }
 
     return () => {
-      subscription.unsubscribe();
+      subscription?.unsubscribe();
     };
   }, []);
 
   const signOut = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error("Failed to sign out", error);
+    }
     setUser(null);
   };
 

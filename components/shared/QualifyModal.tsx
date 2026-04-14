@@ -1089,25 +1089,27 @@ function CreateAccountForm({
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
+    onError("");
+    onInfo("");
     if (!name.trim() || !email.trim() || password.length < 8) {
       onError("Please fill in all fields. Password must be at least 8 characters.");
       return;
     }
 
     setLoading(true);
-    const supabase = createClient();
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { full_name: name },
-        emailRedirectTo: buildAbsoluteUrl(`/${locale}/programs`),
-      },
-    });
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { full_name: name },
+          emailRedirectTo: buildAbsoluteUrl(`/${locale}/programs`),
+        },
+      });
 
     if (error) {
       onError(error.message);
-      setLoading(false);
       return;
     }
 
@@ -1116,7 +1118,6 @@ function CreateAccountForm({
     if (signInError) {
       // Email confirmation likely required — show as info, not error
       onInfo("Account created! Please check your email to confirm, then come back and log in to see your results.");
-      setLoading(false);
       return;
     }
 
@@ -1131,7 +1132,13 @@ function CreateAccountForm({
     }
 
     onSuccess();
-    setLoading(false);
+    } catch (error) {
+      onError(
+        error instanceof Error ? error.message : "Unable to create your account right now."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

@@ -1,6 +1,7 @@
 "use client";
 
 export default function Error({
+  error,
   reset,
 }: {
   error: Error & { digest?: string };
@@ -13,6 +14,9 @@ export default function Error({
       </h1>
       <p className="text-text-muted mb-8">
         An unexpected error occurred. Please try again.
+      </p>
+      <p className="mb-6 max-w-xl text-center text-sm text-text-muted/80">
+        {error.message || "Unknown error"}
       </p>
       <button
         onClick={reset}
