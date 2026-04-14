@@ -1287,18 +1287,28 @@ async function saveQualificationToDb(
     userId = data.user.id;
   }
 
-  // 1. Update profile details (profile already created by trigger)
-  const profileUpdate: Record<string, string> = { updated_at: new Date().toISOString() };
-  if (formData.name) profileUpdate.full_name = formData.name;
-  if (formData.email) profileUpdate.email = formData.email;
-  if (formData.phone) profileUpdate.phone = formData.phone;
-  if (formData.country) profileUpdate.country = formData.country;
-  if (formData.nationality) profileUpdate.nationality = formData.nationality;
+  // 1. Upsert profile details so a signup-trigger race cannot block form submission
+  const profileUpdate: {
+    id: string;
+    updated_at: string;
+    full_name: string | null;
+    email: string | null;
+    phone: string | null;
+    country: string | null;
+    nationality: string | null;
+  } = {
+    id: userId,
+    updated_at: new Date().toISOString(),
+    full_name: formData.name || null,
+    email: formData.email || null,
+    phone: formData.phone || null,
+    country: formData.country || null,
+    nationality: formData.nationality || null,
+  };
 
   const { error: profileError } = await supabase
     .from("profiles")
-    .update(profileUpdate)
-    .eq("id", userId);
+    .upsert(profileUpdate, { onConflict: "id" });
   if (profileError) {
     console.error("[QualifyModal] Profile update error:", profileError);
     throw new Error("Failed to update profile: " + profileError.message);
@@ -1332,6 +1342,14 @@ async function saveQualificationToDb(
       user_id: userId,
       strategic_focus: formData.strategicFocus,
       investment_amount: formData.investmentAmount,
+      timeline: formData.timeline || null,
+      dependants: formData.dependants,
+      is_us_citizen: formData.isUsCitizen,
+      considering_renouncing: formData.isUsCitizen
+        ? formData.consideringRenouncing
+        : null,
+      constraints: formData.constraints,
+      constraint_detail: formData.constraintDetail || null,
       situation: formData.situation || null,
     })
     .select("id")
