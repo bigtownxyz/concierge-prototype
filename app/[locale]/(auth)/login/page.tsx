@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { buildAbsoluteUrl } from "@/lib/utils";
 import { Logo } from "@/components/shared/Logo";
 
 // ─── Shared styles ────────────────────────────────────────────────────────────
@@ -79,6 +81,7 @@ function AuthInput({
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const locale = useLocale();
   const next = searchParams.get("next") ?? "/results";
   const urlError = searchParams.get("error");
 
@@ -120,10 +123,11 @@ export default function LoginPage() {
     const supabase = createClient();
 
     if (mode === "magic") {
+      const callbackPath = `/${locale}/callback?next=${encodeURIComponent(next)}`;
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `https://concierge-proto1231.vercel.app/en/programs`,
+          emailRedirectTo: buildAbsoluteUrl(callbackPath),
         },
       });
       if (error) {

@@ -2,10 +2,12 @@
 
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLocale } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { PROGRAMS, type Program } from "@/lib/constants";
 import { useUser } from "@/hooks/useUser";
 import { createClient } from "@/lib/supabase/client";
+import { buildAbsoluteUrl } from "@/lib/utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -1079,6 +1081,7 @@ function CreateAccountForm({
   onError: (msg: string) => void;
   onInfo: (msg: string) => void;
 }) {
+  const locale = useLocale();
   const [name, setName] = useState(defaultName);
   const [email, setEmail] = useState(defaultEmail);
   const [password, setPassword] = useState("");
@@ -1098,7 +1101,7 @@ function CreateAccountForm({
       password,
       options: {
         data: { full_name: name },
-        emailRedirectTo: `https://concierge-proto1231.vercel.app/en/programs`,
+        emailRedirectTo: buildAbsoluteUrl(`/${locale}/programs`),
       },
     });
 
@@ -1308,8 +1311,6 @@ async function saveQualificationToDb(
     .eq("user_id", userId)
     .maybeSingle();
 
-  let qualId: string;
-
   if (existingQual) {
     // Delete old program matches first (FK constraint)
     await supabase
@@ -1341,7 +1342,7 @@ async function saveQualificationToDb(
     throw new Error("Failed to save qualification: " + qualError.message);
   }
   if (!newQual) throw new Error("Failed to create qualification — no data returned");
-  qualId = newQual.id;
+  const qualId = newQual.id;
 
   // 3. Save only the programmes the user explicitly selected in step 5
   const programRows = formData.selectedPrograms.map((slug) => {

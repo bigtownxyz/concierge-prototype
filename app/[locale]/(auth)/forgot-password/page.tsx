@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { buildAbsoluteUrl } from "@/lib/utils";
 import { Logo } from "@/components/shared/Logo";
 
 export default function ForgotPasswordPage() {
+  const locale = useLocale();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
@@ -22,8 +25,9 @@ export default function ForgotPasswordPage() {
 
     setLoading(true);
     const supabase = createClient();
+    const resetPath = `/${locale}/reset-password`;
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `https://concierge-proto1231.vercel.app/en/reset-password`,
+      redirectTo: buildAbsoluteUrl(resetPath),
     });
 
     if (resetError) {

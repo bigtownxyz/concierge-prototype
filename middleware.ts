@@ -6,7 +6,7 @@ import { updateSession } from "./lib/supabase/middleware";
 const intlMiddleware = createIntlMiddleware(routing);
 
 // Routes that require an active session (matched against path WITHOUT locale prefix)
-const PROTECTED_PREFIXES = ["/portal"];
+const PROTECTED_PREFIXES = ["/portal", "/admin"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
