@@ -33,6 +33,8 @@ export default async function PortalDashboardPage({
       id,
       strategic_focus,
       investment_amount,
+      timeline,
+      dependants,
       situation,
       updated_at,
       qualification_programs (
@@ -61,6 +63,8 @@ export default async function PortalDashboardPage({
               id: qualification.id,
               strategic_focus: qualification.strategic_focus ?? [],
               investment_amount: qualification.investment_amount ?? 500_000,
+              timeline: qualification.timeline ?? null,
+              dependants: qualification.dependants ?? null,
               situation: qualification.situation ?? "",
               updated_at: qualification.updated_at,
               programs: (qualification.qualification_programs ?? []) as {

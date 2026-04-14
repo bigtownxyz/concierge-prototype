@@ -21,6 +21,8 @@ interface QualificationData {
   id: string;
   strategic_focus: string[];
   investment_amount: number;
+  timeline: string | null;
+  dependants: number | null;
   situation: string;
   updated_at: string;
   programs: { program_slug: string; match_score: number }[];

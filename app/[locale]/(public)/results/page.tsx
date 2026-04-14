@@ -15,6 +15,10 @@ interface Qualification {
   investment_amount: number;
   timeline: string | null;
   dependants: number | null;
+  is_us_citizen: boolean | null;
+  considering_renouncing: boolean | null;
+  constraints: string[] | null;
+  constraint_detail: string | null;
   situation: string | null;
   created_at: string;
   updated_at: string;
@@ -501,7 +505,9 @@ export default function ResultsPage() {
       // Fetch qualification
       const { data: qual } = await supabase
         .from("qualifications")
-        .select("*")
+        .select(
+          "id, user_id, strategic_focus, investment_amount, timeline, dependants, is_us_citizen, considering_renouncing, constraints, constraint_detail, situation, created_at, updated_at"
+        )
         .eq("user_id", user.id)
         .maybeSingle();
 
