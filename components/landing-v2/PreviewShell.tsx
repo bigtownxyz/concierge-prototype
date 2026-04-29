@@ -1,6 +1,9 @@
+"use client";
+
 import { ArrowRight } from "lucide-react";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { Logo } from "@/components/shared/Logo";
+import { useUser } from "@/hooks/useUser";
 import { OpenQualifyButton } from "./OpenQualifyButton";
 
 const previewLinks = [
@@ -18,8 +21,19 @@ const legalLinks = [
 
 const primaryButtonClass =
   "inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#bbc4f7] px-5 text-sm font-semibold tracking-[0.01em] text-[#242d58] transition-colors hover:bg-[#a9b3ea]";
+const ghostLinkClass =
+  "hidden text-sm font-medium tracking-[0.02em] text-[#c6c6cb] transition-colors hover:text-[#dfe2eb] sm:inline-flex";
 
 export function PreviewShell({ children }: { children: React.ReactNode }) {
+  const { user, loading, signOut } = useUser();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/");
+    router.refresh();
+  };
+
   return (
     <div className="min-h-screen bg-[#11101C] text-[#F5F5F6]">
       <header className="sticky top-0 z-40 border-b border-white/8 bg-[rgba(17,16,28,0.92)] supports-[backdrop-filter]:bg-[rgba(17,16,28,0.78)] supports-[backdrop-filter]:backdrop-blur-xl">
@@ -41,16 +55,31 @@ export function PreviewShell({ children }: { children: React.ReactNode }) {
           </nav>
 
           <div className="flex items-center gap-3">
-            <Link
-              href="/programs"
-              className="hidden text-sm font-medium tracking-[0.02em] text-[#c6c6cb] transition-colors hover:text-[#dfe2eb] sm:inline-flex"
-            >
-              Browse Programmes
-            </Link>
-            <OpenQualifyButton className={primaryButtonClass}>
-              Get Qualified
-              <ArrowRight className="h-4 w-4" />
-            </OpenQualifyButton>
+            {!loading && user ? (
+              <>
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className={ghostLinkClass}
+                >
+                  Sign Out
+                </button>
+                <Link href="/results" className={primaryButtonClass}>
+                  My Results
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className={ghostLinkClass}>
+                  Sign In
+                </Link>
+                <OpenQualifyButton className={primaryButtonClass}>
+                  Get Qualified
+                  <ArrowRight className="h-4 w-4" />
+                </OpenQualifyButton>
+              </>
+            )}
           </div>
         </div>
       </header>
