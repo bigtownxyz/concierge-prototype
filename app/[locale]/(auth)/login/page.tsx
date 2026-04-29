@@ -145,6 +145,23 @@ export default function LoginPage() {
         return;
       }
 
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      await fetch("/api/profile/bootstrap", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          accessToken: session?.access_token,
+          email,
+        }),
+      }).catch(() => {
+        // Best effort only; the callback and qualification flow also self-heal.
+      });
+
       router.push(next);
       router.refresh();
     } catch (error) {

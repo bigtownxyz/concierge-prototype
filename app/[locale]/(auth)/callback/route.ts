@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { bootstrapProfile } from "@/lib/supabase/profile-bootstrap";
 
 export async function GET(
   request: Request,
@@ -14,6 +15,12 @@ export async function GET(
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
+      try {
+        await bootstrapProfile(supabase);
+      } catch (profileError) {
+        console.error("[callback] Failed to bootstrap profile", profileError);
+      }
+
       // Redirect to the portal (or wherever "next" points)
       const redirectTo = next.startsWith("/") ? `${origin}${next}` : next;
       return NextResponse.redirect(redirectTo);

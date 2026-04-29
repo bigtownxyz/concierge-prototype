@@ -1,5 +1,4 @@
-import { Navbar } from "@/components/shared/Navbar";
-import { Footer } from "@/components/shared/Footer";
+import { PreviewShell } from "@/components/landing-v2/PreviewShell";
 import { QualifyModalGlobal } from "@/components/shared/QualifyModalGlobal";
 
 export default function PublicLayout({
@@ -9,9 +8,7 @@ export default function PublicLayout({
 }) {
   return (
     <>
-      <Navbar />
-      <main className="min-h-screen">{children}</main>
-      <Footer />
+      <PreviewShell>{children}</PreviewShell>
       <QualifyModalGlobal />
     </>
   );

@@ -41,3 +41,12 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# local dev server artifacts
+dev-server.log
+dev-server.pid
+prod-server.log
+prod-server.pid
+
+# supabase local
+supabase/.temp/

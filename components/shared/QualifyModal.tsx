@@ -3,7 +3,7 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocale } from "next-intl";
-import { Link, useRouter } from "@/i18n/navigation";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { PROGRAMS, type Program } from "@/lib/constants";
 import { useUser } from "@/hooks/useUser";
 import { createClient } from "@/lib/supabase/client";
@@ -1222,14 +1222,21 @@ function CreateAccountForm({
 
 function SuccessState({ onClose }: { onClose: () => void }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const isOnResultsPage = pathname === "/results";
 
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
+      if (isOnResultsPage) {
+        router.refresh();
+        return;
+      }
+
       router.push("/results");
     }, 2000);
     return () => clearTimeout(timer);
-  }, [onClose, router]);
+  }, [isOnResultsPage, onClose, router]);
 
   return (
     <motion.div
@@ -1257,7 +1264,7 @@ function SuccessState({ onClose }: { onClose: () => void }) {
           Qualification Received
         </h3>
         <p className="mt-2 text-sm leading-relaxed" style={{ color: "#8f9095" }}>
-          Redirecting to your results...
+          {isOnResultsPage ? "Refreshing your results..." : "Redirecting to your results..."}
         </p>
       </div>
       {/* Progress dots to indicate loading */}
@@ -1294,34 +1301,35 @@ async function saveQualificationToDb(
     userId = data.user.id;
   }
 
-  // 1. Upsert profile details so a signup-trigger race cannot block form submission
-  const profileUpdate: {
-    id: string;
-    updated_at: string;
-    full_name: string | null;
-    email: string | null;
-    phone: string | null;
-    country: string | null;
-    nationality: string | null;
-  } = {
-    id: userId,
-    updated_at: new Date().toISOString(),
-    full_name: formData.name || null,
-    email: formData.email || null,
-    phone: formData.phone || null,
-    country: formData.country || null,
-    nationality: formData.nationality || null,
-  };
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  const { error: profileError } = await supabase
-    .from("profiles")
-    .upsert(profileUpdate, { onConflict: "id" });
-  if (profileError) {
-    console.error("[QualifyModal] Profile update error:", profileError);
-    throw new Error("Failed to update profile: " + profileError.message);
+  const bootstrapResponse = await fetch("/api/profile/bootstrap", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      accessToken: session?.access_token,
+      full_name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      country: formData.country,
+      nationality: formData.nationality,
+    }),
+  });
+
+  if (!bootstrapResponse.ok) {
+    const bootstrapData = (await bootstrapResponse.json().catch(() => null)) as
+      | { error?: string }
+      | null;
+    throw new Error(
+      bootstrapData?.error || "Failed to initialize your profile. Please try again."
+    );
   }
 
-  // 2. Delete any existing qualification and create fresh
+  // 1. Delete any existing qualification and create fresh
   const { data: existingQual } = await supabase
     .from("qualifications")
     .select("id")
@@ -1342,7 +1350,7 @@ async function saveQualificationToDb(
       .eq("id", existingQual.id);
   }
 
-  // Create new qualification
+  // 2. Create new qualification
   const { data: newQual, error: qualError } = await supabase
     .from("qualifications")
     .insert({

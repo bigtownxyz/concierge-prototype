@@ -17,7 +17,13 @@ export default async function LocaleLayout({
     notFound();
   }
 
-  const messages = (await import(`../../messages/${locale}.json`)).default;
+  let messages: Record<string, unknown>;
+
+  try {
+    messages = (await import(`../../messages/${locale}.json`)).default;
+  } catch {
+    notFound();
+  }
 
   return (
     <div dir={isRtl(locale as Locale) ? "rtl" : "ltr"}>

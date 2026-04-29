@@ -1,17 +1,5 @@
-import {
-  Hero,
-  HowItWorks,
-  ProgramsShowcase,
-  CTA,
-} from "@/components/landing";
+import { LandingV2Page } from "@/components/landing-v2/LandingV2Page";
 
 export default function HomePage() {
-  return (
-    <>
-      <Hero />
-      <ProgramsShowcase />
-      <HowItWorks />
-      <CTA />
-    </>
-  );
+  return <LandingV2Page />;
 }
