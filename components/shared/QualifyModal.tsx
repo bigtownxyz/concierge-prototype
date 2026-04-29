@@ -9,6 +9,7 @@ import { useUser } from "@/hooks/useUser";
 import { createClient } from "@/lib/supabase/client";
 import type { PendingQualification } from "@/lib/supabase/qualification-claim";
 import { buildAbsoluteUrl } from "@/lib/utils";
+import { Logo } from "@/components/shared/Logo";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -1431,15 +1432,16 @@ function CreateAccountForm({
   };
 
   return (
-    <form onSubmit={handleCreate} className="flex flex-col gap-4">
-      <div>
+    <form onSubmit={handleCreate} className="flex flex-col gap-5">
+      <div className="flex flex-col items-center gap-3 text-center">
+        <Logo size="sm" />
         <p
-          className="text-xs font-semibold tracking-[0.12em] uppercase mb-1"
+          className="text-xs font-semibold tracking-[0.12em] uppercase"
           style={{ color: "#bbc4f7" }}
         >
           Sign up to view your results
         </p>
-        <p className="text-sm" style={{ color: "#8f9095" }}>
+        <p className="text-sm max-w-md" style={{ color: "#8f9095" }}>
           We&apos;ve matched you to programmes that fit your criteria. Create your
           account to see your personalised recommendations.
         </p>
@@ -1518,6 +1520,7 @@ function CalculatingState() {
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
       className="flex flex-col items-center justify-center gap-6 px-8 py-16 text-center"
     >
+      <Logo size="sm" />
       <div
         className="flex h-16 w-16 items-center justify-center rounded-full"
         style={{
@@ -1586,6 +1589,7 @@ function SuccessState({ onClose }: { onClose: () => void }) {
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
       className="flex flex-col items-center justify-center gap-6 px-8 py-16 text-center"
     >
+      <Logo size="sm" />
       <div
         className="flex h-16 w-16 items-center justify-center rounded-full"
         style={{ background: "rgba(187,196,247,0.1)", border: "1px solid rgba(187,196,247,0.25)" }}
