@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { bootstrapProfile } from "@/lib/supabase/profile-bootstrap";
+import { claimPendingQualification } from "@/lib/supabase/qualification-claim";
 
 export async function GET(
   request: Request,
@@ -19,6 +20,15 @@ export async function GET(
         await bootstrapProfile(supabase);
       } catch (profileError) {
         console.error("[callback] Failed to bootstrap profile", profileError);
+      }
+
+      try {
+        await claimPendingQualification(supabase);
+      } catch (claimError) {
+        console.error(
+          "[callback] Failed to claim pending qualification",
+          claimError
+        );
       }
 
       // Redirect to the portal (or wherever "next" points)

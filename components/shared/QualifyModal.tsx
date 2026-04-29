@@ -7,6 +7,7 @@ import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { PROGRAMS, type Program } from "@/lib/constants";
 import { useUser } from "@/hooks/useUser";
 import { createClient } from "@/lib/supabase/client";
+import type { PendingQualification } from "@/lib/supabase/qualification-claim";
 import { buildAbsoluteUrl } from "@/lib/utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -1072,12 +1073,14 @@ function StepRecommendations({
 function CreateAccountForm({
   defaultEmail,
   defaultName,
+  pendingQualification,
   onSuccess,
   onError,
   onInfo,
 }: {
   defaultEmail: string;
   defaultName: string;
+  pendingQualification: PendingQualification;
   onSuccess: () => void;
   onError: (msg: string) => void;
   onInfo: (msg: string) => void;
@@ -1100,12 +1103,18 @@ function CreateAccountForm({
     setLoading(true);
     try {
       const supabase = createClient();
+      const callbackPath = `/${locale}/callback?next=${encodeURIComponent(
+        `/${locale}/results`
+      )}`;
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: { full_name: name },
-          emailRedirectTo: buildAbsoluteUrl(`/${locale}/programs`),
+          data: {
+            full_name: name,
+            pending_qualification: pendingQualification,
+          },
+          emailRedirectTo: buildAbsoluteUrl(callbackPath),
         },
       });
 
@@ -1550,6 +1559,18 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
       .sort((a, b) => b.score - a.score);
   }, [formData.strategicFocus, formData.investmentAmount, formData.timeline, formData.isUsCitizen, formData.consideringRenouncing]);
 
+  const pendingQualification: PendingQualification = useMemo(() => {
+    const programScores: Record<string, number> = {};
+    for (const ranked of rankedPrograms) {
+      programScores[ranked.program.slug] = ranked.score;
+    }
+    return {
+      formData,
+      programScores,
+      savedAt: new Date().toISOString(),
+    };
+  }, [formData, rankedPrograms]);
+
   const canAdvance =
     step === 1
       ? formData.strategicFocus.length > 0
@@ -1600,6 +1621,12 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
     try {
       await saveQualificationToDb(formData, rankedPrograms);
       try { localStorage.removeItem(DRAFT_KEY); } catch { /* noop */ }
+      try {
+        const supabase = createClient();
+        await supabase.auth.updateUser({
+          data: { pending_qualification: null },
+        });
+      } catch { /* noop — stale metadata is harmless, callback will self-heal */ }
       setSubmitted(true);
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : "Failed to save after account creation.");
@@ -1862,6 +1889,7 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
                         <CreateAccountForm
                           defaultEmail={formData.email}
                           defaultName={formData.name}
+                          pendingQualification={pendingQualification}
                           onSuccess={handleAccountCreated}
                           onError={setSaveError}
                           onInfo={setSaveInfo}
