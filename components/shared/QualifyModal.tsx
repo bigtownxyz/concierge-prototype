@@ -2051,7 +2051,9 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
             </button>
             {/* ── Left Sidebar ──────────────────────────────────────────────── */}
             <div
-              className="hidden w-1/3 flex-col justify-between overflow-y-auto p-8 lg:flex flex-shrink-0"
+              className={`hidden w-1/3 flex-col justify-between overflow-y-auto p-8 flex-shrink-0 ${
+                calculating || showCreateAccount || submitted ? "" : "lg:flex"
+              }`}
               style={{ borderRight: "1px solid rgba(69,71,75,0.3)" }}
             >
               <div className="flex flex-col gap-8">
@@ -2438,7 +2440,7 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
                     }}
                   >
                     <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_back</span>
-                    Back to Results
+                    Back to Form
                   </button>
                 </div>
               )}
