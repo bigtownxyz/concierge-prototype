@@ -309,7 +309,7 @@ export function LandingV2Page() {
     <div className="relative overflow-x-hidden bg-[#11101C] text-[#F5F5F6]">
       <section className="border-b border-white/8">
         <ShaderBackground>
-          <div className="relative z-10 mx-auto max-w-7xl px-6 pb-[clamp(2.75rem,min(7vw,7vh),5.5rem)] pt-[clamp(2.75rem,min(7vw,7vh),5.5rem)] lg:px-8">
+          <div className="relative z-10 mx-auto max-w-7xl px-6 pb-[clamp(4.75rem,8vw,7.5rem)] pt-[clamp(4.5rem,8vw,7rem)] lg:px-8">
             <div className="grid gap-10 lg:grid-cols-12 lg:gap-12 xl:items-start">
               <Reveal className="lg:col-span-7">
                 <div className="max-w-[44rem] space-y-7 sm:space-y-8">
@@ -320,7 +320,7 @@ export function LandingV2Page() {
 
                 <div className="space-y-6">
                   <h1
-                    className="max-w-[20ch] text-balance text-[clamp(2.5rem,min(5.5vw,6.5vh),4.75rem)] leading-[0.95] tracking-[-0.045em] text-[#dfe2eb]"
+                    className="max-w-[11ch] text-balance text-[clamp(3rem,7vw,6.15rem)] leading-[0.92] tracking-[-0.05em] text-[#dfe2eb]"
                     style={DISPLAY_FONT}
                   >
                     Build a more sovereign life with a jurisdiction strategy that
