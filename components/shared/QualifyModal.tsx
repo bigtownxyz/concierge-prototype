@@ -2037,7 +2037,9 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
             onClick={(e) => e.stopPropagation()}
           >
           <div
-            className="relative flex w-full max-w-5xl max-h-[92vh] min-h-[600px] rounded-2xl overflow-hidden shadow-2xl pointer-events-auto border"
+            className={`relative flex w-full max-h-[92vh] min-h-[600px] rounded-2xl overflow-hidden shadow-2xl pointer-events-auto border transition-[max-width] duration-300 ease-out ${
+              calculating || showCreateAccount || submitted ? "max-w-2xl" : "max-w-5xl"
+            }`}
             style={{ background: "#10141a", borderColor: "rgba(69,71,75,0.3)", boxShadow: "0 32px 80px rgba(0,0,0,0.6)" }}
           >
             {/* Close button */}
