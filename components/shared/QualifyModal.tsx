@@ -21,12 +21,36 @@ export interface QualifyModalProps {
 
 type StrategicFocus = "mobility" | "tax" | "family" | "assets";
 type Timeline = "immediate" | "strategic" | "long-term";
+type FamilyRelation = "spouse" | "parent" | "sibling" | "child";
+
+interface FamilyMember {
+  id: string;
+  relation: FamilyRelation;
+  nationality: string;
+  age: number;
+}
+
+const FAMILY_RELATIONS: { id: FamilyRelation; label: string; icon: string }[] = [
+  { id: "spouse", label: "Spouse", icon: "favorite" },
+  { id: "child", label: "Child", icon: "child_care" },
+  { id: "parent", label: "Parent", icon: "elderly" },
+  { id: "sibling", label: "Sibling", icon: "diversity_3" },
+];
+
+function relationLabel(relation: FamilyRelation): string {
+  return FAMILY_RELATIONS.find((r) => r.id === relation)?.label ?? relation;
+}
+
+function relationIcon(relation: FamilyRelation): string {
+  return FAMILY_RELATIONS.find((r) => r.id === relation)?.icon ?? "person";
+}
 
 interface FormData {
   strategicFocus: StrategicFocus[];
   investmentAmount: number;
   timeline: Timeline | "";
   dependants: number;
+  familyMembers: FamilyMember[];
   isUsCitizen: boolean | null;
   consideringRenouncing: boolean | null;
   constraints: string[];
@@ -47,6 +71,7 @@ const EMPTY_FORM: FormData = {
   investmentAmount: 500_000,
   timeline: "",
   dependants: 0,
+  familyMembers: [],
   isUsCitizen: null,
   consideringRenouncing: null,
   constraints: [],
@@ -392,13 +417,283 @@ function StepInvestment({
   );
 }
 
+// ─── Family Members Field ────────────────────────────────────────────────────
+
+function FamilyMembersField({
+  members,
+  onChange,
+}: {
+  members: FamilyMember[];
+  onChange: (next: FamilyMember[]) => void;
+}) {
+  const [adding, setAdding] = useState(false);
+  const [draftRelation, setDraftRelation] = useState<FamilyRelation | "">("");
+  const [draftNationality, setDraftNationality] = useState("");
+  const [draftAge, setDraftAge] = useState("");
+
+  const draftAgeNum = Number(draftAge);
+  const canSave =
+    draftRelation !== "" &&
+    draftNationality !== "" &&
+    Number.isFinite(draftAgeNum) &&
+    draftAgeNum >= 0 &&
+    draftAgeNum <= 120;
+
+  const resetDraft = () => {
+    setDraftRelation("");
+    setDraftNationality("");
+    setDraftAge("");
+  };
+
+  const handleSave = () => {
+    if (!canSave) return;
+    const newMember: FamilyMember = {
+      id:
+        typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+          ? crypto.randomUUID()
+          : `fm-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      relation: draftRelation as FamilyRelation,
+      nationality: draftNationality,
+      age: draftAgeNum,
+    };
+    onChange([...members, newMember]);
+    resetDraft();
+    setAdding(false);
+  };
+
+  const handleCancel = () => {
+    resetDraft();
+    setAdding(false);
+  };
+
+  const handleRemove = (id: string) => {
+    onChange(members.filter((m) => m.id !== id));
+  };
+
+  return (
+    <div className="flex flex-col gap-3">
+      {members.length > 0 && (
+        <div className="flex flex-col gap-2">
+          {members.map((m) => (
+            <div
+              key={m.id}
+              className="flex items-center gap-3 rounded-xl px-4 py-3"
+              style={{
+                background: "#0a0e14",
+                border: "1px solid rgba(69,71,75,0.3)",
+              }}
+            >
+              <span
+                className="material-symbols-outlined flex-shrink-0"
+                style={{ fontSize: 20, color: "#bbc4f7" }}
+                aria-hidden="true"
+              >
+                {relationIcon(m.relation)}
+              </span>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold" style={{ color: "#dfe2eb" }}>
+                  {relationLabel(m.relation)}
+                </p>
+                <p className="text-xs truncate" style={{ color: "#8f9095" }}>
+                  {m.nationality} · {m.age} years old
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleRemove(m.id)}
+                className="flex-shrink-0 rounded-lg p-1.5 transition-colors"
+                style={{ color: "#8f9095" }}
+                aria-label={`Remove ${relationLabel(m.relation)}`}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background =
+                    "rgba(184,92,107,0.12)";
+                  (e.currentTarget as HTMLButtonElement).style.color = "#b85c6b";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background =
+                    "transparent";
+                  (e.currentTarget as HTMLButtonElement).style.color = "#8f9095";
+                }}
+              >
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: 18 }}
+                >
+                  close
+                </span>
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {adding ? (
+        <div
+          className="flex flex-col gap-3 rounded-xl p-4"
+          style={{
+            background: "rgba(187,196,247,0.04)",
+            border: "1px solid rgba(187,196,247,0.18)",
+          }}
+        >
+          <div>
+            <p
+              className="text-xs font-semibold uppercase tracking-wider mb-2"
+              style={{ color: "#8f9095" }}
+            >
+              Relation
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              {FAMILY_RELATIONS.map((r) => (
+                <button
+                  key={r.id}
+                  type="button"
+                  onClick={() => setDraftRelation(r.id)}
+                  className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-semibold transition-all duration-150"
+                  style={{
+                    background:
+                      draftRelation === r.id
+                        ? "rgba(187,196,247,0.12)"
+                        : "#0a0e14",
+                    border:
+                      draftRelation === r.id
+                        ? "1px solid rgba(187,196,247,0.4)"
+                        : "1px solid rgba(69,71,75,0.3)",
+                    color: draftRelation === r.id ? "#bbc4f7" : "#c6c6cb",
+                  }}
+                >
+                  <span
+                    className="material-symbols-outlined"
+                    style={{ fontSize: 18 }}
+                    aria-hidden="true"
+                  >
+                    {r.icon}
+                  </span>
+                  {r.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <p
+              className="text-xs font-semibold uppercase tracking-wider mb-2"
+              style={{ color: "#8f9095" }}
+            >
+              Nationality
+            </p>
+            <select
+              value={draftNationality}
+              onChange={(e) => setDraftNationality(e.target.value)}
+              style={{
+                ...inputStyle,
+                appearance: "none",
+                backgroundImage:
+                  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238f9095' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>\")",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "right 0.875rem center",
+                paddingRight: "2.25rem",
+              }}
+            >
+              <option value="">Select nationality...</option>
+              {COUNTRIES.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <p
+              className="text-xs font-semibold uppercase tracking-wider mb-2"
+              style={{ color: "#8f9095" }}
+            >
+              Age
+            </p>
+            <input
+              type="number"
+              min={0}
+              max={120}
+              value={draftAge}
+              onChange={(e) => setDraftAge(e.target.value)}
+              placeholder="e.g. 12"
+              style={inputStyle}
+            />
+          </div>
+
+          <div className="flex gap-2 pt-1">
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="flex-1 rounded-lg py-2.5 text-sm font-semibold transition-colors"
+              style={{
+                background: "transparent",
+                border: "1px solid rgba(69,71,75,0.3)",
+                color: "#8f9095",
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={!canSave}
+              className="flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                background: "#bbc4f7",
+                color: "#242d58",
+              }}
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setAdding(true)}
+          className="flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold transition-all duration-150"
+          style={{
+            background: "transparent",
+            border: "1px dashed rgba(187,196,247,0.4)",
+            color: "#bbc4f7",
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.background =
+              "rgba(187,196,247,0.06)";
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.background =
+              "transparent";
+          }}
+        >
+          <span
+            className="material-symbols-outlined"
+            style={{ fontSize: 18 }}
+            aria-hidden="true"
+          >
+            add
+          </span>
+          {members.length === 0 ? "Add family member" : "Add another"}
+        </button>
+      )}
+
+      {members.length === 0 && !adding && (
+        <p className="text-xs text-center" style={{ color: "#8f9095" }}>
+          Just yourself? Skip this and continue.
+        </p>
+      )}
+    </div>
+  );
+}
+
 // ─── Step 3: Profile ─────────────────────────────────────────────────────────
 
 function StepProfile({
   timeline,
   onTimelineChange,
-  dependants,
-  onDependantsChange,
+  familyMembers,
+  onFamilyMembersChange,
   isUsCitizen,
   onUsCitizenChange,
   consideringRenouncing,
@@ -406,8 +701,8 @@ function StepProfile({
 }: {
   timeline: Timeline | "";
   onTimelineChange: (v: Timeline) => void;
-  dependants: number;
-  onDependantsChange: (v: number) => void;
+  familyMembers: FamilyMember[];
+  onFamilyMembersChange: (next: FamilyMember[]) => void;
   isUsCitizen: boolean | null;
   onUsCitizenChange: (v: boolean) => void;
   consideringRenouncing: boolean | null;
@@ -473,30 +768,12 @@ function StepProfile({
           Family Members
         </p>
         <p className="text-sm mb-3" style={{ color: "#8f9095" }}>
-          How many family members will be included in the application?
+          Add anyone who will be included in the application. Their nationality and age affect programme eligibility.
         </p>
-        <div className="flex items-center gap-4">
-          <button
-            type="button"
-            onClick={() => onDependantsChange(Math.max(0, dependants - 1))}
-            className="w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold"
-            style={{ background: "#0a0e14", border: "1px solid rgba(69,71,75,0.3)", color: "#bbc4f7" }}
-          >
-            -
-          </button>
-          <span className="text-xl font-semibold w-8 text-center" style={{ color: "#dfe2eb" }}>{dependants}</span>
-          <button
-            type="button"
-            onClick={() => onDependantsChange(dependants + 1)}
-            className="w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold"
-            style={{ background: "#0a0e14", border: "1px solid rgba(69,71,75,0.3)", color: "#bbc4f7" }}
-          >
-            +
-          </button>
-          <span className="text-xs" style={{ color: "#8f9095" }}>
-            {dependants === 0 ? "Just myself" : `${dependants} family member${dependants > 1 ? "s" : ""}`}
-          </span>
-        </div>
+        <FamilyMembersField
+          members={familyMembers}
+          onChange={onFamilyMembersChange}
+        />
       </div>
 
       {/* US Citizen */}
@@ -1361,6 +1638,7 @@ async function saveQualificationToDb(
   }
 
   // 2. Create new qualification
+  const familyMembersPayload = formData.familyMembers ?? [];
   const { data: newQual, error: qualError } = await supabase
     .from("qualifications")
     .insert({
@@ -1368,7 +1646,8 @@ async function saveQualificationToDb(
       strategic_focus: formData.strategicFocus,
       investment_amount: formData.investmentAmount,
       timeline: formData.timeline || null,
-      dependants: formData.dependants,
+      dependants: familyMembersPayload.length,
+      family_members: familyMembersPayload,
       is_us_citizen: formData.isUsCitizen,
       considering_renouncing: formData.isUsCitizen
         ? formData.consideringRenouncing
@@ -1932,8 +2211,14 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
                         <StepProfile
                           timeline={formData.timeline}
                           onTimelineChange={(v) => setFormData((prev) => ({ ...prev, timeline: v }))}
-                          dependants={formData.dependants}
-                          onDependantsChange={(v) => setFormData((prev) => ({ ...prev, dependants: v }))}
+                          familyMembers={formData.familyMembers}
+                          onFamilyMembersChange={(next) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              familyMembers: next,
+                              dependants: next.length,
+                            }))
+                          }
                           isUsCitizen={formData.isUsCitizen}
                           onUsCitizenChange={(v) => setFormData((prev) => ({ ...prev, isUsCitizen: v }))}
                           consideringRenouncing={formData.consideringRenouncing}

@@ -1,10 +1,18 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+export interface PendingFamilyMember {
+  id: string;
+  relation: "spouse" | "parent" | "sibling" | "child";
+  nationality: string;
+  age: number;
+}
+
 export interface PendingQualificationFormData {
   strategicFocus: string[];
   investmentAmount: number;
   timeline: string;
   dependants: number;
+  familyMembers?: PendingFamilyMember[];
   isUsCitizen: boolean | null;
   consideringRenouncing: boolean | null;
   constraints: string[];
@@ -60,6 +68,7 @@ export async function claimPendingQualification(
 
   const { formData, programScores } = pending;
 
+  const familyMembersPayload = formData.familyMembers ?? [];
   const { data: newQual, error: qualError } = await supabase
     .from("qualifications")
     .insert({
@@ -67,7 +76,8 @@ export async function claimPendingQualification(
       strategic_focus: formData.strategicFocus,
       investment_amount: formData.investmentAmount,
       timeline: formData.timeline || null,
-      dependants: formData.dependants,
+      dependants: familyMembersPayload.length || formData.dependants,
+      family_members: familyMembersPayload,
       is_us_citizen: formData.isUsCitizen,
       considering_renouncing: formData.isUsCitizen
         ? formData.consideringRenouncing
