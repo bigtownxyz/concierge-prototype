@@ -174,7 +174,9 @@ function formatTickLabel(n: number): string {
   return `$${n / 1_000}K`;
 }
 
-const STEP_LABELS = ["Strategic Focus", "Estimated Budget", "Your Profile", "Contact Details", "Recommendations"];
+const STEP_LABELS = ["Strategic Focus", "Estimated Budget", "Your Profile", "Contact Details"];
+
+const AUTO_SELECT_TOP_N = 6;
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -1435,10 +1437,11 @@ function CreateAccountForm({
           className="text-xs font-semibold tracking-[0.12em] uppercase mb-1"
           style={{ color: "#bbc4f7" }}
         >
-          Create Account to Save Results
+          Sign up to view your results
         </p>
         <p className="text-sm" style={{ color: "#8f9095" }}>
-          Your recommendations will be saved to your secure portal.
+          We&apos;ve matched you to programmes that fit your criteria. Create your
+          account to see your personalised recommendations.
         </p>
       </div>
 
@@ -1857,30 +1860,41 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
       ? true
       : step === 3
       ? formData.timeline !== "" && formData.isUsCitizen !== null
-      : step === 4
-      ? formData.name.trim() !== "" &&
+      : formData.name.trim() !== "" &&
         formData.email.trim() !== "" &&
         formData.country.trim() !== "" &&
         formData.nationality.trim() !== "" &&
-        formData.situation.trim() !== ""
-      : formData.selectedPrograms.length > 0;
+        formData.situation.trim() !== "";
 
   const handleNext = async () => {
-    if (step < 5) {
+    if (step < 4) {
       setStep((s) => s + 1);
       return;
     }
 
-    // Step 5: final submission
+    // Step 4: final submission. Auto-select top recommendations so the user
+    // sees personalised matches on /results without having to pick programmes
+    // in the modal.
     setSaveError("");
+
+    const autoSelected = rankedPrograms
+      .slice(0, AUTO_SELECT_TOP_N)
+      .map((r) => r.program.slug);
+    const finalFormData: FormData = {
+      ...formData,
+      selectedPrograms:
+        formData.selectedPrograms.length > 0
+          ? formData.selectedPrograms
+          : autoSelected,
+    };
 
     if (user) {
       // Logged in — save directly, pass known user ID
       setIsSaving(true);
       try {
-        await saveQualificationToDb(formData, rankedPrograms, user.id);
-        // Clear draft from localStorage on successful save
+        await saveQualificationToDb(finalFormData, rankedPrograms, user.id);
         try { localStorage.removeItem(DRAFT_KEY); } catch { /* noop */ }
+        setFormData(finalFormData);
         setSubmitted(true);
       } catch (err) {
         setSaveError(err instanceof Error ? err.message : "Failed to save. Please try again.");
@@ -1888,7 +1902,10 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
         setIsSaving(false);
       }
     } else {
-      // Not logged in — show create account form
+      // Not logged in — show create account form. Update form state first so
+      // the pendingQualification embedded in signUp metadata includes the
+      // auto-selected programmes.
+      setFormData(finalFormData);
       setShowCreateAccount(true);
     }
   };
@@ -1921,13 +1938,11 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
       ? "Continue to Profile"
       : step === 3
       ? "Continue to Contact"
-      : step === 4
-      ? "View Recommendations"
       : isSaving
       ? "Saving..."
-      : "Submit Qualification";
+      : "Continue";
 
-  const progress = (step / 5) * 100;
+  const progress = (step / 4) * 100;
 
   return (
     <AnimatePresence>
@@ -2249,26 +2264,17 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
                           onConstraintDetailChange={(v) => setFormData((prev) => ({ ...prev, constraintDetail: v }))}
                         />
                       )}
-                      {step === 5 && (
-                        <>
-                          <StepRecommendations
-                            ranked={rankedPrograms}
-                            selected={formData.selectedPrograms}
-                            onToggle={toggleProgram}
-                          />
-                          {saveError && (
-                            <div
-                              className="mt-4 rounded-xl p-4 text-sm"
-                              style={{
-                                background: "rgba(184,92,107,0.1)",
-                                border: "1px solid rgba(184,92,107,0.3)",
-                                color: "#b85c6b",
-                              }}
-                            >
-                              {saveError}
-                            </div>
-                          )}
-                        </>
+                      {saveError && step === 4 && (
+                        <div
+                          className="mt-4 rounded-xl p-4 text-sm"
+                          style={{
+                            background: "rgba(184,92,107,0.1)",
+                            border: "1px solid rgba(184,92,107,0.3)",
+                            color: "#b85c6b",
+                          }}
+                        >
+                          {saveError}
+                        </div>
                       )}
                     </motion.div>
                   )}
@@ -2312,7 +2318,6 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
                         {step === 3 && !formData.timeline && "Select a preferred timeline"}
                         {step === 3 && formData.timeline && formData.isUsCitizen === null && "Answer the US citizenship question"}
                         {step === 4 && "Fill in all required fields (*)"}
-                        {step === 5 && "Select at least one programme"}
                       </p>
                     )}
                   </div>
@@ -2339,7 +2344,7 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
                   >
                     {nextLabel}
                     <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-                      {step === 5 ? "check" : "arrow_forward"}
+                      arrow_forward
                     </span>
                   </button>
                 </div>
