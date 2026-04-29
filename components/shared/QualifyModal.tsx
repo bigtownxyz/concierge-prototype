@@ -130,19 +130,20 @@ const STRATEGY_OPTIONS: {
   },
 ];
 
-const SLIDER_TICKS = [100_000, 500_000, 1_000_000, 2_500_000, 5_000_000];
+const SLIDER_TICKS = [100_000, 250_000, 500_000, 750_000, 1_000_000];
 const SLIDER_MIN = 100_000;
-const SLIDER_MAX = 5_000_000;
-const SLIDER_STEP = 50_000;
+const SLIDER_MAX = 1_000_000;
+const SLIDER_STEP = 25_000;
 
 function formatAmount(n: number): string {
-  if (n >= 5_000_000) return "$5M+";
-  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000_000) {
+    const m = n / 1_000_000;
+    return `$${m % 1 === 0 ? m : m.toFixed(1)}M`;
+  }
   return `$${(n / 1_000).toFixed(0)}K`;
 }
 
 function formatTickLabel(n: number): string {
-  if (n >= 5_000_000) return "$5M+";
   if (n >= 1_000_000) return `$${n / 1_000_000}M`;
   return `$${n / 1_000}K`;
 }
