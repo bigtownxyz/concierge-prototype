@@ -1508,6 +1508,57 @@ function CreateAccountForm({
   );
 }
 
+// ─── Calculating State ───────────────────────────────────────────────────────
+
+function CalculatingState() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.96 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      className="flex flex-col items-center justify-center gap-6 px-8 py-16 text-center"
+    >
+      <div
+        className="flex h-16 w-16 items-center justify-center rounded-full"
+        style={{
+          background: "rgba(187,196,247,0.1)",
+          border: "1px solid rgba(187,196,247,0.25)",
+        }}
+      >
+        <span
+          className="material-symbols-outlined animate-spin"
+          style={{ fontSize: 32, color: "#bbc4f7" }}
+          aria-hidden="true"
+        >
+          progress_activity
+        </span>
+      </div>
+      <div>
+        <h3
+          className="text-2xl font-semibold"
+          style={{ color: "#dfe2eb", fontFamily: "var(--font-manrope, 'Manrope', sans-serif)" }}
+        >
+          Calculating your results
+        </h3>
+        <p className="mt-2 text-sm leading-relaxed" style={{ color: "#8f9095" }}>
+          Matching your profile against our active programmes...
+        </p>
+      </div>
+      <div className="flex items-center gap-1.5" aria-hidden="true">
+        {[0, 1, 2].map((i) => (
+          <motion.span
+            key={i}
+            className="h-1.5 w-1.5 rounded-full"
+            style={{ background: "#bbc4f7" }}
+            animate={{ opacity: [0.3, 1, 0.3] }}
+            transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2 }}
+          />
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
 // ─── Success State ────────────────────────────────────────────────────────────
 
 function SuccessState({ onClose }: { onClose: () => void }) {
@@ -1697,9 +1748,12 @@ async function saveQualificationToDb(
 
 export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
   const { user } = useUser();
+  const router = useRouter();
+  const locale = useLocale();
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
   const [showCreateAccount, setShowCreateAccount] = useState(false);
+  const [calculating, setCalculating] = useState(false);
   const [saveError, setSaveError] = useState("");
   const [saveInfo, setSaveInfo] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -1743,6 +1797,7 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
       setStep(1);
       setSubmitted(false);
       setShowCreateAccount(false);
+      setCalculating(false);
       setSaveError("");
       setFormData({ ...EMPTY_FORM });
     }, 400);
@@ -1887,25 +1942,32 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
           ? formData.selectedPrograms
           : autoSelected,
     };
+    setFormData(finalFormData);
+
+    // Brief calculating animation builds anticipation before the next step
+    // (sign-up gate for guests, redirect to results for logged-in users).
+    setCalculating(true);
+    const minDelay = new Promise<void>((resolve) => setTimeout(resolve, 1500));
 
     if (user) {
-      // Logged in — save directly, pass known user ID
-      setIsSaving(true);
       try {
-        await saveQualificationToDb(finalFormData, rankedPrograms, user.id);
+        await Promise.all([
+          saveQualificationToDb(finalFormData, rankedPrograms, user.id),
+          minDelay,
+        ]);
         try { localStorage.removeItem(DRAFT_KEY); } catch { /* noop */ }
-        setFormData(finalFormData);
-        setSubmitted(true);
+        handleClose();
+        router.push("/results");
       } catch (err) {
         setSaveError(err instanceof Error ? err.message : "Failed to save. Please try again.");
-      } finally {
-        setIsSaving(false);
+        setCalculating(false);
       }
     } else {
-      // Not logged in — show create account form. Update form state first so
-      // the pendingQualification embedded in signUp metadata includes the
-      // auto-selected programmes.
-      setFormData(finalFormData);
+      // Not logged in — show calculating, then prompt for sign-up.
+      // pendingQualification embedded in signUp metadata picks up
+      // selectedPrograms via the formData state update above.
+      await minDelay;
+      setCalculating(false);
       setShowCreateAccount(true);
     }
   };
@@ -1913,6 +1975,7 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
   const handleAccountCreated = async () => {
     // User just created account and is now signed in — save their data
     setShowCreateAccount(false);
+    setCalculating(true);
     setIsSaving(true);
     try {
       await saveQualificationToDb(formData, rankedPrograms);
@@ -1923,9 +1986,12 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
           data: { pending_qualification: null },
         });
       } catch { /* noop — stale metadata is harmless, callback will self-heal */ }
-      setSubmitted(true);
+      handleClose();
+      router.push("/results");
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : "Failed to save after account creation.");
+      setShowCreateAccount(true);
+      setCalculating(false);
     } finally {
       setIsSaving(false);
     }
@@ -2112,7 +2178,7 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
 
                 {/* Progress + close */}
                 <div className="flex items-center gap-4">
-                  {!submitted && (
+                  {!submitted && !calculating && (
                     <div className="flex flex-col items-end gap-1.5">
                       <span
                         className="text-xs font-semibold"
@@ -2121,7 +2187,7 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
                           fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
                         }}
                       >
-                        Step {step} of 5
+                        Step {step} of 4
                       </span>
                       <div
                         className="h-1 w-28 overflow-hidden rounded-full"
@@ -2143,7 +2209,11 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
               {/* Step content */}
               <div className="flex-1 overflow-y-auto px-6 py-8 lg:px-10">
                 <AnimatePresence mode="wait">
-                  {submitted ? (
+                  {calculating ? (
+                    <motion.div key="calculating">
+                      <CalculatingState />
+                    </motion.div>
+                  ) : submitted ? (
                     <motion.div key="success">
                       <SuccessState onClose={handleClose} />
                     </motion.div>
@@ -2281,8 +2351,8 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
                 </AnimatePresence>
               </div>
 
-              {/* Navigation bar — hidden when showing create account or success */}
-              {!submitted && !showCreateAccount && (
+              {/* Navigation bar — hidden when showing calculating, create account or success */}
+              {!submitted && !showCreateAccount && !calculating && (
                 <div
                   className="flex shrink-0 items-center justify-between gap-3 px-6 py-4"
                   style={{ borderTop: "1px solid rgba(69,71,75,0.25)" }}
