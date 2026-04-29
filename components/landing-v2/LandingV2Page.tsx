@@ -309,7 +309,7 @@ export function LandingV2Page() {
     <div className="relative overflow-x-hidden bg-[#11101C] text-[#F5F5F6]">
       <section className="border-b border-white/8">
         <ShaderBackground>
-          <div className="relative z-10 mx-auto max-w-7xl px-6 pb-[clamp(4.75rem,8vw,7.5rem)] pt-[clamp(4.5rem,8vw,7rem)] lg:px-8">
+          <div className="relative z-10 mx-auto max-w-7xl px-6 pb-[clamp(3rem,min(8vw,7vh),7.5rem)] pt-[clamp(3rem,min(8vw,7vh),7rem)] lg:px-8">
             <div className="grid gap-10 lg:grid-cols-12 lg:gap-12 xl:items-start">
               <Reveal className="lg:col-span-7">
                 <div className="max-w-[44rem] space-y-7 sm:space-y-8">

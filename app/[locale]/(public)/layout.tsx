@@ -7,9 +7,9 @@ export default function PublicLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <div style={{ zoom: 0.88 }}>
       <PreviewShell>{children}</PreviewShell>
       <QualifyModalGlobal />
-    </>
+    </div>
   );
 }
