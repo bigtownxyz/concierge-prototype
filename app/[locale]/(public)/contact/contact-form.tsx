@@ -3,10 +3,47 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-export function ContactForm() {
-  const [submitted, setSubmitted] = useState(false);
+type Status = "idle" | "submitting" | "success" | "error";
 
-  if (submitted) {
+export function ContactForm() {
+  const [status, setStatus] = useState<Status>("idle");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const [website, setWebsite] = useState(""); // honeypot
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMessage("");
+    setStatus("submitting");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fullName, email, subject, message, website }),
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        error?: string;
+      };
+
+      if (!res.ok || !data.ok) {
+        setErrorMessage(data.error || "Could not send your message. Please try again.");
+        setStatus("error");
+        return;
+      }
+
+      setStatus("success");
+    } catch {
+      setErrorMessage("Network error. Please try again.");
+      setStatus("error");
+    }
+  };
+
+  if (status === "success") {
     return (
       <div className="rounded-2xl bg-glass-bg border border-glass-border p-10 text-center">
         <div className="mb-4 text-4xl">&#10003;</div>
@@ -20,14 +57,40 @@ export function ContactForm() {
     );
   }
 
+  const inputClass = cn(
+    "w-full rounded-xl bg-glass-bg border border-glass-border py-3 px-4",
+    "text-sm text-text-primary placeholder:text-text-muted/40",
+    "focus:outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/20",
+    "transition-colors"
+  );
+
+  const submitting = status === "submitting";
+
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        setSubmitted(true);
-      }}
-      className="space-y-5"
-    >
+    <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+      {/* Honeypot — hidden from real users, irresistible to bots */}
+      <div
+        aria-hidden="true"
+        style={{ position: "absolute", left: "-10000px", width: 1, height: 1, overflow: "hidden" }}
+      >
+        <label htmlFor="website-url">Website (leave blank)</label>
+        <input
+          type="text"
+          id="website-url"
+          name="website"
+          tabIndex={-1}
+          autoComplete="off"
+          value={website}
+          onChange={(e) => setWebsite(e.target.value)}
+        />
+      </div>
+
+      {status === "error" && errorMessage && (
+        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">
+          {errorMessage}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
           <label className="block text-xs font-medium text-text-muted mb-1.5">
@@ -36,13 +99,12 @@ export function ContactForm() {
           <input
             type="text"
             required
-            className={cn(
-              "w-full rounded-xl bg-glass-bg border border-glass-border py-3 px-4",
-              "text-sm text-text-primary placeholder:text-text-muted/40",
-              "focus:outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/20",
-              "transition-colors"
-            )}
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            disabled={submitting}
+            className={inputClass}
             placeholder="Your name"
+            autoComplete="name"
           />
         </div>
         <div>
@@ -52,13 +114,12 @@ export function ContactForm() {
           <input
             type="email"
             required
-            className={cn(
-              "w-full rounded-xl bg-glass-bg border border-glass-border py-3 px-4",
-              "text-sm text-text-primary placeholder:text-text-muted/40",
-              "focus:outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/20",
-              "transition-colors"
-            )}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={submitting}
+            className={inputClass}
             placeholder="you@example.com"
+            autoComplete="email"
           />
         </div>
       </div>
@@ -68,12 +129,10 @@ export function ContactForm() {
         </label>
         <input
           type="text"
-          className={cn(
-            "w-full rounded-xl bg-glass-bg border border-glass-border py-3 px-4",
-            "text-sm text-text-primary placeholder:text-text-muted/40",
-            "focus:outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/20",
-            "transition-colors"
-          )}
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
+          disabled={submitting}
+          className={inputClass}
           placeholder="How can we help?"
         />
       </div>
@@ -84,20 +143,20 @@ export function ContactForm() {
         <textarea
           rows={5}
           required
-          className={cn(
-            "w-full rounded-xl bg-glass-bg border border-glass-border py-3 px-4",
-            "text-sm text-text-primary placeholder:text-text-muted/40",
-            "focus:outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/20",
-            "transition-colors resize-none"
-          )}
+          minLength={10}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          disabled={submitting}
+          className={cn(inputClass, "resize-none")}
           placeholder="Tell us about your situation and goals..."
         />
       </div>
       <button
         type="submit"
-        className="w-full rounded-xl bg-luxury py-3.5 text-sm font-semibold text-background transition-all hover:bg-luxury-hover hover:shadow-[0_0_20px_rgba(201,168,76,0.2)]"
+        disabled={submitting}
+        className="w-full rounded-xl bg-luxury py-3.5 text-sm font-semibold text-background transition-all hover:bg-luxury-hover hover:shadow-[0_0_20px_rgba(201,168,76,0.2)] disabled:opacity-60 disabled:cursor-not-allowed"
       >
-        Send Message
+        {submitting ? "Sending…" : "Send Message"}
       </button>
     </form>
   );
