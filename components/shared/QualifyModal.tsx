@@ -2064,20 +2064,7 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
             >
               <div className="flex flex-col gap-8">
                 {/* Logo / brand mark */}
-                <div className="flex items-center gap-2">
-                  <span
-                    className="material-symbols-outlined"
-                    style={{ fontSize: 20, color: "#bbc4f7" }}
-                  >
-                    concierge
-                  </span>
-                  <span
-                    className="text-sm font-semibold tracking-wide"
-                    style={{ color: "#bbc4f7", fontFamily: "var(--font-manrope, 'Manrope', sans-serif)" }}
-                  >
-                    Concierge
-                  </span>
-                </div>
+                <Logo size="sm" />
 
                 {/* Main heading */}
                 <div>
@@ -2168,19 +2155,8 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
                 className="flex shrink-0 items-center justify-between px-6 py-4 pr-16"
                 style={{ borderBottom: "1px solid rgba(69,71,75,0.25)" }}
               >
-                <div className="flex items-center gap-3 lg:hidden">
-                  <span
-                    className="material-symbols-outlined"
-                    style={{ fontSize: 18, color: "#bbc4f7" }}
-                  >
-                    concierge
-                  </span>
-                  <span
-                    className="text-sm font-semibold"
-                    style={{ color: "#bbc4f7", fontFamily: "var(--font-manrope, 'Manrope', sans-serif)" }}
-                  >
-                    Qualification
-                  </span>
+                <div className="flex items-center lg:hidden">
+                  <Logo size="sm" />
                 </div>
                 <div className="hidden lg:block" />
 
