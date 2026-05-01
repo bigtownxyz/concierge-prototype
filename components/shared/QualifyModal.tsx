@@ -1628,6 +1628,57 @@ function SuccessState({ onClose }: { onClose: () => void }) {
   );
 }
 
+// ─── LC Command Centre CRM push ───────────────────────────────────────────────
+
+// Fire-and-forget push to the LC CRM via the local proxy route. Failures are
+// logged but never thrown — a CRM outage must not block the user's flow.
+function pushQualificationToLcCrm(
+  formData: FormData,
+  rankedPrograms: { program: Program; score: number }[],
+  signedUp: boolean,
+  conciergeUserId?: string
+): void {
+  const programScores: Record<string, number> = {};
+  for (const r of rankedPrograms) programScores[r.program.slug] = r.score;
+  fetch("/api/leads/intake", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    keepalive: true,
+    body: JSON.stringify({
+      email: formData.email,
+      name: formData.name,
+      phone: formData.phone || null,
+      country: formData.country || null,
+      nationality: formData.nationality || null,
+      qualification: {
+        strategicFocus: formData.strategicFocus,
+        investmentAmount: formData.investmentAmount,
+        timeline: formData.timeline || null,
+        familyMembers: formData.familyMembers,
+        dependants: formData.dependants,
+        isUsCitizen: formData.isUsCitizen,
+        consideringRenouncing: formData.consideringRenouncing,
+        constraints: formData.constraints,
+        constraintDetail: formData.constraintDetail || null,
+        situation: formData.situation || null,
+        selectedPrograms: formData.selectedPrograms,
+        programScores,
+      },
+      signedUp,
+      conciergeUserId: conciergeUserId ?? null,
+    }),
+  }).catch((err) => console.warn("[QualifyModal] LC CRM POST failed (non-fatal)", err));
+}
+
+function markLcSignup(email: string, conciergeUserId: string): void {
+  fetch("/api/leads/intake", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    keepalive: true,
+    body: JSON.stringify({ email, conciergeUserId }),
+  }).catch((err) => console.warn("[QualifyModal] LC CRM PATCH failed (non-fatal)", err));
+}
+
 // ─── DB persistence helper ────────────────────────────────────────────────────
 
 async function saveQualificationToDb(
@@ -1953,6 +2004,10 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
     setCalculating(true);
     const minDelay = new Promise<void>((resolve) => setTimeout(resolve, 1500));
 
+    // Push to LC CRM in parallel — non-blocking, fire-and-forget so a CRM
+    // outage never blocks the user's flow. The proxy logs failures.
+    pushQualificationToLcCrm(finalFormData, rankedPrograms, !!user, user?.id);
+
     if (user) {
       try {
         await Promise.all([
@@ -1989,6 +2044,11 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
         await supabase.auth.updateUser({
           data: { pending_qualification: null },
         });
+        // Mark the LC CRM submission as signed_up. Best-effort, fail-open.
+        const { data } = await supabase.auth.getUser();
+        if (data.user) {
+          markLcSignup(formData.email, data.user.id);
+        }
       } catch { /* noop — stale metadata is harmless, callback will self-heal */ }
       handleClose();
       router.push("/results");

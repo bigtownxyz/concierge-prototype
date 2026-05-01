@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { bootstrapProfile } from "@/lib/supabase/profile-bootstrap";
 import { claimPendingQualification } from "@/lib/supabase/qualification-claim";
+import { markSignupInLc } from "@/lib/lc-intake";
 
 export async function GET(
   request: Request,
@@ -29,6 +30,20 @@ export async function GET(
           "[callback] Failed to claim pending qualification",
           claimError
         );
+      }
+
+      // Best-effort: tell LC CRM the user signed up. Idempotent — safe even
+      // if the modal already fired this from handleAccountCreated.
+      try {
+        const { data } = await supabase.auth.getUser();
+        if (data.user?.email) {
+          await markSignupInLc({
+            email: data.user.email,
+            conciergeUserId: data.user.id,
+          });
+        }
+      } catch (lcError) {
+        console.error("[callback] Failed to mark LC signup", lcError);
       }
 
       // Redirect to the portal (or wherever "next" points)

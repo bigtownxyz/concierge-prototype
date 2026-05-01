@@ -41,6 +41,10 @@ export async function POST(request: Request) {
 
   // Silently drop honeypot hits — pretend success so the bot doesn't retry.
   if (parsed.data.website && parsed.data.website.length > 0) {
+    console.warn(
+      "[contact] honeypot triggered — submission dropped. Value:",
+      parsed.data.website.slice(0, 80)
+    );
     return NextResponse.json({ ok: true });
   }
 
