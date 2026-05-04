@@ -61,8 +61,16 @@ export async function POST(request: Request) {
   }
   const parsed = PostSchema.safeParse(body);
   if (!parsed.success) {
+    console.error("[leads/intake] POST validation failed", JSON.stringify({
+      issues: parsed.error.issues,
+      body,
+    }));
     return NextResponse.json(
-      { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input." },
+      {
+        ok: false,
+        error: parsed.error.issues[0]?.message ?? "Invalid input.",
+        issues: parsed.error.issues,
+      },
       { status: 400 }
     );
   }
@@ -85,8 +93,16 @@ export async function PATCH(request: Request) {
   }
   const parsed = PatchSchema.safeParse(body);
   if (!parsed.success) {
+    console.error("[leads/intake] PATCH validation failed", JSON.stringify({
+      issues: parsed.error.issues,
+      body,
+    }));
     return NextResponse.json(
-      { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input." },
+      {
+        ok: false,
+        error: parsed.error.issues[0]?.message ?? "Invalid input.",
+        issues: parsed.error.issues,
+      },
       { status: 400 }
     );
   }
