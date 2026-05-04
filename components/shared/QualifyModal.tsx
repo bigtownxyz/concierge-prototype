@@ -1386,7 +1386,7 @@ function CreateAccountForm({
       const callbackPath = `/${locale}/callback?next=${encodeURIComponent(
         `/${locale}/results`
       )}`;
-      const { error } = await supabase.auth.signUp({
+      const { data: signUpData, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -1403,11 +1403,30 @@ function CreateAccountForm({
       return;
     }
 
+    // Supabase signals "email already in use" by returning a user with an
+    // empty `identities` array (anti-enumeration; no error is thrown).
+    // In that case no account was created and no email was sent — the user
+    // needs to log in instead. Without this branch the modal misleadingly
+    // says "check your email to confirm" when the user really just typed
+    // the wrong password for an existing account.
+    const isExistingEmail =
+      !!signUpData.user && Array.isArray(signUpData.user.identities) && signUpData.user.identities.length === 0;
+    if (isExistingEmail) {
+      onError("An account already exists for this email. Use “Sign in” below or reset your password.");
+      return;
+    }
+
     // Sign in immediately so we have a session for saving data
     const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
     if (signInError) {
-      // Email confirmation likely required — show as info, not error
-      onInfo("Account created! Please check your email to confirm, then come back and log in to see your results.");
+      const msg = signInError.message?.toLowerCase() ?? "";
+      if (msg.includes("email not confirmed") || msg.includes("confirm")) {
+        onInfo("Account created! Please check your email to confirm, then come back and log in to see your results.");
+      } else if (msg.includes("invalid login")) {
+        onError("An account already exists for this email. Use “Sign in” below or reset your password.");
+      } else {
+        onError(signInError.message);
+      }
       return;
     }
 
