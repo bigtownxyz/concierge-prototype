@@ -20,6 +20,7 @@ import {
 import { cn, formatCurrency } from "@/lib/utils";
 import { ShaderBackground } from "@/components/ui/shaders-hero-section";
 import { OpenQualifyButton } from "./OpenQualifyButton";
+import { useSquircle } from "@/hooks/useSquircle";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const DISPLAY_FONT = {
@@ -181,21 +182,29 @@ function FeaturedProgramCard({
   className,
   priority = false,
   variant = "feature",
+  cornerRadius = 32,
+  cornerSmoothing = 0.72,
 }: {
   program: Program;
   className?: string;
   priority?: boolean;
   variant?: "feature" | "compact";
+  /** Fraction of the shorter dimension — e.g. 0.11 = 11% */
+  cornerRadius?: number;
+  cornerSmoothing?: number;
 }) {
   const isCompact = variant === "compact";
+  const { ref, clipPath } = useSquircle(cornerRadius ?? 0.11, cornerSmoothing);
 
   return (
     <Link
+      ref={ref as React.Ref<HTMLAnchorElement>}
       href={`/programs/${program.slug}`}
       className={cn(
         "group relative block overflow-hidden border border-white/12 bg-[#101420]/80 text-[#dfe2eb] shadow-[0_32px_90px_rgba(2,6,18,0.5)] ring-1 ring-white/5 transition-[border-color,box-shadow,transform] duration-500 ease-out hover:-translate-y-1 hover:border-[#bbc4f7]/30 hover:shadow-[0_40px_110px_rgba(8,15,35,0.62)]",
         className
       )}
+      style={{ clipPath, borderRadius: undefined }}
     >
       <Image
         src={getProgramImage(program)}
@@ -561,45 +570,57 @@ export function LandingV2Page() {
                 <Reveal delay={0.04} className="xl:absolute xl:left-[4%] xl:top-[4.2rem] xl:z-20 xl:w-[40.5%] xl:-rotate-[3deg]">
                   <FeaturedProgramCard
                     program={featuredPrograms[0]}
-                    className="min-h-[29rem] rounded-[5.25rem_8rem_4rem_4.5rem] xl:h-[30.5rem]"
+                    className="min-h-[29rem] xl:h-[30.5rem]"
                     priority
                     variant="feature"
+                    cornerRadius={0.13}
+                    cornerSmoothing={0.75}
                   />
                 </Reveal>
                 <Reveal delay={0.08} className="xl:absolute xl:left-[45%] xl:top-0 xl:z-30 xl:w-[33%] xl:rotate-[2deg]">
                   <FeaturedProgramCard
                     program={featuredPrograms[1]}
-                    className="min-h-[28rem] rounded-[5.5rem_5.5rem_4rem_4rem] xl:h-[28.75rem]"
+                    className="min-h-[28rem] xl:h-[28.75rem]"
                     priority
                     variant="compact"
+                    cornerRadius={0.11}
+                    cornerSmoothing={0.72}
                   />
                 </Reveal>
                 <Reveal delay={0.12} className="xl:absolute xl:right-[2%] xl:top-[11.2rem] xl:z-40 xl:w-[27%] xl:rotate-[4deg]">
                   <FeaturedProgramCard
                     program={featuredPrograms[2]}
-                    className="min-h-[30rem] rounded-[5rem_4.5rem_5rem_3.75rem] xl:h-[32rem]"
+                    className="min-h-[30rem] xl:h-[32rem]"
                     variant="compact"
+                    cornerRadius={0.15}
+                    cornerSmoothing={0.70}
                   />
                 </Reveal>
                 <Reveal delay={0.1} className="xl:absolute xl:left-[-1%] xl:top-[29rem] xl:z-30 xl:w-[28%] xl:rotate-[2deg]">
                   <FeaturedProgramCard
                     program={featuredPrograms[3]}
-                    className="min-h-[25.5rem] rounded-[4rem_5.5rem_4.25rem_3.75rem] xl:h-[25.75rem]"
+                    className="min-h-[25.5rem] xl:h-[25.75rem]"
                     variant="compact"
+                    cornerRadius={0.10}
+                    cornerSmoothing={0.68}
                   />
                 </Reveal>
                 <Reveal delay={0.14} className="xl:absolute xl:left-[30%] xl:top-[27.4rem] xl:z-40 xl:w-[27%] xl:-rotate-[4deg]">
                   <FeaturedProgramCard
                     program={featuredPrograms[4]}
-                    className="min-h-[26rem] rounded-[5.25rem_5.25rem_3.75rem_3.75rem] xl:h-[26.5rem]"
+                    className="min-h-[26rem] xl:h-[26.5rem]"
                     variant="compact"
+                    cornerRadius={0.12}
+                    cornerSmoothing={0.74}
                   />
                 </Reveal>
                 <Reveal delay={0.18} className="xl:absolute xl:left-[60%] xl:top-[28.6rem] xl:z-20 xl:w-[25%] xl:rotate-[2deg]">
                   <FeaturedProgramCard
                     program={featuredPrograms[5]}
-                    className="min-h-[25.5rem] rounded-[4.75rem_5.5rem_3.75rem_3.75rem] xl:h-[25.75rem]"
+                    className="min-h-[25.5rem] xl:h-[25.75rem]"
                     variant="compact"
+                    cornerRadius={0.10}
+                    cornerSmoothing={0.71}
                   />
                 </Reveal>
             </div>
