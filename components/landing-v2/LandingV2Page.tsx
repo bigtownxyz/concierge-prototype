@@ -20,7 +20,8 @@ import {
 import { cn, formatCurrency } from "@/lib/utils";
 import { ShaderBackground } from "@/components/ui/shaders-hero-section";
 import { OpenQualifyButton } from "./OpenQualifyButton";
-import { useSquircle } from "@/hooks/useSquircle";
+import { useTracedShape } from "@/hooks/useTracedShape";
+import { CARD_SHAPES } from "@/lib/cardShapes";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const DISPLAY_FONT = {
@@ -182,19 +183,17 @@ function FeaturedProgramCard({
   className,
   priority = false,
   variant = "feature",
-  cornerRadius = 32,
-  cornerSmoothing = 0.72,
+  shapeKey,
 }: {
   program: Program;
   className?: string;
   priority?: boolean;
   variant?: "feature" | "compact";
-  /** Fraction of the shorter dimension — e.g. 0.11 = 11% */
-  cornerRadius?: number;
-  cornerSmoothing?: number;
+  shapeKey?: string;
 }) {
   const isCompact = variant === "compact";
-  const { ref, clipPath } = useSquircle(cornerRadius ?? 0.11, cornerSmoothing);
+  const shape = shapeKey ? CARD_SHAPES[shapeKey] : null;
+  const { ref, clipPath } = useTracedShape(shape?.pts ?? []);
 
   return (
     <Link
@@ -573,8 +572,7 @@ export function LandingV2Page() {
                     className="min-h-[29rem] xl:h-[30.5rem]"
                     priority
                     variant="feature"
-                    cornerRadius={0.13}
-                    cornerSmoothing={0.75}
+                    shapeKey="portugal"
                   />
                 </Reveal>
                 <Reveal delay={0.08} className="xl:absolute xl:left-[45%] xl:top-0 xl:z-30 xl:w-[33%] xl:rotate-[2deg]">
@@ -583,8 +581,7 @@ export function LandingV2Page() {
                     className="min-h-[28rem] xl:h-[28.75rem]"
                     priority
                     variant="compact"
-                    cornerRadius={0.11}
-                    cornerSmoothing={0.72}
+                    shapeKey="uae"
                   />
                 </Reveal>
                 <Reveal delay={0.12} className="xl:absolute xl:right-[2%] xl:top-[11.2rem] xl:z-40 xl:w-[27%] xl:rotate-[4deg]">
@@ -592,8 +589,7 @@ export function LandingV2Page() {
                     program={featuredPrograms[2]}
                     className="min-h-[30rem] xl:h-[32rem]"
                     variant="compact"
-                    cornerRadius={0.15}
-                    cornerSmoothing={0.70}
+                    shapeKey="stkitts"
                   />
                 </Reveal>
                 <Reveal delay={0.1} className="xl:absolute xl:left-[-1%] xl:top-[29rem] xl:z-30 xl:w-[28%] xl:rotate-[2deg]">
@@ -601,8 +597,7 @@ export function LandingV2Page() {
                     program={featuredPrograms[3]}
                     className="min-h-[25.5rem] xl:h-[25.75rem]"
                     variant="compact"
-                    cornerRadius={0.10}
-                    cornerSmoothing={0.68}
+                    shapeKey="grenada"
                   />
                 </Reveal>
                 <Reveal delay={0.14} className="xl:absolute xl:left-[30%] xl:top-[27.4rem] xl:z-40 xl:w-[27%] xl:-rotate-[4deg]">
@@ -610,8 +605,7 @@ export function LandingV2Page() {
                     program={featuredPrograms[4]}
                     className="min-h-[26rem] xl:h-[26.5rem]"
                     variant="compact"
-                    cornerRadius={0.12}
-                    cornerSmoothing={0.74}
+                    shapeKey="serbia"
                   />
                 </Reveal>
                 <Reveal delay={0.18} className="xl:absolute xl:left-[60%] xl:top-[28.6rem] xl:z-20 xl:w-[25%] xl:rotate-[2deg]">
@@ -619,8 +613,7 @@ export function LandingV2Page() {
                     program={featuredPrograms[5]}
                     className="min-h-[25.5rem] xl:h-[25.75rem]"
                     variant="compact"
-                    cornerRadius={0.10}
-                    cornerSmoothing={0.71}
+                    shapeKey="dominica"
                   />
                 </Reveal>
             </div>
