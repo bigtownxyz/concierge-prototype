@@ -565,11 +565,11 @@ export function LandingV2Page() {
               </div>
             </Reveal>
 
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:relative xl:block xl:h-[55rem]">
-                <Reveal delay={0.04} className="xl:absolute xl:left-[3%] xl:top-[2rem] xl:z-20 xl:w-[35%] xl:-rotate-[3deg]">
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:relative xl:block xl:h-[62rem]">
+                <Reveal delay={0.04} className="xl:absolute xl:left-[3%] xl:top-[4rem] xl:z-20 xl:w-[35%] xl:-rotate-[3deg]">
                   <FeaturedProgramCard
                     program={featuredPrograms[0]}
-                    className="min-h-[29rem] xl:h-[30.25rem]"
+                    className="min-h-[29rem] xl:h-[31rem]"
                     priority
                     variant="feature"
                     shapeKey="portugal"
@@ -578,40 +578,40 @@ export function LandingV2Page() {
                 <Reveal delay={0.08} className="xl:absolute xl:left-[42%] xl:top-0 xl:z-30 xl:w-[43%] xl:rotate-[2deg]">
                   <FeaturedProgramCard
                     program={featuredPrograms[1]}
-                    className="min-h-[28rem] xl:h-[31.5rem]"
+                    className="min-h-[28rem] xl:h-[34rem]"
                     priority
                     variant="compact"
                     shapeKey="uae"
                   />
                 </Reveal>
-                <Reveal delay={0.12} className="xl:absolute xl:left-[82%] xl:top-[5rem] xl:z-20 xl:w-[32%] xl:rotate-[4deg]">
+                <Reveal delay={0.12} className="xl:absolute xl:left-[82%] xl:top-[3rem] xl:z-20 xl:w-[32%] xl:rotate-[4deg]">
                   <FeaturedProgramCard
                     program={featuredPrograms[2]}
-                    className="min-h-[30rem] xl:h-[36rem]"
+                    className="min-h-[30rem] xl:h-[37rem]"
                     variant="compact"
                     shapeKey="stkitts"
                   />
                 </Reveal>
-                <Reveal delay={0.1} className="xl:absolute xl:left-[-8%] xl:top-[30.5rem] xl:z-30 xl:w-[41%] xl:rotate-[2deg]">
+                <Reveal delay={0.1} className="xl:absolute xl:left-[-8%] xl:top-[33rem] xl:z-30 xl:w-[41%] xl:rotate-[2deg]">
                   <FeaturedProgramCard
                     program={featuredPrograms[3]}
-                    className="min-h-[25.5rem] xl:h-[24rem]"
+                    className="min-h-[25.5rem] xl:h-[27rem]"
                     variant="compact"
                     shapeKey="grenada"
                   />
                 </Reveal>
-                <Reveal delay={0.14} className="xl:absolute xl:left-[21%] xl:top-[29.5rem] xl:z-40 xl:w-[38%] xl:-rotate-[4deg]">
+                <Reveal delay={0.14} className="xl:absolute xl:left-[21%] xl:top-[32rem] xl:z-40 xl:w-[38%] xl:-rotate-[4deg]">
                   <FeaturedProgramCard
                     program={featuredPrograms[4]}
-                    className="min-h-[26rem] xl:h-[25.25rem]"
+                    className="min-h-[26rem] xl:h-[27rem]"
                     variant="compact"
                     shapeKey="serbia"
                   />
                 </Reveal>
-                <Reveal delay={0.18} className="xl:absolute xl:left-[46%] xl:top-[29rem] xl:z-20 xl:w-[40%] xl:rotate-[2deg]">
+                <Reveal delay={0.18} className="xl:absolute xl:left-[47%] xl:top-[32rem] xl:z-20 xl:w-[38%] xl:rotate-[2deg]">
                   <FeaturedProgramCard
                     program={featuredPrograms[5]}
-                    className="min-h-[25.5rem] xl:h-[24.75rem]"
+                    className="min-h-[25.5rem] xl:h-[27rem]"
                     variant="compact"
                     shapeKey="dominica"
                   />
