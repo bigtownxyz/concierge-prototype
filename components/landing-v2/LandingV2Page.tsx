@@ -566,56 +566,54 @@ export function LandingV2Page() {
             </Reveal>
 
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:relative xl:block xl:h-[57rem]">
-                <Reveal delay={0.04} className="xl:absolute xl:left-[11.5%] xl:top-[3.25rem] xl:z-20 xl:w-[32.5%] xl:-rotate-[3deg]">
+                <Reveal delay={0.04} className="xl:absolute xl:left-[1%] xl:top-[3.5rem] xl:z-10 xl:w-[31.5%] xl:-rotate-[3deg]">
                   <FeaturedProgramCard
                     program={featuredPrograms[0]}
-                    className="min-h-[29rem] xl:h-[26.5rem]"
+                    className="min-h-[29rem] xl:h-[28rem]"
                     priority
                     variant="feature"
                     shapeKey="portugal"
                   />
                 </Reveal>
-                <Reveal delay={0.08} className="xl:absolute xl:left-[46.5%] xl:top-0 xl:z-30 xl:w-[26%] xl:rotate-[2deg]">
+                <Reveal delay={0.08} className="xl:absolute xl:left-[42%] xl:top-[1.25rem] xl:z-20 xl:w-[41%] xl:rotate-[2deg]">
                   <FeaturedProgramCard
                     program={featuredPrograms[1]}
-                    className="min-h-[28rem] xl:h-[26rem]"
+                    className="min-h-[28rem] xl:h-[30rem]"
                     priority
                     variant="compact"
                     shapeKey="uae"
                   />
                 </Reveal>
-                <Reveal delay={0.12} className="xl:absolute xl:left-[77.5%] xl:top-[10rem] xl:z-10 xl:w-[22.5%] xl:rotate-[4deg]">
+                <Reveal delay={0.12} className="xl:absolute xl:left-[71%] xl:top-[3.5rem] xl:z-10 xl:w-[29%] xl:rotate-[4deg]">
                   <FeaturedProgramCard
                     program={featuredPrograms[2]}
-                    className="min-h-[30rem] xl:h-[31.5rem]"
+                    className="min-h-[30rem] xl:h-[34rem]"
                     variant="compact"
                     shapeKey="stkitts"
                   />
                 </Reveal>
-                <Reveal delay={0.1} className="xl:absolute xl:left-[0%] xl:top-[30.75rem] xl:z-20 xl:w-[23.5%] xl:rotate-[2deg]">
+                <Reveal delay={0.1} className="xl:absolute xl:left-[-7%] xl:top-[30rem] xl:z-20 xl:w-[43%] xl:rotate-[2deg]">
                   <FeaturedProgramCard
                     program={featuredPrograms[3]}
-                    className="min-h-[25.5rem] xl:h-[26.5rem]"
+                    className="min-h-[25.5rem] xl:h-[25rem]"
                     variant="compact"
                     shapeKey="grenada"
                   />
                 </Reveal>
-                {/* shapeKey swapped: cardShapes 'dominica' holds _5 points = the traced Serbia outline */}
-                <Reveal delay={0.14} className="xl:absolute xl:left-[27.5%] xl:top-[29.5rem] xl:z-40 xl:w-[21.5%] xl:-rotate-[4deg]">
+                <Reveal delay={0.14} className="xl:absolute xl:left-[15%] xl:top-[28rem] xl:z-40 xl:w-[35%] xl:-rotate-[4deg]">
                   <FeaturedProgramCard
                     program={featuredPrograms[4]}
-                    className="min-h-[26rem] xl:h-[26.5rem]"
-                    variant="compact"
-                    shapeKey="dominica"
-                  />
-                </Reveal>
-                {/* shapeKey swapped: cardShapes 'serbia' holds _4 points = the traced Dominica outline */}
-                <Reveal delay={0.18} className="xl:absolute xl:left-[53%] xl:top-[29rem] xl:z-30 xl:w-[22%] xl:rotate-[2deg]">
-                  <FeaturedProgramCard
-                    program={featuredPrograms[5]}
-                    className="min-h-[25.5rem] xl:h-[27.5rem]"
+                    className="min-h-[26rem] xl:h-[27rem]"
                     variant="compact"
                     shapeKey="serbia"
+                  />
+                </Reveal>
+                <Reveal delay={0.18} className="xl:absolute xl:left-[45%] xl:top-[29rem] xl:z-30 xl:w-[35%] xl:rotate-[2deg]">
+                  <FeaturedProgramCard
+                    program={featuredPrograms[5]}
+                    className="min-h-[25.5rem] xl:h-[26rem]"
+                    variant="compact"
+                    shapeKey="dominica"
                   />
                 </Reveal>
             </div>
