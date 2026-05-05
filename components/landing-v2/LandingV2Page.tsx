@@ -193,7 +193,7 @@ function FeaturedProgramCard({
     <Link
       href={`/programs/${program.slug}`}
       className={cn(
-        "group relative block overflow-hidden rounded-t-[3.5rem] rounded-b-[2.25rem] border border-white/12 bg-[#101420]/80 text-[#dfe2eb] shadow-[0_32px_90px_rgba(2,6,18,0.5)] ring-1 ring-white/5 transition-[border-color,box-shadow,transform] duration-500 ease-out hover:-translate-y-1 hover:border-[#bbc4f7]/30 hover:shadow-[0_40px_110px_rgba(8,15,35,0.62)]",
+        "group relative block overflow-hidden border border-white/12 bg-[#101420]/80 text-[#dfe2eb] shadow-[0_32px_90px_rgba(2,6,18,0.5)] ring-1 ring-white/5 transition-[border-color,box-shadow,transform] duration-500 ease-out hover:-translate-y-1 hover:border-[#bbc4f7]/30 hover:shadow-[0_40px_110px_rgba(8,15,35,0.62)]",
         className
       )}
     >
