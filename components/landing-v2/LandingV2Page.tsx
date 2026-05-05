@@ -205,7 +205,7 @@ function FeaturedProgramCard({
         className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
         sizes="(min-width: 1280px) 32vw, (min-width: 1024px) 48vw, 100vw"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#11101C] via-[#11101C]/55 via-38% to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#11101C] via-[#11101C]/75 via-45% to-[#11101C]/20" />
       <div className="relative flex h-full min-h-[20rem] flex-col justify-between p-5 sm:p-6">
         <div className="flex flex-wrap items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[#bbc4f7]">
           <span className="rounded-full border border-[#bbc4f7]/25 bg-[#23233A]/80 px-3 py-1">
@@ -365,7 +365,7 @@ export function LandingV2Page() {
                         sizes="(min-width: 1024px) 34vw, 100vw"
                       />
                     ) : null}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#11101C] via-[#11101C]/48 via-45% to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#11101C] via-[#11101C]/65 via-45% to-transparent" />
                     <div className="relative flex h-full flex-col justify-end p-6 sm:p-7 lg:p-8">
                       <div className="max-w-[30rem] space-y-5">
                         <div className="inline-flex items-center gap-2 rounded-full border border-[#bbc4f7]/25 bg-[#23233A]/75 px-3 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#bbc4f7]">
@@ -566,7 +566,7 @@ export function LandingV2Page() {
                     <Reveal key={program.slug} delay={0.08 + index * 0.05}>
                       <FeaturedProgramCard
                         program={program}
-                        className="min-h-[18.5rem]"
+                        className="min-h-[20rem]"
                         priority={index === 0}
                         variant="compact"
                       />
@@ -580,7 +580,7 @@ export function LandingV2Page() {
                   <Reveal key={program.slug} delay={0.1 + index * 0.05}>
                     <FeaturedProgramCard
                       program={program}
-                      className="min-h-[24rem]"
+                      className="min-h-[27rem]"
                       variant="compact"
                     />
                   </Reveal>
