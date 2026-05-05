@@ -216,7 +216,7 @@ function FeaturedProgramCard({
       <div className="absolute inset-0 bg-gradient-to-t from-[#070914]/88 via-[#09101e]/58 via-50% to-[#122852]/12" />
       <div className="absolute inset-0 bg-gradient-to-br from-white/12 via-transparent to-transparent opacity-60" />
       <div className="absolute inset-x-10 top-0 h-px bg-white/35" />
-      <div className="relative flex h-full min-h-[20rem] flex-col justify-between p-5 sm:p-6">
+      <div className="relative flex h-full min-h-[20rem] flex-col justify-between p-5 pb-14 sm:p-6 sm:pb-14">
         <div className="flex flex-wrap items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[#bbc4f7]">
           <span className="rounded-full border border-[#bbc4f7]/25 bg-[#11162a]/80 px-3 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md">
             {program.type}
