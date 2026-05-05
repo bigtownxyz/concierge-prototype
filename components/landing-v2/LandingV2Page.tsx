@@ -193,7 +193,7 @@ function FeaturedProgramCard({
     <Link
       href={`/programs/${program.slug}`}
       className={cn(
-        "group relative block overflow-hidden rounded-[28px] border border-white/8 bg-[#1B1A2B] text-[#dfe2eb]",
+        "group relative block overflow-hidden rounded-[2.75rem] border border-white/8 bg-[#1B1A2B] text-[#dfe2eb]",
         className
       )}
     >
@@ -242,40 +242,20 @@ function FeaturedProgramCard({
             </p>
           </div>
 
-          <dl
-            className={cn(
-              "gap-3 text-sm text-[#dfe2eb]",
-              isCompact ? "grid grid-cols-2" : "flex flex-wrap"
-            )}
-          >
-            <div
-              className={cn(
-                "rounded-2xl border border-white/10 bg-[#11101C]/55 px-4 py-3",
-                isCompact ? "min-w-0" : "min-w-[7.7rem] flex-1"
-              )}
-            >
+          <dl className="grid grid-cols-2 gap-3 text-sm text-[#dfe2eb]">
+            <div className="rounded-2xl border border-white/10 bg-[#11101C]/55 px-4 py-3">
               <dt className="text-[0.63rem] uppercase tracking-[0.2em] text-[#bbc4f7]">
                 Entry point
               </dt>
               <dd className="mt-2 font-semibold">{formatInvestment(program)}</dd>
             </div>
-            <div
-              className={cn(
-                "rounded-2xl border border-white/10 bg-[#11101C]/55 px-4 py-3",
-                isCompact ? "min-w-0" : "min-w-[7.7rem] flex-1"
-              )}
-            >
+            <div className="rounded-2xl border border-white/10 bg-[#11101C]/55 px-4 py-3">
               <dt className="text-[0.63rem] uppercase tracking-[0.2em] text-[#bbc4f7]">
                 Timeline
               </dt>
               <dd className="mt-2 font-semibold">{formatTimeline(program)}</dd>
             </div>
-            <div
-              className={cn(
-                "rounded-2xl border border-white/10 bg-[#11101C]/55 px-4 py-3",
-                isCompact ? "col-span-2 min-w-0" : "min-w-[7.7rem] flex-1"
-              )}
-            >
+            <div className="col-span-2 rounded-2xl border border-white/10 bg-[#11101C]/55 px-4 py-3">
               <dt className="text-[0.63rem] uppercase tracking-[0.2em] text-[#bbc4f7]">
                 Access
               </dt>
@@ -527,16 +507,29 @@ export function LandingV2Page() {
         </div>
       </section>
 
-      <section className={cn("border-b border-white/8", sectionPaddingClass)}>
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
+      <section className="relative overflow-hidden border-b border-white/8 py-[clamp(4.75rem,8vw,6.75rem)]">
+        <Image
+          src="/images/snapshots-bg.jpg"
+          alt=""
+          fill
+          className="object-cover object-center"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0810]/95 via-[#0a0810]/65 to-[#0a0810]/20" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0810]/30 via-transparent to-[#0a0810]/65" />
+
+        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="grid gap-10 lg:grid-cols-12 lg:gap-8">
             <Reveal className="lg:col-span-4">
               <div className="space-y-6 lg:sticky lg:top-28">
                 <p className={eyebrowClass} style={BODY_FONT}>
                   Programme snapshots
                 </p>
-                <h2 className={sectionTitleClass} style={DISPLAY_FONT}>
-                  A wider read on six real pathways.
+                <h2 className="mt-4 max-w-[11ch] text-balance text-[clamp(2.45rem,4.8vw,4.35rem)] leading-[0.98] tracking-[-0.04em] text-[#dfe2eb]">
+                  <span style={DISPLAY_FONT}>A wider read on six </span>
+                  <em style={{ fontFamily: "var(--font-cormorant), 'Cormorant Garamond', Georgia, serif", fontStyle: "italic", letterSpacing: "-0.01em" }}>
+                    real pathways.
+                  </em>
                 </h2>
                 <p className={sectionBodyClass} style={BODY_FONT}>
                   The shortlist above is a starting point. This section opens
@@ -550,41 +543,55 @@ export function LandingV2Page() {
               </div>
             </Reveal>
 
-            <div className="space-y-5 lg:col-span-8">
-              <div className="grid gap-5 xl:grid-cols-[minmax(0,1.12fr)_minmax(18rem,0.88fr)]">
+            <div className="lg:col-span-8">
+              <div className="grid grid-cols-3 gap-4 items-start">
                 <Reveal delay={0.04}>
                   <FeaturedProgramCard
                     program={featuredPrograms[0]}
-                    className="min-h-[34rem]"
+                    className="min-h-[30rem] mt-16"
                     priority
                     variant="feature"
                   />
                 </Reveal>
-
-                <div className="grid gap-5">
-                  {featuredPrograms.slice(1, 3).map((program, index) => (
-                    <Reveal key={program.slug} delay={0.08 + index * 0.05}>
-                      <FeaturedProgramCard
-                        program={program}
-                        className="min-h-[20rem]"
-                        priority={index === 0}
-                        variant="compact"
-                      />
-                    </Reveal>
-                  ))}
-                </div>
+                <Reveal delay={0.08}>
+                  <FeaturedProgramCard
+                    program={featuredPrograms[1]}
+                    className="min-h-[26rem]"
+                    priority
+                    variant="compact"
+                  />
+                </Reveal>
+                <Reveal delay={0.12}>
+                  <FeaturedProgramCard
+                    program={featuredPrograms[2]}
+                    className="min-h-[28rem] mt-8"
+                    variant="compact"
+                  />
+                </Reveal>
               </div>
 
-              <div className="grid gap-5 md:grid-cols-3">
-                {featuredPrograms.slice(3).map((program, index) => (
-                  <Reveal key={program.slug} delay={0.1 + index * 0.05}>
-                    <FeaturedProgramCard
-                      program={program}
-                      className="min-h-[27rem]"
-                      variant="compact"
-                    />
-                  </Reveal>
-                ))}
+              <div className="grid grid-cols-3 gap-4 mt-4 items-start">
+                <Reveal delay={0.1}>
+                  <FeaturedProgramCard
+                    program={featuredPrograms[3]}
+                    className="min-h-[26rem]"
+                    variant="compact"
+                  />
+                </Reveal>
+                <Reveal delay={0.14}>
+                  <FeaturedProgramCard
+                    program={featuredPrograms[4]}
+                    className="min-h-[26rem] mt-6"
+                    variant="compact"
+                  />
+                </Reveal>
+                <Reveal delay={0.18}>
+                  <FeaturedProgramCard
+                    program={featuredPrograms[5]}
+                    className="min-h-[26rem]"
+                    variant="compact"
+                  />
+                </Reveal>
               </div>
             </div>
           </div>
