@@ -193,7 +193,7 @@ function FeaturedProgramCard({
     <Link
       href={`/programs/${program.slug}`}
       className={cn(
-        "group relative block overflow-hidden rounded-[2.75rem] border border-white/8 bg-[#1B1A2B] text-[#dfe2eb]",
+        "group relative block overflow-hidden rounded-t-[999px] rounded-b-[1.75rem] border border-white/12 bg-[#101420]/80 text-[#dfe2eb] shadow-[0_32px_90px_rgba(2,6,18,0.5)] ring-1 ring-white/5 transition-[border-color,box-shadow,transform] duration-500 ease-out hover:-translate-y-1 hover:border-[#bbc4f7]/30 hover:shadow-[0_40px_110px_rgba(8,15,35,0.62)]",
         className
       )}
     >
@@ -205,14 +205,16 @@ function FeaturedProgramCard({
         className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
         sizes="(min-width: 1280px) 32vw, (min-width: 1024px) 48vw, 100vw"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#11101C] via-[#11101C]/75 via-45% to-[#11101C]/20" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#070914]/88 via-[#09101e]/58 via-50% to-[#122852]/12" />
+      <div className="absolute inset-0 bg-gradient-to-br from-white/12 via-transparent to-transparent opacity-60" />
+      <div className="absolute inset-x-10 top-0 h-px bg-white/35" />
       <div className="relative flex h-full min-h-[20rem] flex-col justify-between p-5 sm:p-6">
         <div className="flex flex-wrap items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[#bbc4f7]">
-          <span className="rounded-full border border-[#bbc4f7]/25 bg-[#23233A]/80 px-3 py-1">
+          <span className="rounded-full border border-[#bbc4f7]/25 bg-[#11162a]/80 px-3 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md">
             {program.type}
           </span>
           {program.exclusive ? (
-            <span className="rounded-full border border-[#bbc4f7]/25 bg-[#23233A]/80 px-3 py-1">
+            <span className="rounded-full border border-[#bbc4f7]/25 bg-[#11162a]/80 px-3 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md">
               Exclusive
             </span>
           ) : null}
@@ -242,21 +244,21 @@ function FeaturedProgramCard({
             </p>
           </div>
 
-          <dl className="grid grid-cols-2 gap-3 text-sm text-[#dfe2eb]">
-            <div className="rounded-2xl border border-white/10 bg-[#11101C]/55 px-4 py-3">
-              <dt className="text-[0.63rem] uppercase tracking-[0.2em] text-[#bbc4f7]">
+          <dl className="grid grid-cols-2 overflow-hidden rounded-[1.35rem] border border-white/12 bg-[#050816]/58 text-sm text-[#dfe2eb] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-md">
+            <div className="border-r border-white/10 px-4 py-3">
+              <dt className="whitespace-nowrap text-[0.58rem] uppercase tracking-[0.16em] text-[#bbc4f7]">
                 Entry point
               </dt>
               <dd className="mt-2 font-semibold">{formatInvestment(program)}</dd>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-[#11101C]/55 px-4 py-3">
-              <dt className="text-[0.63rem] uppercase tracking-[0.2em] text-[#bbc4f7]">
+            <div className="px-4 py-3">
+              <dt className="whitespace-nowrap text-[0.58rem] uppercase tracking-[0.16em] text-[#bbc4f7]">
                 Timeline
               </dt>
               <dd className="mt-2 font-semibold">{formatTimeline(program)}</dd>
             </div>
-            <div className="col-span-2 rounded-2xl border border-white/10 bg-[#11101C]/55 px-4 py-3">
-              <dt className="text-[0.63rem] uppercase tracking-[0.2em] text-[#bbc4f7]">
+            <div className="col-span-2 border-t border-white/10 px-4 py-3">
+              <dt className="whitespace-nowrap text-[0.58rem] uppercase tracking-[0.16em] text-[#bbc4f7]">
                 Access
               </dt>
               <dd className="mt-2 font-semibold">
@@ -507,31 +509,43 @@ export function LandingV2Page() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden border-b border-white/8 py-[clamp(4.75rem,8vw,6.75rem)]">
+      <section
+        id="program-snapshots"
+        className="relative overflow-hidden border-b border-white/8 pb-[clamp(5rem,8vw,7.5rem)] pt-[clamp(2rem,4vw,3.25rem)] xl:pb-[clamp(6.5rem,9vw,8.5rem)]"
+      >
         <Image
           src="/images/snapshots-bg.jpg"
           alt=""
           fill
-          className="object-cover object-center"
+          className="object-cover object-[42%_50%]"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0810]/95 via-[#0a0810]/65 to-[#0a0810]/20" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0810]/30 via-transparent to-[#0a0810]/65" />
+        <div className="absolute inset-0 bg-[#050713]/18" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#050713]/88 via-[#071024]/58 to-[#050713]/30" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#050713]/38 via-[#050713]/12 to-[#050713]/58" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_32%,rgba(187,196,247,0.15),transparent_25rem),radial-gradient(circle_at_17%_86%,rgba(206,140,82,0.24),transparent_24rem)]" />
+        <div
+          className="absolute inset-0 opacity-45"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 8% 18%, rgba(218,226,255,0.85) 0 1px, transparent 1.8px), radial-gradient(circle at 38% 8%, rgba(218,226,255,0.65) 0 1px, transparent 1.7px), radial-gradient(circle at 72% 15%, rgba(218,226,255,0.75) 0 1px, transparent 1.7px), radial-gradient(circle at 88% 28%, rgba(218,226,255,0.6) 0 1px, transparent 1.7px), radial-gradient(circle at 58% 56%, rgba(218,226,255,0.45) 0 1px, transparent 1.7px)",
+          }}
+        />
 
-        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="grid gap-10 lg:grid-cols-12 lg:gap-8">
-            <Reveal className="lg:col-span-4">
-              <div className="space-y-6 lg:sticky lg:top-28">
+        <div className="relative z-10 mx-auto max-w-[94rem] px-6 lg:px-8">
+          <div className="grid gap-12 xl:grid-cols-[0.64fr_1.36fr] xl:gap-4">
+            <Reveal>
+              <div className="space-y-6 xl:sticky xl:top-28 xl:pl-10 xl:pt-4">
                 <p className={eyebrowClass} style={BODY_FONT}>
                   Programme snapshots
                 </p>
-                <h2 className="mt-4 max-w-[11ch] text-balance text-[clamp(2.45rem,4.8vw,4.35rem)] leading-[0.98] tracking-[-0.04em] text-[#dfe2eb]">
+                <h2 className="mt-4 max-w-[12.5ch] text-balance text-[clamp(3rem,5.6vw,5.15rem)] leading-[0.96] tracking-[-0.045em] text-[#f4f6fb]">
                   <span style={DISPLAY_FONT}>A wider read on six </span>
-                  <em style={{ fontFamily: "var(--font-cormorant), 'Cormorant Garamond', Georgia, serif", fontStyle: "italic", letterSpacing: "-0.01em" }}>
+                  <em className="font-normal" style={{ fontFamily: "var(--font-cormorant), 'Cormorant Garamond', Georgia, serif", fontStyle: "italic", letterSpacing: "-0.01em" }}>
                     real pathways.
                   </em>
                 </h2>
-                <p className={sectionBodyClass} style={BODY_FONT}>
+                <p className="mt-7 max-w-[34ch] text-base leading-8 text-[#d7d9e1]" style={BODY_FONT}>
                   The shortlist above is a starting point. This section opens
                   the aperture with a broader read across six jurisdictions,
                   entry points, and strategic use cases.
@@ -543,56 +557,51 @@ export function LandingV2Page() {
               </div>
             </Reveal>
 
-            <div className="lg:col-span-8">
-              <div className="grid grid-cols-3 gap-4 items-start">
-                <Reveal delay={0.04}>
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:relative xl:block xl:h-[53.5rem]">
+                <Reveal delay={0.04} className="xl:absolute xl:left-[4%] xl:top-[4.2rem] xl:z-20 xl:w-[40.5%] xl:-rotate-[3deg]">
                   <FeaturedProgramCard
                     program={featuredPrograms[0]}
-                    className="min-h-[30rem] mt-16"
+                    className="min-h-[29rem] rounded-[5.25rem_8rem_4rem_4.5rem] xl:h-[30.5rem]"
                     priority
                     variant="feature"
                   />
                 </Reveal>
-                <Reveal delay={0.08}>
+                <Reveal delay={0.08} className="xl:absolute xl:left-[45%] xl:top-0 xl:z-30 xl:w-[33%] xl:rotate-[2deg]">
                   <FeaturedProgramCard
                     program={featuredPrograms[1]}
-                    className="min-h-[26rem]"
+                    className="min-h-[28rem] rounded-[5.5rem_5.5rem_4rem_4rem] xl:h-[28.75rem]"
                     priority
                     variant="compact"
                   />
                 </Reveal>
-                <Reveal delay={0.12}>
+                <Reveal delay={0.12} className="xl:absolute xl:right-[2%] xl:top-[11.2rem] xl:z-40 xl:w-[27%] xl:rotate-[4deg]">
                   <FeaturedProgramCard
                     program={featuredPrograms[2]}
-                    className="min-h-[28rem] mt-8"
+                    className="min-h-[30rem] rounded-[5rem_4.5rem_5rem_3.75rem] xl:h-[32rem]"
                     variant="compact"
                   />
                 </Reveal>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4 mt-4 items-start">
-                <Reveal delay={0.1}>
+                <Reveal delay={0.1} className="xl:absolute xl:left-[-1%] xl:top-[29rem] xl:z-30 xl:w-[28%] xl:rotate-[2deg]">
                   <FeaturedProgramCard
                     program={featuredPrograms[3]}
-                    className="min-h-[26rem]"
+                    className="min-h-[25.5rem] rounded-[4rem_5.5rem_4.25rem_3.75rem] xl:h-[25.75rem]"
                     variant="compact"
                   />
                 </Reveal>
-                <Reveal delay={0.14}>
+                <Reveal delay={0.14} className="xl:absolute xl:left-[30%] xl:top-[27.4rem] xl:z-40 xl:w-[27%] xl:-rotate-[4deg]">
                   <FeaturedProgramCard
                     program={featuredPrograms[4]}
-                    className="min-h-[26rem] mt-6"
+                    className="min-h-[26rem] rounded-[5.25rem_5.25rem_3.75rem_3.75rem] xl:h-[26.5rem]"
                     variant="compact"
                   />
                 </Reveal>
-                <Reveal delay={0.18}>
+                <Reveal delay={0.18} className="xl:absolute xl:left-[60%] xl:top-[28.6rem] xl:z-20 xl:w-[25%] xl:rotate-[2deg]">
                   <FeaturedProgramCard
                     program={featuredPrograms[5]}
-                    className="min-h-[26rem]"
+                    className="min-h-[25.5rem] rounded-[4.75rem_5.5rem_3.75rem_3.75rem] xl:h-[25.75rem]"
                     variant="compact"
                   />
                 </Reveal>
-              </div>
             </div>
           </div>
         </div>
