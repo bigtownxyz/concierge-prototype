@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { type CSSProperties, useState } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import {
@@ -126,11 +126,93 @@ const featuredPrograms = featuredProgramOrder
 
 const heroProgram = featuredPrograms.find((program) => program.slug === "dubai");
 const heroSelectedPrograms = featuredPrograms.slice(0, 3);
+const snapshotCardLayouts = [
+  {
+    shapeKey: "portugal",
+    programIndex: 0,
+    variant: "feature",
+    priority: true,
+    left: "10.1%",
+    top: "2.7%",
+    width: "35.1%",
+    height: "50.4%",
+    z: "10",
+    mobileClass: "min-h-[29rem]",
+  },
+  {
+    shapeKey: "uae",
+    programIndex: 1,
+    variant: "compact",
+    priority: true,
+    left: "45.4%",
+    top: "-2.6%",
+    width: "28%",
+    height: "49.6%",
+    z: "20",
+    mobileClass: "min-h-[28rem]",
+  },
+  {
+    shapeKey: "stkitts",
+    programIndex: 2,
+    variant: "compact",
+    left: "75.7%",
+    top: "16.6%",
+    width: "21.8%",
+    height: "56.2%",
+    z: "10",
+    mobileClass: "min-h-[30rem]",
+  },
+  {
+    shapeKey: "grenada",
+    programIndex: 3,
+    variant: "compact",
+    left: "2.7%",
+    top: "54.2%",
+    width: "23.4%",
+    height: "47.3%",
+    z: "20",
+    mobileClass: "min-h-[25.5rem]",
+  },
+  {
+    shapeKey: "serbia",
+    programIndex: 4,
+    variant: "compact",
+    left: "29.7%",
+    top: "51%",
+    width: "21.5%",
+    height: "47.5%",
+    z: "40",
+    mobileClass: "min-h-[26rem]",
+  },
+  {
+    shapeKey: "dominica",
+    programIndex: 5,
+    variant: "compact",
+    left: "52%",
+    top: "50.6%",
+    width: "21.8%",
+    height: "48.2%",
+    z: "30",
+    mobileClass: "min-h-[25.5rem]",
+  },
+] as const;
 const optimiseItems = [
   "Jurisdictions aligned to family inclusion and long-term flexibility.",
   "Qualification-first screening before time or capital gets committed.",
   "Execution that stays sober about diligence, timelines, and edge cases.",
 ] as const;
+
+type SnapshotLayout = (typeof snapshotCardLayouts)[number];
+
+function getSnapshotLayoutStyle(layout: SnapshotLayout) {
+  return {
+    "--snapshot-left": layout.left,
+    "--snapshot-top": layout.top,
+    "--snapshot-width": layout.width,
+    "--snapshot-height": layout.height,
+    "--snapshot-z": layout.z,
+  } as CSSProperties;
+}
 
 function formatInvestment(program: Program) {
   return `From ${formatCurrency(program.minInvestment, program.currency)}`;
@@ -150,24 +232,61 @@ function getProgramImage(program: Program) {
   return `/images/programs/${program.slug}.jpg`;
 }
 
+function getProgramImagePosition(program: Program) {
+  switch (program.slug) {
+    case "portugal":
+      return "68% 45%";
+    case "dubai":
+      return "50% 42%";
+    case "st-kitts-and-nevis":
+      return "52% 54%";
+    case "grenada":
+      return "48% 48%";
+    case "serbia":
+      return "52% 52%";
+    case "dominica":
+      return "48% 52%";
+    default:
+      return "50% 50%";
+  }
+}
+
+function getShapePath(pts: [number, number][]) {
+  if (!pts.length) {
+    return "";
+  }
+
+  return `M ${pts[0][0] * 100} ${pts[0][1] * 100}${pts
+    .slice(1)
+    .map(([x, y]) => ` L ${x * 100} ${y * 100}`)
+    .join("")} Z`;
+}
+
 function Reveal({
   children,
   className,
   delay = 0,
+  style,
 }: {
   children: React.ReactNode;
   className?: string;
   delay?: number;
+  style?: CSSProperties;
 }) {
   const prefersReducedMotion = useReducedMotion();
 
   if (prefersReducedMotion) {
-    return <div className={className}>{children}</div>;
+    return (
+      <div className={className} style={style}>
+        {children}
+      </div>
+    );
   }
 
   return (
     <motion.div
       className={className}
+      style={style}
       initial={{ opacity: 0, y: 28 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-96px" }}
@@ -194,13 +313,14 @@ function FeaturedProgramCard({
   const isCompact = variant === "compact";
   const shape = shapeKey ? CARD_SHAPES[shapeKey] : null;
   const { ref, clipPath } = useTracedShape(shape?.pts ?? []);
+  const outlinePath = shape ? getShapePath(shape.pts) : "";
 
   return (
     <Link
       ref={ref as React.Ref<HTMLAnchorElement>}
       href={`/programs/${program.slug}`}
       className={cn(
-        "group relative block overflow-hidden border border-white/12 bg-[#101420]/80 text-[#dfe2eb] shadow-[0_32px_90px_rgba(2,6,18,0.5)] ring-1 ring-white/5 transition-[border-color,box-shadow,transform] duration-500 ease-out hover:-translate-y-1 hover:border-[#bbc4f7]/30 hover:shadow-[0_40px_110px_rgba(8,15,35,0.62)]",
+        "group relative isolate block overflow-hidden border border-[#c5cdf8]/22 bg-[#0a0d18]/74 text-[#dfe2eb] shadow-[0_30px_90px_rgba(2,6,18,0.48)] ring-1 ring-white/[0.06] transition-[border-color,box-shadow,transform] duration-500 ease-out hover:-translate-y-1 hover:border-[#cbd3ff]/45 hover:shadow-[0_42px_120px_rgba(3,8,24,0.62)]",
         className
       )}
       style={{ clipPath, borderRadius: undefined }}
@@ -210,32 +330,64 @@ function FeaturedProgramCard({
         alt={program.country}
         fill
         priority={priority}
-        className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+        className="object-cover brightness-[1.08] saturate-[1.12] contrast-[1.04] transition-transform duration-700 ease-out group-hover:scale-[1.035]"
+        style={{ objectPosition: getProgramImagePosition(program) }}
         sizes="(min-width: 1280px) 32vw, (min-width: 1024px) 48vw, 100vw"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#070914]/88 via-[#09101e]/58 via-50% to-[#122852]/12" />
-      <div className="absolute inset-0 bg-gradient-to-br from-white/12 via-transparent to-transparent opacity-60" />
-      <div className="absolute inset-x-10 top-0 h-px bg-white/35" />
-      <div className={cn("relative flex h-full min-h-[20rem] flex-col justify-between p-5 sm:p-6", isCompact ? "pb-16 sm:pb-16" : "pb-24 sm:pb-24")}>
-        <div className="flex flex-wrap items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[#bbc4f7]">
-          <span className="rounded-full border border-[#bbc4f7]/25 bg-[#11162a]/80 px-3 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md">
-            {program.type}
-          </span>
-          {program.exclusive ? (
-            <span className="rounded-full border border-[#bbc4f7]/25 bg-[#11162a]/80 px-3 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md">
-              Exclusive
-            </span>
-          ) : null}
-        </div>
-
+      <div className="absolute inset-0 bg-gradient-to-t from-[#050713]/82 via-[#071021]/42 via-55% to-[#172f60]/0" />
+      <div className="absolute inset-0 bg-gradient-to-br from-white/16 via-transparent to-transparent opacity-70" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_7%,rgba(255,255,255,0.2),transparent_12rem)] opacity-70" />
+      <div className="absolute inset-x-[12%] top-0 h-px bg-white/45" />
+      {outlinePath ? (
+        <svg
+          className="pointer-events-none absolute inset-0 z-20 h-full w-full"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path
+            d={outlinePath}
+            fill="none"
+            stroke="rgba(205, 214, 255, 0.34)"
+            strokeWidth="1.45"
+            vectorEffect="non-scaling-stroke"
+          />
+          <path
+            d={outlinePath}
+            fill="none"
+            stroke="rgba(255, 255, 255, 0.16)"
+            strokeWidth="0.55"
+            vectorEffect="non-scaling-stroke"
+          />
+        </svg>
+      ) : null}
+      <div
+        className={cn(
+          "relative z-10 flex min-h-[inherit] flex-col p-[clamp(1.65rem,2.35vw,3rem)]",
+          isCompact
+            ? "gap-5 pb-[clamp(2.2rem,3.2vw,3.7rem)] xl:pb-[7rem]"
+            : "gap-7 pb-[clamp(2.5rem,3.8vw,4.2rem)] xl:pb-[5.35rem]"
+        )}
+      >
         <div className={cn("space-y-4", isCompact && "space-y-3.5")}>
-          <div className="space-y-2.5">
+          <div className="flex flex-wrap items-center gap-2 text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[#bbc4f7]">
+            <span className="rounded-full border border-[#bbc4f7]/20 bg-[#11162a]/78 px-3 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md">
+              {program.type}
+            </span>
+            {program.exclusive ? (
+              <span className="rounded-full border border-[#bbc4f7]/20 bg-[#11162a]/78 px-3 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md">
+                Exclusive
+              </span>
+            ) : null}
+          </div>
+
+          <div className="space-y-3">
             <div
               className={cn(
-                "max-w-[9ch] text-balance leading-[0.96] tracking-[-0.035em] text-[#dfe2eb]",
+                "max-w-[9.5ch] text-balance leading-[0.98] tracking-[-0.035em] text-[#f4f6fb]",
                 isCompact
-                  ? "text-[clamp(1.35rem,2.2vw,2rem)]"
-                  : "text-[clamp(1.55rem,3vw,2.45rem)]"
+                  ? "text-[clamp(1.45rem,2.2vw,2.05rem)]"
+                  : "text-[clamp(1.85rem,2.95vw,2.55rem)]"
               )}
               style={DISPLAY_FONT}
             >
@@ -243,7 +395,7 @@ function FeaturedProgramCard({
             </div>
             <p
               className={cn(
-                "text-sm text-[#c6c6cb]",
+                "text-sm text-[#d7d9e1]",
                 isCompact ? "max-w-[28ch] leading-6" : "max-w-[34ch] leading-6"
               )}
               style={BODY_FONT}
@@ -251,25 +403,27 @@ function FeaturedProgramCard({
               {program.marketingHook}
             </p>
           </div>
+        </div>
 
-          <dl className="grid grid-cols-2 overflow-hidden rounded-[1.35rem] border border-white/12 bg-[#050816]/58 text-sm text-[#dfe2eb] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-md">
-            <div className="border-r border-white/10 px-4 py-3">
+        <div className={cn("mt-auto space-y-3.5", isCompact && "space-y-2.5")}>
+          <dl className="grid grid-cols-2 overflow-hidden rounded-[0.55rem] border border-white/14 bg-[#050816]/58 text-[0.82rem] text-[#f4f6fb] shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-md">
+            <div className="border-r border-white/12 px-3 py-3 sm:px-4">
               <dt className="whitespace-nowrap text-[0.58rem] uppercase tracking-[0.16em] text-[#bbc4f7]">
                 Entry point
               </dt>
-              <dd className="mt-2 font-semibold">{formatInvestment(program)}</dd>
+              <dd className="mt-1.5 font-semibold">{formatInvestment(program)}</dd>
             </div>
-            <div className="px-4 py-3">
+            <div className="px-3 py-3 sm:px-4">
               <dt className="whitespace-nowrap text-[0.58rem] uppercase tracking-[0.16em] text-[#bbc4f7]">
                 Timeline
               </dt>
-              <dd className="mt-2 font-semibold">{formatTimeline(program)}</dd>
+              <dd className="mt-1.5 font-semibold">{formatTimeline(program)}</dd>
             </div>
-            <div className="col-span-2 border-t border-white/10 px-4 py-3">
+            <div className="col-span-2 border-t border-white/12 px-3 py-3 sm:px-4">
               <dt className="whitespace-nowrap text-[0.58rem] uppercase tracking-[0.16em] text-[#bbc4f7]">
                 Access
               </dt>
-              <dd className="mt-2 font-semibold">
+              <dd className="mt-1.5 font-semibold">
                 {program.visaFreeCount
                   ? `${program.visaFreeCount} visa-free`
                   : "Structured planning"}
@@ -279,7 +433,7 @@ function FeaturedProgramCard({
 
           <div
             className={cn(
-              "inline-flex items-center gap-2 pt-1 text-sm font-semibold text-[#dfe2eb]",
+              "inline-flex items-center gap-2 text-[0.82rem] font-semibold text-[#f4f6fb]",
               isCompact && "pt-0.5"
             )}
           >
@@ -519,37 +673,42 @@ export function LandingV2Page() {
 
       <section
         id="program-snapshots"
-        className="relative overflow-hidden border-b border-white/8 pb-[clamp(5rem,8vw,7.5rem)] pt-[clamp(2rem,4vw,3.25rem)] xl:pb-[clamp(6.5rem,9vw,8.5rem)]"
+        className="relative overflow-hidden border-b border-white/8 pb-[clamp(5rem,8vw,7.5rem)] pt-[clamp(2rem,4vw,3.25rem)] xl:min-h-[1000px] xl:pb-12 xl:pt-16"
       >
         <Image
           src="/images/snapshots-bg.jpg"
           alt=""
           fill
-          className="object-cover object-[42%_50%]"
+          className="object-cover object-[42%_54%] brightness-[1.08] saturate-[1.12] contrast-[1.04]"
           priority
         />
-        <div className="absolute inset-0 bg-[#050713]/18" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#050713]/88 via-[#071024]/58 to-[#050713]/30" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#050713]/38 via-[#050713]/12 to-[#050713]/58" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_32%,rgba(187,196,247,0.15),transparent_25rem),radial-gradient(circle_at_17%_86%,rgba(206,140,82,0.24),transparent_24rem)]" />
+        <div className="absolute inset-0 bg-[#050713]/10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#050713]/78 via-[#071024]/42 to-[#050713]/12" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#050713]/24 via-[#050713]/6 to-[#050713]/44" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_53%_30%,rgba(187,196,247,0.2),transparent_27rem),radial-gradient(circle_at_16%_82%,rgba(214,151,88,0.34),transparent_26rem)]" />
         <div
-          className="absolute inset-0 opacity-45"
+          className="absolute inset-0 opacity-70"
           style={{
             backgroundImage:
-              "radial-gradient(circle at 8% 18%, rgba(218,226,255,0.85) 0 1px, transparent 1.8px), radial-gradient(circle at 38% 8%, rgba(218,226,255,0.65) 0 1px, transparent 1.7px), radial-gradient(circle at 72% 15%, rgba(218,226,255,0.75) 0 1px, transparent 1.7px), radial-gradient(circle at 88% 28%, rgba(218,226,255,0.6) 0 1px, transparent 1.7px), radial-gradient(circle at 58% 56%, rgba(218,226,255,0.45) 0 1px, transparent 1.7px)",
+              "radial-gradient(circle at 8% 18%, rgba(218,226,255,0.95) 0 1px, transparent 1.7px), radial-gradient(circle at 22% 7%, rgba(218,226,255,0.65) 0 1px, transparent 1.6px), radial-gradient(circle at 38% 8%, rgba(218,226,255,0.72) 0 1px, transparent 1.7px), radial-gradient(circle at 64% 5%, rgba(218,226,255,0.9) 0 1px, transparent 1.7px), radial-gradient(circle at 72% 15%, rgba(218,226,255,0.85) 0 1px, transparent 1.7px), radial-gradient(circle at 88% 28%, rgba(218,226,255,0.72) 0 1px, transparent 1.7px), radial-gradient(circle at 58% 56%, rgba(218,226,255,0.52) 0 1px, transparent 1.7px)",
           }}
         />
 
-        <div className="relative z-10 mx-auto max-w-[94rem] px-6 lg:px-8">
-          <div className="grid gap-12 xl:grid-cols-[0.64fr_1.36fr] xl:gap-4">
+        <div className="relative z-10 mx-auto max-w-[113rem] px-6 lg:px-8">
+          <div className="grid gap-12 xl:grid-cols-[32rem_minmax(0,1fr)] xl:gap-4">
             <Reveal>
-              <div className="space-y-6 xl:sticky xl:top-28 xl:pl-10 xl:pt-4">
+              <div className="space-y-6 xl:sticky xl:top-28 xl:pl-12 xl:pt-4">
                 <p className={eyebrowClass} style={BODY_FONT}>
                   Programme snapshots
                 </p>
-                <h2 className="mt-4 max-w-[12.5ch] text-balance text-[clamp(3rem,5.6vw,5.15rem)] leading-[0.96] tracking-[-0.045em] text-[#f4f6fb]">
-                  <span style={DISPLAY_FONT}>A wider read on six </span>
-                  <em className="font-normal" style={{ fontFamily: "var(--font-cormorant), 'Cormorant Garamond', Georgia, serif", fontStyle: "italic", letterSpacing: "-0.01em" }}>
+                <h2 className="mt-4 max-w-[30rem] text-[clamp(3rem,5.6vw,5.15rem)] leading-[0.96] tracking-[-0.045em] text-[#f4f6fb]">
+                  <span className="block" style={DISPLAY_FONT}>
+                    A wider
+                  </span>
+                  <span className="block" style={DISPLAY_FONT}>
+                    read on six
+                  </span>
+                  <em className="block font-normal" style={{ fontFamily: "var(--font-cormorant), 'Cormorant Garamond', Georgia, serif", fontStyle: "italic", letterSpacing: "-0.01em" }}>
                     real pathways.
                   </em>
                 </h2>
@@ -565,57 +724,31 @@ export function LandingV2Page() {
               </div>
             </Reveal>
 
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:relative xl:block xl:h-[78rem]">
-                <Reveal delay={0.04} className="xl:absolute xl:left-[11.56%] xl:top-[5.64%] xl:z-10 xl:w-[47%] xl:-rotate-[3deg]">
-                  <FeaturedProgramCard
-                    program={featuredPrograms[0]}
-                    className="min-h-[29rem] xl:h-[36rem]"
-                    priority
-                    variant="feature"
-                    shapeKey="portugal"
-                  />
-                </Reveal>
-                <Reveal delay={0.08} className="xl:absolute xl:left-[46.6%] xl:top-0 xl:z-20 xl:w-[38%] xl:rotate-[2deg]">
-                  <FeaturedProgramCard
-                    program={featuredPrograms[1]}
-                    className="min-h-[28rem] xl:h-[35rem]"
-                    priority
-                    variant="compact"
-                    shapeKey="uae"
-                  />
-                </Reveal>
-                <Reveal delay={0.12} className="xl:absolute xl:left-[77.49%] xl:top-[17.43%] xl:z-10 xl:w-[33%] xl:rotate-[4deg]">
-                  <FeaturedProgramCard
-                    program={featuredPrograms[2]}
-                    className="min-h-[30rem] xl:h-[40rem]"
-                    variant="compact"
-                    shapeKey="stkitts"
-                  />
-                </Reveal>
-                <Reveal delay={0.1} className="xl:absolute xl:left-0 xl:top-[53.93%] xl:z-20 xl:w-[34%] xl:rotate-[2deg]">
-                  <FeaturedProgramCard
-                    program={featuredPrograms[3]}
-                    className="min-h-[25.5rem] xl:h-[35rem]"
-                    variant="compact"
-                    shapeKey="grenada"
-                  />
-                </Reveal>
-                <Reveal delay={0.14} className="xl:absolute xl:left-[27.61%] xl:top-[51.91%] xl:z-40 xl:w-[31%] xl:-rotate-[4deg]">
-                  <FeaturedProgramCard
-                    program={featuredPrograms[4]}
-                    className="min-h-[26rem] xl:h-[35rem]"
-                    variant="compact"
-                    shapeKey="serbia"
-                  />
-                </Reveal>
-                <Reveal delay={0.18} className="xl:absolute xl:left-[53.18%] xl:top-[50.98%] xl:z-30 xl:w-[32%] xl:rotate-[2deg]">
-                  <FeaturedProgramCard
-                    program={featuredPrograms[5]}
-                    className="min-h-[25.5rem] xl:h-[35rem]"
-                    variant="compact"
-                    shapeKey="dominica"
-                  />
-                </Reveal>
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:relative xl:-ml-[4.5rem] xl:mt-6 xl:block xl:aspect-[1159/880] xl:w-[min(84vw,1304px)] xl:max-w-none">
+              {snapshotCardLayouts.map((layout, index) => {
+                const program = featuredPrograms[layout.programIndex];
+
+                if (!program) {
+                  return null;
+                }
+
+                return (
+                  <Reveal
+                    key={layout.shapeKey}
+                    delay={0.04 + index * 0.035}
+                    className="xl:absolute xl:left-[var(--snapshot-left)] xl:top-[var(--snapshot-top)] xl:z-[var(--snapshot-z)] xl:h-[var(--snapshot-height)] xl:w-[var(--snapshot-width)]"
+                    style={getSnapshotLayoutStyle(layout)}
+                  >
+                    <FeaturedProgramCard
+                      program={program}
+                      className={cn(layout.mobileClass, "xl:h-full xl:min-h-0")}
+                      priority={layout.priority}
+                      variant={layout.variant}
+                      shapeKey={layout.shapeKey}
+                    />
+                  </Reveal>
+                );
+              })}
             </div>
           </div>
         </div>
