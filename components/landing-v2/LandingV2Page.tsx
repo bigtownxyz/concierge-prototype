@@ -239,13 +239,13 @@ function getProgramImagePosition(program: Program) {
     case "dubai":
       return "50% 42%";
     case "st-kitts-and-nevis":
-      return "52% 54%";
+      return "65% 50%";
     case "grenada":
-      return "48% 48%";
+      return "35% 42%";
     case "serbia":
-      return "52% 52%";
+      return "50% 44%";
     case "dominica":
-      return "48% 52%";
+      return "50% 55%";
     default:
       return "50% 50%";
   }
