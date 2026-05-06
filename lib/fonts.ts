@@ -1,9 +1,17 @@
-import { Cormorant_Garamond, Inter, JetBrains_Mono, Noto_Serif, Manrope } from "next/font/google";
+import { Cormorant_Garamond, Inter, Instrument_Serif, JetBrains_Mono, Noto_Serif, Manrope } from "next/font/google";
 
 export const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-cormorant",
+  display: "swap",
+});
+
+export const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-instrument-serif",
   display: "swap",
 });
 

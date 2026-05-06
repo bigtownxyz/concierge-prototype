@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { cormorant, inter, jetbrainsMono, notoSerif, manrope } from "@/lib/fonts";
+import { cormorant, inter, instrumentSerif, jetbrainsMono, notoSerif, manrope } from "@/lib/fonts";
 import "./globals.css";
 // Material Symbols Outlined - loaded via next/head equivalent (metadata link)
 // injected as a <link> in the <head> via the layout JSX below
@@ -44,7 +44,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${cormorant.variable} ${inter.variable} ${jetbrainsMono.variable} ${notoSerif.variable} ${manrope.variable} antialiased`}
+        className={`${cormorant.variable} ${inter.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} ${notoSerif.variable} ${manrope.variable} antialiased`}
       >
         {children}
       </body>

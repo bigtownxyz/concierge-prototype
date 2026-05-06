@@ -1,8 +1,8 @@
 "use client";
 
-import { type CSSProperties, useState } from "react";
+import { type CSSProperties, useRef, useState } from "react";
 import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from "framer-motion";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -126,74 +126,86 @@ const featuredPrograms = featuredProgramOrder
 
 const heroProgram = featuredPrograms.find((program) => program.slug === "dubai");
 const heroSelectedPrograms = featuredPrograms.slice(0, 3);
+// Scatter layout: each card's width/height ratio matches its CARD_SHAPES
+// ratio (w/h × container_aspect 1159/880 = shape ratio) so the clip-path
+// renders the blob undistorted. Cards are scaled up to nearly touch with
+// ~1% gaps everywhere, no overlaps.
 const snapshotCardLayouts = [
   {
     shapeKey: "portugal",
     programIndex: 0,
     variant: "feature",
     priority: true,
-    left: "10.1%",
-    top: "2.7%",
-    width: "35.1%",
-    height: "50.4%",
+    left: "1%",
+    top: "1%",
+    width: "35.5%",
+    height: "51%",
     z: "10",
     mobileClass: "min-h-[29rem]",
+    parallax: 50,
   },
   {
     shapeKey: "uae",
     programIndex: 1,
     variant: "compact",
     priority: true,
-    left: "45.4%",
-    top: "-2.6%",
-    width: "28%",
-    height: "49.6%",
-    z: "20",
+    left: "37.5%",
+    top: "-4%",
+    width: "29.2%",
+    height: "51%",
+    z: "10",
     mobileClass: "min-h-[28rem]",
+    parallax: 80,
   },
   {
     shapeKey: "stkitts",
     programIndex: 2,
     variant: "compact",
-    left: "75.7%",
-    top: "16.6%",
-    width: "21.8%",
-    height: "56.2%",
+    left: "65.36%",
+    top: "20%",
+    width: "23.16%",
+    height: "57%",
     z: "10",
     mobileClass: "min-h-[30rem]",
+    parallax: 60,
   },
   {
     shapeKey: "grenada",
     programIndex: 3,
     variant: "compact",
-    left: "2.7%",
-    top: "54.2%",
-    width: "23.4%",
-    height: "47.3%",
-    z: "20",
+    left: "-3%",
+    top: "53%",
+    width: "22.7%",
+    height: "45%",
+    z: "10",
     mobileClass: "min-h-[25.5rem]",
+    parallax: 75,
   },
   {
-    shapeKey: "serbia",
+    // Serbia program rendered with the dominica shape (swapped).
+    shapeKey: "dominica",
     programIndex: 4,
     variant: "compact",
-    left: "29.7%",
-    top: "51%",
-    width: "21.5%",
-    height: "47.5%",
-    z: "40",
+    left: "21.3%",
+    top: "48%",
+    width: "21.78%",
+    height: "47%",
+    z: "10",
     mobileClass: "min-h-[26rem]",
+    parallax: 90,
   },
   {
-    shapeKey: "dominica",
+    // Dominica program rendered with the serbia shape (swapped).
+    shapeKey: "serbia",
     programIndex: 5,
     variant: "compact",
-    left: "52%",
-    top: "50.6%",
-    width: "21.8%",
-    height: "48.2%",
-    z: "30",
+    left: "44.2%",
+    top: "48%",
+    width: "20.15%",
+    height: "45%",
+    z: "10",
     mobileClass: "min-h-[25.5rem]",
+    parallax: 65,
   },
 ] as const;
 const optimiseItems = [
@@ -228,6 +240,20 @@ function formatTimeline(program: Program) {
   }`;
 }
 
+function formatSnapshotAccess(program: Program) {
+  if (program.slug === "portugal") {
+    return "181 visa-free";
+  }
+
+  if (program.slug === "serbia") {
+    return "138 visa-free";
+  }
+
+  return program.visaFreeCount
+    ? `${program.visaFreeCount} visa-free`
+    : "Structured planning";
+}
+
 function getProgramImage(program: Program) {
   return `/images/programs/${program.slug}.jpg`;
 }
@@ -235,31 +261,20 @@ function getProgramImage(program: Program) {
 function getProgramImagePosition(program: Program) {
   switch (program.slug) {
     case "portugal":
-      return "68% 45%";
+      return "50% 58%";
     case "dubai":
-      return "50% 42%";
+      return "52% 48%";
     case "st-kitts-and-nevis":
-      return "65% 50%";
+      return "52% 54%";
     case "grenada":
-      return "35% 42%";
+      return "48% 48%";
     case "serbia":
-      return "50% 44%";
+      return "52% 52%";
     case "dominica":
-      return "50% 55%";
+      return "48% 52%";
     default:
       return "50% 50%";
   }
-}
-
-function getShapePath(pts: [number, number][]) {
-  if (!pts.length) {
-    return "";
-  }
-
-  return `M ${pts[0][0] * 100} ${pts[0][1] * 100}${pts
-    .slice(1)
-    .map(([x, y]) => ` L ${x * 100} ${y * 100}`)
-    .join("")} Z`;
 }
 
 function Reveal({
@@ -312,142 +327,248 @@ function FeaturedProgramCard({
 }) {
   const isCompact = variant === "compact";
   const shape = shapeKey ? CARD_SHAPES[shapeKey] : null;
-  const { ref, clipPath } = useTracedShape(shape?.pts ?? []);
-  const outlinePath = shape ? getShapePath(shape.pts) : "";
+  const { ref, clipPath, pathD, viewBox } = useTracedShape(shape?.pts ?? []);
+  const glassBorderId = `snapshot-glass-border-${program.slug}`;
 
   return (
     <Link
       ref={ref as React.Ref<HTMLAnchorElement>}
       href={`/programs/${program.slug}`}
       className={cn(
-        "group relative isolate block overflow-hidden border border-[#c5cdf8]/22 bg-[#0a0d18]/74 text-[#dfe2eb] shadow-[0_30px_90px_rgba(2,6,18,0.48)] ring-1 ring-white/[0.06] transition-[border-color,box-shadow,transform] duration-500 ease-out hover:-translate-y-1 hover:border-[#cbd3ff]/45 hover:shadow-[0_42px_120px_rgba(3,8,24,0.62)]",
+        "group relative isolate block text-[#dfe2eb] transition-[filter,transform] duration-500 ease-out hover:-translate-y-1",
         className
       )}
-      style={{ clipPath, borderRadius: undefined }}
     >
-      <Image
-        src={getProgramImage(program)}
-        alt={program.country}
-        fill
-        priority={priority}
-        className="object-cover brightness-[1.08] saturate-[1.12] contrast-[1.04] transition-transform duration-700 ease-out group-hover:scale-[1.035]"
-        style={{ objectPosition: getProgramImagePosition(program) }}
-        sizes="(min-width: 1280px) 32vw, (min-width: 1024px) 48vw, 100vw"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#050713]/82 via-[#071021]/42 via-55% to-[#172f60]/0" />
-      <div className="absolute inset-0 bg-gradient-to-br from-white/16 via-transparent to-transparent opacity-70" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_7%,rgba(255,255,255,0.2),transparent_12rem)] opacity-70" />
-      <div className="absolute inset-x-[12%] top-0 h-px bg-white/45" />
-      {outlinePath ? (
+      <div
+        className="absolute inset-0 overflow-hidden bg-[#0a0d18]/70"
+        style={{
+          clipPath,
+          borderRadius: undefined,
+          filter:
+            "drop-shadow(0 30px 44px rgba(0, 0, 0, 0.46)) drop-shadow(0 10px 18px rgba(4, 9, 25, 0.34))",
+        }}
+      >
+        <Image
+          src={getProgramImage(program)}
+          alt={program.country}
+          fill
+          priority={priority}
+          className="object-cover brightness-[0.92] saturate-[1.04] contrast-[1.08] transition-transform duration-700 ease-out group-hover:scale-[1.035]"
+          style={{ objectPosition: getProgramImagePosition(program) }}
+          sizes="(min-width: 1280px) 32vw, (min-width: 1024px) 48vw, 100vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#050713]/88 via-[#071021]/50 via-55% to-[#172f60]/6" />
+        <div className="absolute inset-0 bg-gradient-to-br from-white/13 via-transparent to-transparent opacity-65" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_7%,rgba(255,255,255,0.16),transparent_12rem)] opacity-65" />
+        <div
+          className={cn(
+            "relative z-10 flex min-h-[inherit] flex-col p-[clamp(1.45rem,2vw,2.6rem)]",
+            isCompact
+              ? "gap-4 pb-[clamp(2.1rem,3vw,3.4rem)] xl:px-[clamp(1.95rem,2.6vw,2.75rem)] xl:pb-[clamp(4.6rem,5.4vw,5.9rem)]"
+              : "gap-6 pb-[clamp(2.35rem,3.4vw,3.9rem)] xl:px-[clamp(2.5rem,3.75vw,3.75rem)] xl:pb-[5.1rem]"
+          )}
+        >
+          <div
+            className={cn(
+              "space-y-4",
+              isCompact && "ml-6 space-y-3 pt-3 xl:ml-2 xl:pt-0"
+            )}
+          >
+            <div
+              className={cn(
+                "flex flex-wrap items-center gap-2 font-semibold uppercase tracking-[0.2em] text-[#bbc4f7]",
+                isCompact ? "text-[0.56rem]" : "text-[0.6rem]"
+              )}
+            >
+              <span className="rounded-full border border-[#bbc4f7]/20 bg-[#11162a]/78 px-2.5 py-0.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md">
+                {program.type}
+              </span>
+              {program.exclusive ? (
+                <span className="rounded-full border border-[#bbc4f7]/20 bg-[#11162a]/78 px-2.5 py-0.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md">
+                  Exclusive
+                </span>
+              ) : null}
+            </div>
+
+            <div className={cn("space-y-3", isCompact && "space-y-2.5")}>
+              <div
+                className={cn(
+                  "text-balance leading-[0.98] tracking-[-0.035em] text-[#f4f6fb]",
+                  isCompact
+                    ? "max-w-[8.8ch] text-[clamp(1.35rem,1.75vw,1.85rem)]"
+                    : "max-w-[9.5ch] text-[clamp(1.65rem,2.45vw,2.25rem)]"
+                )}
+                style={DISPLAY_FONT}
+              >
+                {program.country}
+              </div>
+              <p
+                className={cn(
+                  "text-[#d7d9e1]",
+                  isCompact
+                    ? "max-w-[27ch] text-[0.78rem] leading-[1.45rem]"
+                    : "max-w-[34ch] text-[0.82rem] leading-[1.55rem]"
+                )}
+                style={BODY_FONT}
+              >
+                {program.marketingHook}
+              </p>
+            </div>
+          </div>
+
+          <div
+            className={cn(
+              "mt-auto space-y-3.5",
+              isCompact && "space-y-2.5 xl:ml-[3%] xl:w-[88%] xl:max-w-[16rem]"
+            )}
+          >
+            <dl
+              className={cn(
+                "grid grid-cols-2 overflow-hidden rounded-[0.5rem] border border-white/14 bg-[#050816]/62 text-[#f4f6fb] shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-md",
+                isCompact ? "text-[0.72rem]" : "text-[0.78rem]"
+              )}
+            >
+              <div className="border-r border-white/12 px-3 py-2.5 sm:px-3.5">
+                <dt className="whitespace-nowrap text-[0.5rem] uppercase tracking-[0.16em] text-[#bbc4f7]">
+                  Entry point
+                </dt>
+                <dd className="mt-1 font-semibold">
+                  {formatInvestment(program)}
+                </dd>
+              </div>
+              <div className="px-3 py-2.5 sm:px-3.5">
+                <dt className="whitespace-nowrap text-[0.5rem] uppercase tracking-[0.16em] text-[#bbc4f7]">
+                  Timeline
+                </dt>
+                <dd className="mt-1 font-semibold">{formatTimeline(program)}</dd>
+              </div>
+              <div className="col-span-2 border-t border-white/12 px-3 py-2.5 sm:px-3.5">
+                <dt className="whitespace-nowrap text-[0.5rem] uppercase tracking-[0.16em] text-[#bbc4f7]">
+                  Access
+                </dt>
+                <dd className="mt-1 font-semibold">
+                  {formatSnapshotAccess(program)}
+                </dd>
+              </div>
+            </dl>
+
+            <div
+              className={cn(
+                "inline-flex items-center gap-2 font-semibold text-[#f4f6fb]",
+                isCompact ? "text-[0.78rem]" : "text-[0.82rem]",
+                isCompact && "pt-0.5"
+              )}
+            >
+              Review route
+              <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            </div>
+          </div>
+        </div>
+      </div>
+      {pathD ? (
         <svg
-          className="pointer-events-none absolute inset-0 z-20 h-full w-full"
-          viewBox="0 0 100 100"
+          className="pointer-events-none absolute inset-0 z-20 h-full w-full overflow-visible"
+          viewBox={viewBox}
           preserveAspectRatio="none"
           aria-hidden="true"
         >
+          <defs>
+            <linearGradient
+              id={glassBorderId}
+              x1="0"
+              y1="0"
+              x2="1"
+              y2="1"
+            >
+              <stop offset="0" stopColor="rgba(248, 251, 255, 0.62)" />
+              <stop offset="0.24" stopColor="rgba(188, 205, 255, 0.34)" />
+              <stop offset="0.56" stopColor="rgba(255, 255, 255, 0.2)" />
+              <stop offset="0.82" stopColor="rgba(144, 171, 255, 0.36)" />
+              <stop offset="1" stopColor="rgba(255, 255, 255, 0.48)" />
+            </linearGradient>
+          </defs>
           <path
-            d={outlinePath}
+            d={pathD}
             fill="none"
-            stroke="rgba(205, 214, 255, 0.34)"
-            strokeWidth="1.45"
-            vectorEffect="non-scaling-stroke"
-          />
-          <path
-            d={outlinePath}
-            fill="none"
-            stroke="rgba(255, 255, 255, 0.16)"
-            strokeWidth="0.55"
+            stroke={`url(#${glassBorderId})`}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="1.25"
             vectorEffect="non-scaling-stroke"
           />
         </svg>
       ) : null}
-      <div
-        className={cn(
-          "relative z-10 flex min-h-[inherit] flex-col p-[clamp(1.65rem,2.35vw,3rem)]",
-          isCompact
-            ? "gap-5 pb-[clamp(2.2rem,3.2vw,3.7rem)] xl:pb-[7rem]"
-            : "gap-7 pb-[clamp(2.5rem,3.8vw,4.2rem)] xl:pb-[5.35rem]"
-        )}
-      >
-        <div className={cn("space-y-4", isCompact && "space-y-3.5")}>
-          <div className="flex flex-wrap items-center gap-2 text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[#bbc4f7]">
-            <span className="rounded-full border border-[#bbc4f7]/20 bg-[#11162a]/78 px-3 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md">
-              {program.type}
-            </span>
-            {program.exclusive ? (
-              <span className="rounded-full border border-[#bbc4f7]/20 bg-[#11162a]/78 px-3 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md">
-                Exclusive
-              </span>
-            ) : null}
-          </div>
-
-          <div className="space-y-3">
-            <div
-              className={cn(
-                "max-w-[9.5ch] text-balance leading-[0.98] tracking-[-0.035em] text-[#f4f6fb]",
-                isCompact
-                  ? "text-[clamp(1.45rem,2.2vw,2.05rem)]"
-                  : "text-[clamp(1.85rem,2.95vw,2.55rem)]"
-              )}
-              style={DISPLAY_FONT}
-            >
-              {program.country}
-            </div>
-            <p
-              className={cn(
-                "text-sm text-[#d7d9e1]",
-                isCompact ? "max-w-[28ch] leading-6" : "max-w-[34ch] leading-6"
-              )}
-              style={BODY_FONT}
-            >
-              {program.marketingHook}
-            </p>
-          </div>
-        </div>
-
-        <div className={cn("mt-auto space-y-3.5", isCompact && "space-y-2.5")}>
-          <dl className="grid grid-cols-2 overflow-hidden rounded-[0.55rem] border border-white/14 bg-[#050816]/58 text-[0.82rem] text-[#f4f6fb] shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-md">
-            <div className="border-r border-white/12 px-3 py-3 sm:px-4">
-              <dt className="whitespace-nowrap text-[0.58rem] uppercase tracking-[0.16em] text-[#bbc4f7]">
-                Entry point
-              </dt>
-              <dd className="mt-1.5 font-semibold">{formatInvestment(program)}</dd>
-            </div>
-            <div className="px-3 py-3 sm:px-4">
-              <dt className="whitespace-nowrap text-[0.58rem] uppercase tracking-[0.16em] text-[#bbc4f7]">
-                Timeline
-              </dt>
-              <dd className="mt-1.5 font-semibold">{formatTimeline(program)}</dd>
-            </div>
-            <div className="col-span-2 border-t border-white/12 px-3 py-3 sm:px-4">
-              <dt className="whitespace-nowrap text-[0.58rem] uppercase tracking-[0.16em] text-[#bbc4f7]">
-                Access
-              </dt>
-              <dd className="mt-1.5 font-semibold">
-                {program.visaFreeCount
-                  ? `${program.visaFreeCount} visa-free`
-                  : "Structured planning"}
-              </dd>
-            </div>
-          </dl>
-
-          <div
-            className={cn(
-              "inline-flex items-center gap-2 text-[0.82rem] font-semibold text-[#f4f6fb]",
-              isCompact && "pt-0.5"
-            )}
-          >
-            Review route
-            <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-          </div>
-        </div>
-      </div>
     </Link>
+  );
+}
+
+function FloatingSnapshotCard({
+  layout,
+  index,
+  scrollYProgress,
+  prefersReducedMotion,
+}: {
+  layout: SnapshotLayout;
+  index: number;
+  scrollYProgress: MotionValue<number>;
+  prefersReducedMotion: boolean;
+}) {
+  const program = featuredPrograms[layout.programIndex];
+  const range = layout.parallax ?? 60;
+  // top-of-section → bottom-of-section maps to +range → -range, so
+  // each card drifts upward as the section travels down the viewport.
+  const parallaxY = useTransform(scrollYProgress, [0, 1], [range, -range]);
+  const delay = 0.04 + index * 0.035;
+
+  if (!program) return null;
+
+  const card = (
+    <FeaturedProgramCard
+      program={program}
+      className={cn(layout.mobileClass, "xl:h-full xl:min-h-0")}
+      priority={layout.priority}
+      variant={layout.variant}
+      shapeKey={layout.shapeKey}
+    />
+  );
+
+  if (prefersReducedMotion) {
+    return (
+      <div
+        className="xl:absolute xl:left-[var(--snapshot-left)] xl:top-[var(--snapshot-top)] xl:z-[var(--snapshot-z)] xl:h-[var(--snapshot-height)] xl:w-[var(--snapshot-width)]"
+        style={getSnapshotLayoutStyle(layout)}
+      >
+        {card}
+      </div>
+    );
+  }
+
+  return (
+    <motion.div
+      className="xl:absolute xl:left-[var(--snapshot-left)] xl:top-[var(--snapshot-top)] xl:z-[var(--snapshot-z)] xl:h-[var(--snapshot-height)] xl:w-[var(--snapshot-width)]"
+      style={{ ...getSnapshotLayoutStyle(layout), y: parallaxY }}
+    >
+      <motion.div
+        className="h-full w-full"
+        initial={{ opacity: 0, y: 28 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-96px" }}
+        transition={{ duration: 0.75, delay, ease: EASE }}
+      >
+        {card}
+      </motion.div>
+    </motion.div>
   );
 }
 
 export function LandingV2Page() {
   const [openFaq, setOpenFaq] = useState(0);
+  const snapshotsSectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress: snapshotsScroll } = useScroll({
+    target: snapshotsSectionRef,
+    offset: ["start end", "end start"],
+  });
+  const prefersReducedMotion = useReducedMotion() ?? false;
 
   return (
     <div className="relative overflow-x-hidden bg-[#11101C] text-[#F5F5F6]">
@@ -672,20 +793,27 @@ export function LandingV2Page() {
       </section>
 
       <section
+        ref={snapshotsSectionRef}
         id="program-snapshots"
         className="relative overflow-hidden border-b border-white/8 pb-[clamp(5rem,8vw,7.5rem)] pt-[clamp(2rem,4vw,3.25rem)] xl:min-h-[1000px] xl:pb-12 xl:pt-16"
       >
         <Image
-          src="/images/snapshots-bg.jpg"
+          src="/images/snapshots-bg.png"
           alt=""
           fill
           className="object-cover object-[42%_54%] brightness-[1.08] saturate-[1.12] contrast-[1.04]"
           priority
         />
-        <div className="absolute inset-0 bg-[#050713]/10" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#050713]/78 via-[#071024]/42 to-[#050713]/12" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#050713]/24 via-[#050713]/6 to-[#050713]/44" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_53%_30%,rgba(187,196,247,0.2),transparent_27rem),radial-gradient(circle_at_16%_82%,rgba(214,151,88,0.34),transparent_26rem)]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#050713]/20 to-[#050713]/10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#050713]/12" />
+        <div
+          className="absolute inset-0 bg-gradient-to-b from-[#050713]/24 via-[#050713]/6 to-[#050713]/44"
+          style={{
+            WebkitMaskImage: "linear-gradient(to right, transparent, black)",
+            maskImage: "linear-gradient(to right, transparent, black)",
+          }}
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_53%_30%,rgba(187,196,247,0.2),transparent_27rem)]" />
         <div
           className="absolute inset-0 opacity-70"
           style={{
@@ -694,7 +822,7 @@ export function LandingV2Page() {
           }}
         />
 
-        <div className="relative z-10 mx-auto max-w-[113rem] px-6 lg:px-8">
+        <div className="relative z-10 mx-auto max-w-[113rem] px-6 lg:px-8 xl:origin-center xl:scale-[0.92]">
           <div className="grid gap-12 xl:grid-cols-[32rem_minmax(0,1fr)] xl:gap-4">
             <Reveal>
               <div className="space-y-6 xl:sticky xl:top-28 xl:pl-12 xl:pt-4">
@@ -708,7 +836,7 @@ export function LandingV2Page() {
                   <span className="block" style={DISPLAY_FONT}>
                     read on six
                   </span>
-                  <em className="block font-normal" style={{ fontFamily: "var(--font-cormorant), 'Cormorant Garamond', Georgia, serif", fontStyle: "italic", letterSpacing: "-0.01em" }}>
+                  <em className="block font-normal" style={{ fontFamily: "var(--font-instrument-serif), 'Instrument Serif', Georgia, serif", fontStyle: "italic", letterSpacing: "-0.01em" }}>
                     real pathways.
                   </em>
                 </h2>
@@ -725,30 +853,20 @@ export function LandingV2Page() {
             </Reveal>
 
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:relative xl:-ml-[4.5rem] xl:mt-6 xl:block xl:aspect-[1159/880] xl:w-[min(84vw,1304px)] xl:max-w-none">
-              {snapshotCardLayouts.map((layout, index) => {
-                const program = featuredPrograms[layout.programIndex];
-
-                if (!program) {
-                  return null;
-                }
-
-                return (
-                  <Reveal
-                    key={layout.shapeKey}
-                    delay={0.04 + index * 0.035}
-                    className="xl:absolute xl:left-[var(--snapshot-left)] xl:top-[var(--snapshot-top)] xl:z-[var(--snapshot-z)] xl:h-[var(--snapshot-height)] xl:w-[var(--snapshot-width)]"
-                    style={getSnapshotLayoutStyle(layout)}
-                  >
-                    <FeaturedProgramCard
-                      program={program}
-                      className={cn(layout.mobileClass, "xl:h-full xl:min-h-0")}
-                      priority={layout.priority}
-                      variant={layout.variant}
-                      shapeKey={layout.shapeKey}
-                    />
-                  </Reveal>
-                );
-              })}
+              {/* Soft blue glow pinned behind Portugal's bottom-left in container coords. */}
+              <div
+                aria-hidden
+                className="pointer-events-none hidden xl:absolute xl:inset-0 xl:block xl:bg-[radial-gradient(circle_at_12%_50%,rgba(140,165,240,0.32),transparent_10rem)]"
+              />
+              {snapshotCardLayouts.map((layout, index) => (
+                <FloatingSnapshotCard
+                  key={layout.shapeKey}
+                  layout={layout}
+                  index={index}
+                  scrollYProgress={snapshotsScroll}
+                  prefersReducedMotion={prefersReducedMotion}
+                />
+              ))}
             </div>
           </div>
         </div>
