@@ -50,3 +50,6 @@ prod-server.pid
 
 # supabase local
 supabase/.temp/
+
+# repo-root screenshots / dev snapshots (working artifacts, not committed)
+/*.png

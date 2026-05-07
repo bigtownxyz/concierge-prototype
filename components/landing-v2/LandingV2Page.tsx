@@ -136,7 +136,7 @@ const snapshotCardLayouts = [
     programIndex: 0,
     variant: "feature",
     priority: true,
-    left: "1%",
+    left: "6%",
     top: "1%",
     width: "35.5%",
     height: "51%",
@@ -149,7 +149,7 @@ const snapshotCardLayouts = [
     programIndex: 1,
     variant: "compact",
     priority: true,
-    left: "37.5%",
+    left: "42.5%",
     top: "-4%",
     width: "29.2%",
     height: "51%",
@@ -161,7 +161,7 @@ const snapshotCardLayouts = [
     shapeKey: "stkitts",
     programIndex: 2,
     variant: "compact",
-    left: "65.36%",
+    left: "70.36%",
     top: "20%",
     width: "23.16%",
     height: "57%",
@@ -173,7 +173,7 @@ const snapshotCardLayouts = [
     shapeKey: "grenada",
     programIndex: 3,
     variant: "compact",
-    left: "-3%",
+    left: "2%",
     top: "53%",
     width: "22.7%",
     height: "45%",
@@ -186,7 +186,7 @@ const snapshotCardLayouts = [
     shapeKey: "dominica",
     programIndex: 4,
     variant: "compact",
-    left: "21.3%",
+    left: "26.3%",
     top: "48%",
     width: "21.78%",
     height: "47%",
@@ -199,7 +199,7 @@ const snapshotCardLayouts = [
     shapeKey: "serbia",
     programIndex: 5,
     variant: "compact",
-    left: "44.2%",
+    left: "49.2%",
     top: "48%",
     width: "20.15%",
     height: "45%",
@@ -365,7 +365,7 @@ function FeaturedProgramCard({
             "relative z-10 flex min-h-[inherit] flex-col p-[clamp(1.45rem,2vw,2.6rem)]",
             isCompact
               ? "gap-4 pb-[clamp(2.1rem,3vw,3.4rem)] xl:px-[clamp(1.95rem,2.6vw,2.75rem)] xl:pb-[clamp(4.6rem,5.4vw,5.9rem)]"
-              : "gap-6 pb-[clamp(2.35rem,3.4vw,3.9rem)] xl:px-[clamp(2.5rem,3.75vw,3.75rem)] xl:pb-[5.1rem]"
+              : "gap-6 pb-[clamp(2.35rem,3.4vw,3.9rem)] xl:px-[clamp(2.5rem,3.75vw,3.75rem)] xl:pb-[1.5rem]"
           )}
         >
           <div
@@ -407,7 +407,7 @@ function FeaturedProgramCard({
                   "text-[#d7d9e1]",
                   isCompact
                     ? "max-w-[27ch] text-[0.78rem] leading-[1.45rem]"
-                    : "max-w-[34ch] text-[0.82rem] leading-[1.55rem]"
+                    : "max-w-[50ch] text-[0.82rem] leading-[1.55rem]"
                 )}
                 style={BODY_FONT}
               >
@@ -856,7 +856,7 @@ export function LandingV2Page() {
               {/* Soft blue glow pinned behind Portugal's bottom-left in container coords. */}
               <div
                 aria-hidden
-                className="pointer-events-none hidden xl:absolute xl:inset-0 xl:block xl:bg-[radial-gradient(circle_at_12%_50%,rgba(140,165,240,0.32),transparent_10rem)]"
+                className="pointer-events-none hidden xl:absolute xl:inset-0 xl:block xl:bg-[radial-gradient(circle_at_15.5%_40%,rgba(140,165,240,0.32),transparent_10rem)]"
               />
               {snapshotCardLayouts.map((layout, index) => (
                 <FloatingSnapshotCard
