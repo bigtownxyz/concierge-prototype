@@ -931,7 +931,19 @@ export function LandingV2Page() {
             maskImage: "linear-gradient(to right, transparent, black)",
           }}
         />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_53%_30%,rgba(187,196,247,0.2),transparent_27rem)]" />
+        {prefersReducedMotion ? (
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_53%_30%,rgba(187,196,247,0.2),transparent_27rem)]" />
+        ) : (
+          <motion.div
+            className="absolute inset-0 bg-[radial-gradient(circle_at_53%_30%,rgba(187,196,247,0.2),transparent_27rem)]"
+            animate={{ opacity: [0.78, 1, 0.78] }}
+            transition={{
+              duration: 11,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+        )}
         <div
           className="absolute inset-0 opacity-70"
           style={{
