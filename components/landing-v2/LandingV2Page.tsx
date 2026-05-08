@@ -371,7 +371,8 @@ function FeaturedProgramCard({
           <div
             className={cn(
               "space-y-4",
-              isCompact && "ml-6 space-y-3 pt-3 xl:ml-2 xl:pt-0"
+              isCompact && "ml-6 space-y-3 pt-3 xl:ml-2 xl:pt-0",
+              program.slug === "dubai" && "xl:pt-6"
             )}
           >
             <div
