@@ -2,7 +2,7 @@
 
 import { type CSSProperties, useRef, useState } from "react";
 import Image from "next/image";
-import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from "framer-motion";
+import { motion, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform, type MotionValue } from "framer-motion";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -330,14 +330,44 @@ function FeaturedProgramCard({
   const { ref, clipPath, pathD, viewBox } = useTracedShape(shape?.pts ?? []);
   const glassBorderId = `snapshot-glass-border-${program.slug}`;
 
+  // Mouse-tracking 3D tilt (perspective response on hover).
+  const prefersReducedMotion = useReducedMotion();
+  const tiltX = useMotionValue(0);
+  const tiltY = useMotionValue(0);
+  const springConfig = { stiffness: 240, damping: 28, mass: 0.7 };
+  const springX = useSpring(tiltX, springConfig);
+  const springY = useSpring(tiltY, springConfig);
+  const rotateY = useTransform(springX, [-1, 1], [-7, 7]);
+  const rotateX = useTransform(springY, [-1, 1], [6, -6]);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (prefersReducedMotion) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const px = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    const py = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+    tiltX.set(px);
+    tiltY.set(py);
+  };
+  const handleMouseLeave = () => {
+    tiltX.set(0);
+    tiltY.set(0);
+  };
+
   return (
+    <div
+      className={cn("relative", className)}
+      style={{ perspective: 1100 }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      <motion.div
+        className="h-full w-full"
+        style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+      >
     <Link
       ref={ref as React.Ref<HTMLAnchorElement>}
       href={`/programs/${program.slug}`}
-      className={cn(
-        "group relative isolate block text-[#dfe2eb]",
-        className
-      )}
+      className="group relative isolate block h-full w-full text-[#dfe2eb]"
     >
       <div
         className="absolute inset-0 overflow-hidden bg-[#0a0d18]/70"
@@ -512,6 +542,8 @@ function FeaturedProgramCard({
         </svg>
       ) : null}
     </Link>
+      </motion.div>
+    </div>
   );
 }
 
