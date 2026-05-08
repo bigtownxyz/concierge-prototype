@@ -318,47 +318,35 @@ function FeaturedProgramCard({
   priority = false,
   variant = "feature",
   shapeKey,
+  tiltX,
+  tiltY,
 }: {
   program: Program;
   className?: string;
   priority?: boolean;
   variant?: "feature" | "compact";
   shapeKey?: string;
+  tiltX?: MotionValue<number>;
+  tiltY?: MotionValue<number>;
 }) {
   const isCompact = variant === "compact";
   const shape = shapeKey ? CARD_SHAPES[shapeKey] : null;
   const { ref, clipPath, pathD, viewBox } = useTracedShape(shape?.pts ?? []);
   const glassBorderId = `snapshot-glass-border-${program.slug}`;
 
-  // Mouse-tracking 3D tilt (perspective response on hover).
-  const prefersReducedMotion = useReducedMotion();
-  const tiltX = useMotionValue(0);
-  const tiltY = useMotionValue(0);
-  const springConfig = { stiffness: 240, damping: 28, mass: 0.7 };
-  const springX = useSpring(tiltX, springConfig);
-  const springY = useSpring(tiltY, springConfig);
-  const rotateY = useTransform(springX, [-1, 1], [-7, 7]);
-  const rotateX = useTransform(springY, [-1, 1], [6, -6]);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (prefersReducedMotion) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const px = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    const py = ((e.clientY - rect.top) / rect.height) * 2 - 1;
-    tiltX.set(px);
-    tiltY.set(py);
-  };
-  const handleMouseLeave = () => {
-    tiltX.set(0);
-    tiltY.set(0);
-  };
+  // Tilt is driven by section-level mouse position (passed in via props),
+  // so all shapes rotate in unison as the cursor moves around the section.
+  const fallbackX = useMotionValue(0);
+  const fallbackY = useMotionValue(0);
+  const effectiveX = tiltX ?? fallbackX;
+  const effectiveY = tiltY ?? fallbackY;
+  const rotateY = useTransform(effectiveX, [-1, 1], [-8, 8]);
+  const rotateX = useTransform(effectiveY, [-1, 1], [6, -6]);
 
   return (
     <div
       className={cn("relative", className)}
       style={{ perspective: 1100 }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
     >
       <motion.div
         className="h-full w-full"
@@ -552,11 +540,15 @@ function FloatingSnapshotCard({
   index,
   scrollYProgress,
   prefersReducedMotion,
+  tiltX,
+  tiltY,
 }: {
   layout: SnapshotLayout;
   index: number;
   scrollYProgress: MotionValue<number>;
   prefersReducedMotion: boolean;
+  tiltX?: MotionValue<number>;
+  tiltY?: MotionValue<number>;
 }) {
   const program = featuredPrograms[layout.programIndex];
   const range = layout.parallax ?? 60;
@@ -574,6 +566,8 @@ function FloatingSnapshotCard({
       priority={layout.priority}
       variant={layout.variant}
       shapeKey={layout.shapeKey}
+      tiltX={tiltX}
+      tiltY={tiltY}
     />
   );
 
@@ -695,6 +689,34 @@ export function LandingV2Page() {
     offset: ["start end", "end start"],
   });
   const prefersReducedMotion = useReducedMotion() ?? false;
+
+  // Section-level mouse-tracking: feeds tilt to all snapshot shapes so
+  // they rotate in unison as the cursor moves across the section.
+  const snapshotsTiltX = useMotionValue(0);
+  const snapshotsTiltY = useMotionValue(0);
+  const snapshotsTiltSpringX = useSpring(snapshotsTiltX, {
+    stiffness: 90,
+    damping: 24,
+    mass: 0.9,
+  });
+  const snapshotsTiltSpringY = useSpring(snapshotsTiltY, {
+    stiffness: 90,
+    damping: 24,
+    mass: 0.9,
+  });
+  const handleSnapshotsMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    if (prefersReducedMotion) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const px = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    const py = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+    snapshotsTiltX.set(px);
+    snapshotsTiltY.set(py);
+  };
+  const handleSnapshotsMouseLeave = () => {
+    snapshotsTiltX.set(0);
+    snapshotsTiltY.set(0);
+  };
+
 
   return (
     <div className="relative overflow-x-hidden bg-[#11101C] text-[#F5F5F6]">
@@ -922,6 +944,8 @@ export function LandingV2Page() {
         ref={snapshotsSectionRef}
         id="program-snapshots"
         className="relative overflow-hidden border-b border-white/8 pb-[clamp(5rem,8vw,7.5rem)] pt-[clamp(2rem,4vw,3.25rem)] xl:min-h-[1000px] xl:pb-12 xl:pt-16"
+        onMouseMove={handleSnapshotsMouseMove}
+        onMouseLeave={handleSnapshotsMouseLeave}
       >
         <Image
           src="/images/snapshots-bg.jpg"
@@ -1008,6 +1032,8 @@ export function LandingV2Page() {
                   index={index}
                   scrollYProgress={snapshotsScroll}
                   prefersReducedMotion={prefersReducedMotion}
+                  tiltX={snapshotsTiltSpringX}
+                  tiltY={snapshotsTiltSpringY}
                 />
               ))}
             </div>
