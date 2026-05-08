@@ -320,6 +320,7 @@ function FeaturedProgramCard({
   shapeKey,
   tiltX,
   tiltY,
+  tiltDepth = 1,
 }: {
   program: Program;
   className?: string;
@@ -328,30 +329,35 @@ function FeaturedProgramCard({
   shapeKey?: string;
   tiltX?: MotionValue<number>;
   tiltY?: MotionValue<number>;
+  tiltDepth?: number;
 }) {
   const isCompact = variant === "compact";
   const shape = shapeKey ? CARD_SHAPES[shapeKey] : null;
   const { ref, clipPath, pathD, viewBox } = useTracedShape(shape?.pts ?? []);
   const glassBorderId = `snapshot-glass-border-${program.slug}`;
 
-  // Tilt is driven by section-level mouse position (passed in via props),
-  // so all shapes rotate in unison as the cursor moves around the section.
+  // Section-mouse-driven parallax translation. Each card translates with a
+  // depth multiplier so cards "in front" drift further than ones "behind".
   const fallbackX = useMotionValue(0);
   const fallbackY = useMotionValue(0);
   const effectiveX = tiltX ?? fallbackX;
   const effectiveY = tiltY ?? fallbackY;
-  const rotateY = useTransform(effectiveX, [-1, 1], [-8, 8]);
-  const rotateX = useTransform(effectiveY, [-1, 1], [6, -6]);
+  const x = useTransform(
+    effectiveX,
+    [-1, 1],
+    [-28 * tiltDepth, 28 * tiltDepth]
+  );
+  const y = useTransform(
+    effectiveY,
+    [-1, 1],
+    [-18 * tiltDepth, 18 * tiltDepth]
+  );
 
   return (
-    <div
+    <motion.div
       className={cn("relative", className)}
-      style={{ perspective: 1100 }}
+      style={{ x, y }}
     >
-      <motion.div
-        className="h-full w-full"
-        style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      >
     <Link
       ref={ref as React.Ref<HTMLAnchorElement>}
       href={`/programs/${program.slug}`}
@@ -530,8 +536,7 @@ function FeaturedProgramCard({
         </svg>
       ) : null}
     </Link>
-      </motion.div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -559,6 +564,11 @@ function FloatingSnapshotCard({
 
   if (!program) return null;
 
+  // Normalise the layout's scroll-parallax value into a depth multiplier
+  // (~0.7 — 1.3) so each card translates by a different amount, lending
+  // a parallax-depth feel to the section-level mouse motion.
+  const tiltDepth = (layout.parallax ?? 70) / 70;
+
   const card = (
     <FeaturedProgramCard
       program={program}
@@ -568,6 +578,7 @@ function FloatingSnapshotCard({
       shapeKey={layout.shapeKey}
       tiltX={tiltX}
       tiltY={tiltY}
+      tiltDepth={tiltDepth}
     />
   );
 
