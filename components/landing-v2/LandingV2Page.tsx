@@ -366,7 +366,7 @@ function FeaturedProgramCard({
             isCompact
               ? "gap-4 pb-[clamp(2.1rem,3vw,3.4rem)] xl:px-[clamp(1.95rem,2.6vw,2.75rem)] xl:pb-2"
               : "gap-6 pb-[clamp(2.35rem,3.4vw,3.9rem)] xl:px-[clamp(2.5rem,3.75vw,3.75rem)] xl:pb-2",
-            program.slug === "st-kitts-and-nevis" && "xl:pb-8"
+            program.slug === "st-kitts-and-nevis" && "xl:pb-16"
           )}
         >
           <div
