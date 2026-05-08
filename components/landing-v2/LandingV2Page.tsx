@@ -364,7 +364,7 @@ function FeaturedProgramCard({
           className={cn(
             "relative z-10 flex min-h-[inherit] flex-col p-[clamp(1.45rem,2vw,2.6rem)]",
             isCompact
-              ? "gap-4 pb-[clamp(2.1rem,3vw,3.4rem)] xl:px-[clamp(1.95rem,2.6vw,2.75rem)] xl:pb-[clamp(4.6rem,5.4vw,5.9rem)]"
+              ? "gap-4 pb-[clamp(2.1rem,3vw,3.4rem)] xl:px-[clamp(1.95rem,2.6vw,2.75rem)] xl:pb-2"
               : "gap-6 pb-[clamp(2.35rem,3.4vw,3.9rem)] xl:px-[clamp(2.5rem,3.75vw,3.75rem)] xl:pb-2"
           )}
         >
