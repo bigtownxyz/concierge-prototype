@@ -2,7 +2,7 @@
 
 import { type CSSProperties, useRef, useState } from "react";
 import Image from "next/image";
-import { motion, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform, type MotionValue } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from "framer-motion";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -318,80 +318,26 @@ function FeaturedProgramCard({
   priority = false,
   variant = "feature",
   shapeKey,
-  tiltX,
-  tiltY,
-  tiltDepth = 1,
-  centerX = 0,
-  centerY = 0,
 }: {
   program: Program;
   className?: string;
   priority?: boolean;
   variant?: "feature" | "compact";
   shapeKey?: string;
-  tiltX?: MotionValue<number>;
-  tiltY?: MotionValue<number>;
-  tiltDepth?: number;
-  centerX?: number;
-  centerY?: number;
 }) {
   const isCompact = variant === "compact";
   const shape = shapeKey ? CARD_SHAPES[shapeKey] : null;
   const { ref, clipPath, pathD, viewBox } = useTracedShape(shape?.pts ?? []);
   const glassBorderId = `snapshot-glass-border-${program.slug}`;
 
-  // Radial repulsion — each card translates *away* from the cursor along the
-  // (cardCenter - mouse) vector. Falloff is exponential so close-by cards
-  // get a strong push and distant cards barely move. Inputs are normalised
-  // to the scatter container's box, with both axes in [-1, 1].
-  const fallbackX = useMotionValue(0);
-  const fallbackY = useMotionValue(0);
-  const effectiveX = tiltX ?? fallbackX;
-  const effectiveY = tiltY ?? fallbackY;
-  const baseRangeX = 20 * tiltDepth;
-  const baseRangeY = 12 * tiltDepth;
-  // Rational falloff (smoother near the card centre than an exponential —
-  // avoids the sharp slope that made motion feel jerky when the cursor
-  // sat directly over a card).
-  const x = useTransform<number, number>(
-    [effectiveX, effectiveY],
-    ([mx, my]) => {
-      const dx = centerX - mx;
-      const dy = centerY - my;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < 0.001) return 0;
-      const factor = 1 / (1 + dist * dist * 2);
-      return (dx / dist) * factor * baseRangeX;
-    }
-  );
-  const y = useTransform<number, number>(
-    [effectiveX, effectiveY],
-    ([mx, my]) => {
-      const dx = centerX - mx;
-      const dy = centerY - my;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < 0.001) return 0;
-      const factor = 1 / (1 + dist * dist * 2);
-      return (dy / dist) * factor * baseRangeY;
-    }
-  );
-
   return (
-    <motion.div
-      className={cn("relative", className)}
-      style={{
-        x,
-        y,
-        willChange: "transform",
-        backfaceVisibility: "hidden",
-        WebkitBackfaceVisibility: "hidden",
-        WebkitFontSmoothing: "antialiased",
-      }}
-    >
     <Link
       ref={ref as React.Ref<HTMLAnchorElement>}
       href={`/programs/${program.slug}`}
-      className="group relative isolate block h-full w-full text-[#dfe2eb]"
+      className={cn(
+        "group relative isolate block text-[#dfe2eb]",
+        className
+      )}
     >
       <div
         className="absolute inset-0 overflow-hidden bg-[#0a0d18]/70"
@@ -566,7 +512,6 @@ function FeaturedProgramCard({
         </svg>
       ) : null}
     </Link>
-    </motion.div>
   );
 }
 
@@ -575,15 +520,11 @@ function FloatingSnapshotCard({
   index,
   scrollYProgress,
   prefersReducedMotion,
-  tiltX,
-  tiltY,
 }: {
   layout: SnapshotLayout;
   index: number;
   scrollYProgress: MotionValue<number>;
   prefersReducedMotion: boolean;
-  tiltX?: MotionValue<number>;
-  tiltY?: MotionValue<number>;
 }) {
   const program = featuredPrograms[layout.programIndex];
   const range = layout.parallax ?? 60;
@@ -594,20 +535,6 @@ function FloatingSnapshotCard({
 
   if (!program) return null;
 
-  // Normalise the layout's scroll-parallax value into a depth multiplier
-  // (~0.7 — 1.3) so each card translates by a different amount, lending
-  // a parallax-depth feel to the section-level mouse motion.
-  const tiltDepth = (layout.parallax ?? 70) / 70;
-
-  // Card centre in the scatter container's coord space, mapped to [-1, 1]
-  // (matches how mouse position is normalised by the parent handler).
-  const leftPct = parseFloat(layout.left);
-  const topPct = parseFloat(layout.top);
-  const widthPct = parseFloat(layout.width);
-  const heightPct = parseFloat(layout.height);
-  const centerX = ((leftPct + widthPct / 2) / 100) * 2 - 1;
-  const centerY = ((topPct + heightPct / 2) / 100) * 2 - 1;
-
   const card = (
     <FeaturedProgramCard
       program={program}
@@ -615,11 +542,6 @@ function FloatingSnapshotCard({
       priority={layout.priority}
       variant={layout.variant}
       shapeKey={layout.shapeKey}
-      tiltX={tiltX}
-      tiltY={tiltY}
-      tiltDepth={tiltDepth}
-      centerX={centerX}
-      centerY={centerY}
     />
   );
 
@@ -741,33 +663,6 @@ export function LandingV2Page() {
     offset: ["start end", "end start"],
   });
   const prefersReducedMotion = useReducedMotion() ?? false;
-
-  // Section-level mouse-tracking: feeds tilt to all snapshot shapes so
-  // they rotate in unison as the cursor moves across the section.
-  const snapshotsTiltX = useMotionValue(0);
-  const snapshotsTiltY = useMotionValue(0);
-  const snapshotsTiltSpringX = useSpring(snapshotsTiltX, {
-    stiffness: 12,
-    damping: 14,
-    mass: 2.8,
-  });
-  const snapshotsTiltSpringY = useSpring(snapshotsTiltY, {
-    stiffness: 12,
-    damping: 14,
-    mass: 2.8,
-  });
-  const handleSnapshotsMouseMove = (e: React.MouseEvent<HTMLElement>) => {
-    if (prefersReducedMotion) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const px = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    const py = ((e.clientY - rect.top) / rect.height) * 2 - 1;
-    snapshotsTiltX.set(px);
-    snapshotsTiltY.set(py);
-  };
-  const handleSnapshotsMouseLeave = () => {
-    snapshotsTiltX.set(0);
-    snapshotsTiltY.set(0);
-  };
 
 
   return (
@@ -1069,11 +964,7 @@ export function LandingV2Page() {
             </div>
 
             {/* Desktop: scatter shape-clipped cards with parallax */}
-            <div
-              className="hidden xl:relative xl:-ml-[4.5rem] xl:mt-6 xl:block xl:aspect-[1159/880] xl:w-[min(84vw,1304px)] xl:max-w-none"
-              onMouseMove={handleSnapshotsMouseMove}
-              onMouseLeave={handleSnapshotsMouseLeave}
-            >
+            <div className="hidden xl:relative xl:-ml-[4.5rem] xl:mt-6 xl:block xl:aspect-[1159/880] xl:w-[min(84vw,1304px)] xl:max-w-none">
               {/* Soft blue glow pinned behind Portugal's bottom-left in container coords. */}
               <div
                 aria-hidden
@@ -1086,8 +977,6 @@ export function LandingV2Page() {
                   index={index}
                   scrollYProgress={snapshotsScroll}
                   prefersReducedMotion={prefersReducedMotion}
-                  tiltX={snapshotsTiltSpringX}
-                  tiltY={snapshotsTiltSpringY}
                 />
               ))}
             </div>
