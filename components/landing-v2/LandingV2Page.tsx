@@ -374,7 +374,8 @@ function FeaturedProgramCard({
               "space-y-4",
               isCompact && "ml-6 space-y-3 pt-3 xl:ml-2 xl:pt-0",
               program.slug === "dubai" && "xl:pt-6",
-              program.slug === "st-kitts-and-nevis" && "xl:ml-6"
+              program.slug === "st-kitts-and-nevis" && "xl:ml-6",
+              program.slug === "dominica" && "xl:-ml-1"
             )}
           >
             <div
