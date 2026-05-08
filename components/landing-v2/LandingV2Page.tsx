@@ -418,7 +418,10 @@ function FeaturedProgramCard({
 
           <div
             className={cn(
-              "mt-auto space-y-3.5 pt-16",
+              "mt-auto space-y-3.5",
+              program.slug === "grenada" || program.slug === "dominica"
+                ? "pt-10"
+                : "pt-16",
               isCompact && "space-y-2.5 xl:ml-[3%] xl:w-[88%] xl:max-w-[16rem]"
             )}
           >
