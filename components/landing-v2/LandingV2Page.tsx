@@ -740,14 +740,14 @@ export function LandingV2Page() {
   const snapshotsTiltX = useMotionValue(0);
   const snapshotsTiltY = useMotionValue(0);
   const snapshotsTiltSpringX = useSpring(snapshotsTiltX, {
-    stiffness: 32,
-    damping: 26,
-    mass: 1.4,
+    stiffness: 12,
+    damping: 14,
+    mass: 2.8,
   });
   const snapshotsTiltSpringY = useSpring(snapshotsTiltY, {
-    stiffness: 32,
-    damping: 26,
-    mass: 1.4,
+    stiffness: 12,
+    damping: 14,
+    mass: 2.8,
   });
   const handleSnapshotsMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     if (prefersReducedMotion) return;
