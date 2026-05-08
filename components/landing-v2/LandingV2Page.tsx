@@ -383,11 +383,11 @@ function FeaturedProgramCard({
                 isCompact ? "text-[0.56rem]" : "text-[0.6rem]"
               )}
             >
-              <span className="rounded-full border border-[#bbc4f7]/20 bg-[#11162a]/78 px-2.5 py-0.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md">
+              <span className="rounded-full border border-[#bbc4f7]/20 bg-[#11162a]/78 px-2.5 py-0.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md [text-indent:0.2em]">
                 {program.type}
               </span>
               {program.exclusive ? (
-                <span className="rounded-full border border-[#bbc4f7]/20 bg-[#11162a]/78 px-2.5 py-0.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md">
+                <span className="rounded-full border border-[#bbc4f7]/20 bg-[#11162a]/78 px-2.5 py-0.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md [text-indent:0.2em]">
                   Exclusive
                 </span>
               ) : null}
@@ -597,11 +597,11 @@ function SimpleSnapshotCard({
 
       <div className="relative z-10 flex h-full flex-col gap-5 p-6 sm:gap-6 sm:p-7">
         <div className="flex flex-wrap items-center gap-2 text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-[#bbc4f7]">
-          <span className="rounded-full border border-[#bbc4f7]/20 bg-[#11162a]/78 px-2.5 py-0.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md">
+          <span className="rounded-full border border-[#bbc4f7]/20 bg-[#11162a]/78 px-2.5 py-0.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md [text-indent:0.2em]">
             {program.type}
           </span>
           {program.exclusive ? (
-            <span className="rounded-full border border-[#bbc4f7]/20 bg-[#11162a]/78 px-2.5 py-0.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md">
+            <span className="rounded-full border border-[#bbc4f7]/20 bg-[#11162a]/78 px-2.5 py-0.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md [text-indent:0.2em]">
               Exclusive
             </span>
           ) : null}
