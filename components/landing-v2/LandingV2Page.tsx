@@ -321,6 +321,8 @@ function FeaturedProgramCard({
   tiltX,
   tiltY,
   tiltDepth = 1,
+  centerX = 0,
+  centerY = 0,
 }: {
   program: Program;
   className?: string;
@@ -330,28 +332,46 @@ function FeaturedProgramCard({
   tiltX?: MotionValue<number>;
   tiltY?: MotionValue<number>;
   tiltDepth?: number;
+  centerX?: number;
+  centerY?: number;
 }) {
   const isCompact = variant === "compact";
   const shape = shapeKey ? CARD_SHAPES[shapeKey] : null;
   const { ref, clipPath, pathD, viewBox } = useTracedShape(shape?.pts ?? []);
   const glassBorderId = `snapshot-glass-border-${program.slug}`;
 
-  // Section-mouse-driven parallax translation. Cards are *repelled* from
-  // the cursor (sign-inverted) and each card uses a depth multiplier so
-  // "front" cards drift further than ones "behind".
+  // Radial repulsion — each card translates *away* from the cursor along the
+  // (cardCenter - mouse) vector. Falloff is exponential so close-by cards
+  // get a strong push and distant cards barely move. Inputs are normalised
+  // to the scatter container's box, with both axes in [-1, 1].
   const fallbackX = useMotionValue(0);
   const fallbackY = useMotionValue(0);
   const effectiveX = tiltX ?? fallbackX;
   const effectiveY = tiltY ?? fallbackY;
-  const x = useTransform(
-    effectiveX,
-    [-1, 1],
-    [28 * tiltDepth, -28 * tiltDepth]
+  const baseRangeX = 70 * tiltDepth;
+  const baseRangeY = 42 * tiltDepth;
+  const falloffRate = 1.4;
+  const x = useTransform<number, number>(
+    [effectiveX, effectiveY],
+    ([mx, my]) => {
+      const dx = centerX - mx;
+      const dy = centerY - my;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 0.001) return 0;
+      const factor = Math.exp(-dist * falloffRate);
+      return (dx / dist) * factor * baseRangeX;
+    }
   );
-  const y = useTransform(
-    effectiveY,
-    [-1, 1],
-    [18 * tiltDepth, -18 * tiltDepth]
+  const y = useTransform<number, number>(
+    [effectiveX, effectiveY],
+    ([mx, my]) => {
+      const dx = centerX - mx;
+      const dy = centerY - my;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 0.001) return 0;
+      const factor = Math.exp(-dist * falloffRate);
+      return (dy / dist) * factor * baseRangeY;
+    }
   );
 
   return (
@@ -570,6 +590,15 @@ function FloatingSnapshotCard({
   // a parallax-depth feel to the section-level mouse motion.
   const tiltDepth = (layout.parallax ?? 70) / 70;
 
+  // Card centre in the scatter container's coord space, mapped to [-1, 1]
+  // (matches how mouse position is normalised by the parent handler).
+  const leftPct = parseFloat(layout.left);
+  const topPct = parseFloat(layout.top);
+  const widthPct = parseFloat(layout.width);
+  const heightPct = parseFloat(layout.height);
+  const centerX = ((leftPct + widthPct / 2) / 100) * 2 - 1;
+  const centerY = ((topPct + heightPct / 2) / 100) * 2 - 1;
+
   const card = (
     <FeaturedProgramCard
       program={program}
@@ -580,6 +609,8 @@ function FloatingSnapshotCard({
       tiltX={tiltX}
       tiltY={tiltY}
       tiltDepth={tiltDepth}
+      centerX={centerX}
+      centerY={centerY}
     />
   );
 
@@ -956,8 +987,6 @@ export function LandingV2Page() {
         ref={snapshotsSectionRef}
         id="program-snapshots"
         className="relative overflow-hidden border-b border-white/8 pb-[clamp(5rem,8vw,7.5rem)] pt-[clamp(2rem,4vw,3.25rem)] xl:min-h-[1000px] xl:pb-12 xl:pt-16"
-        onMouseMove={handleSnapshotsMouseMove}
-        onMouseLeave={handleSnapshotsMouseLeave}
       >
         <Image
           src="/images/snapshots-bg.jpg"
@@ -1031,7 +1060,11 @@ export function LandingV2Page() {
             </div>
 
             {/* Desktop: scatter shape-clipped cards with parallax */}
-            <div className="hidden xl:relative xl:-ml-[4.5rem] xl:mt-6 xl:block xl:aspect-[1159/880] xl:w-[min(84vw,1304px)] xl:max-w-none">
+            <div
+              className="hidden xl:relative xl:-ml-[4.5rem] xl:mt-6 xl:block xl:aspect-[1159/880] xl:w-[min(84vw,1304px)] xl:max-w-none"
+              onMouseMove={handleSnapshotsMouseMove}
+              onMouseLeave={handleSnapshotsMouseLeave}
+            >
               {/* Soft blue glow pinned behind Portugal's bottom-left in container coords. */}
               <div
                 aria-hidden
