@@ -561,8 +561,8 @@ function FloatingSnapshotCard({
   // without a "synchronized" tell.
   const driftAmp = 4 + (index % 3); // 4, 5, 6, 4, 5, 6
   const driftAmpX = 1.5 + (index % 2); // 1.5, 2.5, 1.5, 2.5, 1.5, 2.5
-  const driftDuration = 7 + index * 0.45; // 7, 7.45, ..., 9.25
-  const driftDelay = -index * 1.2; // negative delay → start mid-cycle
+  const driftDuration = 13 + index * 0.8; // 13, 13.8, ..., 17
+  const driftDelay = -index * 2; // negative delay → start mid-cycle
 
   return (
     <motion.div
