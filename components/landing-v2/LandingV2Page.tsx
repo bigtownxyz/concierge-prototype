@@ -419,6 +419,7 @@ function FeaturedProgramCard({
           <div
             className={cn(
               "mt-auto space-y-3.5",
+              !isCompact && "pt-12",
               isCompact && "space-y-2.5 xl:ml-[3%] xl:w-[88%] xl:max-w-[16rem]"
             )}
           >
@@ -558,6 +559,87 @@ function FloatingSnapshotCard({
         {card}
       </motion.div>
     </motion.div>
+  );
+}
+
+function SimpleSnapshotCard({
+  program,
+  priority = false,
+}: {
+  program: Program;
+  priority?: boolean;
+}) {
+  return (
+    <Link
+      href={`/programs/${program.slug}`}
+      className="group relative isolate flex min-h-[19rem] flex-col overflow-hidden rounded-[24px] border border-white/8 bg-[#0a0d18]/70 text-[#dfe2eb] shadow-[0_24px_40px_rgba(0,0,0,0.38)] transition-transform duration-500 ease-out hover:-translate-y-1 sm:min-h-[20rem]"
+    >
+      <Image
+        src={getProgramImage(program)}
+        alt={program.country}
+        fill
+        priority={priority}
+        className="object-cover brightness-[0.92] saturate-[1.04] contrast-[1.08] transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+        style={{ objectPosition: getProgramImagePosition(program) }}
+        sizes="(min-width: 1280px) 0px, 100vw"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#050713]/92 via-[#071021]/58 via-55% to-[#172f60]/14" />
+      <div className="absolute inset-0 bg-gradient-to-br from-white/12 via-transparent to-transparent opacity-65" />
+
+      <div className="relative z-10 flex h-full flex-col gap-5 p-6 sm:gap-6 sm:p-7">
+        <div className="flex flex-wrap items-center gap-2 text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-[#bbc4f7]">
+          <span className="rounded-full border border-[#bbc4f7]/20 bg-[#11162a]/78 px-2.5 py-0.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md">
+            {program.type}
+          </span>
+          {program.exclusive ? (
+            <span className="rounded-full border border-[#bbc4f7]/20 bg-[#11162a]/78 px-2.5 py-0.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md">
+              Exclusive
+            </span>
+          ) : null}
+        </div>
+
+        <div className="mt-auto space-y-3">
+          <div
+            className="text-balance text-[clamp(2rem,5.5vw,2.5rem)] leading-[0.98] tracking-[-0.035em] text-[#f4f6fb]"
+            style={DISPLAY_FONT}
+          >
+            {program.country}
+          </div>
+          <p
+            className="max-w-[44ch] text-[0.85rem] leading-[1.55rem] text-[#d7d9e1]"
+            style={BODY_FONT}
+          >
+            {program.marketingHook}
+          </p>
+        </div>
+
+        <dl className="grid grid-cols-3 overflow-hidden rounded-[0.5rem] border border-white/14 bg-[#050816]/62 text-[0.78rem] text-[#f4f6fb] shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-md">
+          <div className="border-r border-white/12 px-3 py-2.5 sm:px-3.5">
+            <dt className="whitespace-nowrap text-[0.5rem] uppercase tracking-[0.16em] text-[#bbc4f7]">
+              Entry point
+            </dt>
+            <dd className="mt-1 font-semibold">{formatInvestment(program)}</dd>
+          </div>
+          <div className="border-r border-white/12 px-3 py-2.5 sm:px-3.5">
+            <dt className="whitespace-nowrap text-[0.5rem] uppercase tracking-[0.16em] text-[#bbc4f7]">
+              Timeline
+            </dt>
+            <dd className="mt-1 font-semibold">{formatTimeline(program)}</dd>
+          </div>
+          <div className="px-3 py-2.5 sm:px-3.5">
+            <dt className="whitespace-nowrap text-[0.5rem] uppercase tracking-[0.16em] text-[#bbc4f7]">
+              Access
+            </dt>
+            <dd className="mt-1 font-semibold">{formatSnapshotAccess(program)}</dd>
+          </div>
+        </dl>
+
+        <div className="inline-flex items-center gap-2 text-[0.82rem] font-semibold text-[#f4f6fb]">
+          Review route
+          <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+        </div>
+      </div>
+    </Link>
   );
 }
 
@@ -798,7 +880,7 @@ export function LandingV2Page() {
         className="relative overflow-hidden border-b border-white/8 pb-[clamp(5rem,8vw,7.5rem)] pt-[clamp(2rem,4vw,3.25rem)] xl:min-h-[1000px] xl:pb-12 xl:pt-16"
       >
         <Image
-          src="/images/snapshots-bg.png"
+          src="/images/snapshots-bg.jpg"
           alt=""
           fill
           className="object-cover object-[42%_54%] brightness-[1.08] saturate-[1.12] contrast-[1.04]"
@@ -852,11 +934,28 @@ export function LandingV2Page() {
               </div>
             </Reveal>
 
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:relative xl:-ml-[4.5rem] xl:mt-6 xl:block xl:aspect-[1159/880] xl:w-[min(84vw,1304px)] xl:max-w-none">
+            {/* Below desktop: simple stacked rectangular cards */}
+            <div className="grid gap-5 xl:hidden">
+              {snapshotCardLayouts.map((layout, index) => {
+                const program = featuredPrograms[layout.programIndex];
+                if (!program) return null;
+                return (
+                  <Reveal key={layout.shapeKey} delay={index * 0.04}>
+                    <SimpleSnapshotCard
+                      program={program}
+                      priority={"priority" in layout ? layout.priority : false}
+                    />
+                  </Reveal>
+                );
+              })}
+            </div>
+
+            {/* Desktop: scatter shape-clipped cards with parallax */}
+            <div className="hidden xl:relative xl:-ml-[4.5rem] xl:mt-6 xl:block xl:aspect-[1159/880] xl:w-[min(84vw,1304px)] xl:max-w-none">
               {/* Soft blue glow pinned behind Portugal's bottom-left in container coords. */}
               <div
                 aria-hidden
-                className="pointer-events-none hidden xl:absolute xl:inset-0 xl:block xl:bg-[radial-gradient(circle_at_15.5%_40%,rgba(140,165,240,0.32),transparent_10rem)]"
+                className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15.5%_40%,rgba(140,165,240,0.32),transparent_10rem)]"
               />
               {snapshotCardLayouts.map((layout, index) => (
                 <FloatingSnapshotCard
