@@ -164,7 +164,7 @@ const snapshotCardLayouts = [
     left: "70.36%",
     top: "20%",
     width: "23.16%",
-    height: "57%",
+    height: "50%",
     z: "10",
     mobileClass: "min-h-[30rem]",
     parallax: 60,
