@@ -578,6 +578,12 @@ function FloatingSnapshotCard({
       >
         <motion.div
           className="h-full w-full"
+          style={{
+            willChange: "transform",
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
+            WebkitFontSmoothing: "antialiased",
+          }}
           animate={{
             x: [0, driftAmpX, 0, -driftAmpX, 0],
             y: [0, -driftAmp, 0, driftAmp * 0.6, 0],
