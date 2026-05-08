@@ -427,6 +427,8 @@ function FeaturedProgramCard({
                 ? "pt-0"
                 : program.slug === "st-kitts-and-nevis"
                 ? "pt-4"
+                : program.slug === "dubai"
+                ? "pt-8"
                 : program.slug === "serbia"
                 ? "pt-10"
                 : "pt-16",
