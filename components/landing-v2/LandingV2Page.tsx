@@ -556,6 +556,14 @@ function FloatingSnapshotCard({
     );
   }
 
+  // Per-card ambient drift: each shape bobs autonomously on its own loop
+  // with varied amplitude / duration / phase so the section feels alive
+  // without a "synchronized" tell.
+  const driftAmp = 4 + (index % 3); // 4, 5, 6, 4, 5, 6
+  const driftAmpX = 1.5 + (index % 2); // 1.5, 2.5, 1.5, 2.5, 1.5, 2.5
+  const driftDuration = 7 + index * 0.45; // 7, 7.45, ..., 9.25
+  const driftDelay = -index * 1.2; // negative delay → start mid-cycle
+
   return (
     <motion.div
       className="xl:absolute xl:left-[var(--snapshot-left)] xl:top-[var(--snapshot-top)] xl:z-[var(--snapshot-z)] xl:h-[var(--snapshot-height)] xl:w-[var(--snapshot-width)]"
@@ -568,7 +576,22 @@ function FloatingSnapshotCard({
         viewport={{ once: true, margin: "-96px" }}
         transition={{ duration: 0.75, delay, ease: EASE }}
       >
-        {card}
+        <motion.div
+          className="h-full w-full"
+          animate={{
+            x: [0, driftAmpX, 0, -driftAmpX, 0],
+            y: [0, -driftAmp, 0, driftAmp * 0.6, 0],
+          }}
+          transition={{
+            duration: driftDuration,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: driftDelay,
+            times: [0, 0.25, 0.5, 0.75, 1],
+          }}
+        >
+          {card}
+        </motion.div>
       </motion.div>
     </motion.div>
   );
