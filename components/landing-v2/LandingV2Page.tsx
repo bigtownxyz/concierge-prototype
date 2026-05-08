@@ -379,7 +379,14 @@ function FeaturedProgramCard({
   return (
     <motion.div
       className={cn("relative", className)}
-      style={{ x, y }}
+      style={{
+        x,
+        y,
+        willChange: "transform",
+        backfaceVisibility: "hidden",
+        WebkitBackfaceVisibility: "hidden",
+        WebkitFontSmoothing: "antialiased",
+      }}
     >
     <Link
       ref={ref as React.Ref<HTMLAnchorElement>}
