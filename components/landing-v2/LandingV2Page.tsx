@@ -420,7 +420,7 @@ function FeaturedProgramCard({
             className={cn(
               "mt-auto space-y-3.5",
               program.slug === "grenada" || program.slug === "dominica"
-                ? "pt-2"
+                ? "pt-0"
                 : program.slug === "serbia"
                 ? "pt-10"
                 : "pt-16",
