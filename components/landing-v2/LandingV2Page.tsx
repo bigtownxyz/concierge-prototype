@@ -348,9 +348,11 @@ function FeaturedProgramCard({
   const fallbackY = useMotionValue(0);
   const effectiveX = tiltX ?? fallbackX;
   const effectiveY = tiltY ?? fallbackY;
-  const baseRangeX = 70 * tiltDepth;
-  const baseRangeY = 42 * tiltDepth;
-  const falloffRate = 1.4;
+  const baseRangeX = 20 * tiltDepth;
+  const baseRangeY = 12 * tiltDepth;
+  // Rational falloff (smoother near the card centre than an exponential —
+  // avoids the sharp slope that made motion feel jerky when the cursor
+  // sat directly over a card).
   const x = useTransform<number, number>(
     [effectiveX, effectiveY],
     ([mx, my]) => {
@@ -358,7 +360,7 @@ function FeaturedProgramCard({
       const dy = centerY - my;
       const dist = Math.sqrt(dx * dx + dy * dy);
       if (dist < 0.001) return 0;
-      const factor = Math.exp(-dist * falloffRate);
+      const factor = 1 / (1 + dist * dist * 2);
       return (dx / dist) * factor * baseRangeX;
     }
   );
@@ -369,7 +371,7 @@ function FeaturedProgramCard({
       const dy = centerY - my;
       const dist = Math.sqrt(dx * dx + dy * dy);
       if (dist < 0.001) return 0;
-      const factor = Math.exp(-dist * falloffRate);
+      const factor = 1 / (1 + dist * dist * 2);
       return (dy / dist) * factor * baseRangeY;
     }
   );
@@ -738,14 +740,14 @@ export function LandingV2Page() {
   const snapshotsTiltX = useMotionValue(0);
   const snapshotsTiltY = useMotionValue(0);
   const snapshotsTiltSpringX = useSpring(snapshotsTiltX, {
-    stiffness: 90,
-    damping: 24,
-    mass: 0.9,
+    stiffness: 32,
+    damping: 26,
+    mass: 1.4,
   });
   const snapshotsTiltSpringY = useSpring(snapshotsTiltY, {
-    stiffness: 90,
-    damping: 24,
-    mass: 0.9,
+    stiffness: 32,
+    damping: 26,
+    mass: 1.4,
   });
   const handleSnapshotsMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     if (prefersReducedMotion) return;
