@@ -335,7 +335,7 @@ function FeaturedProgramCard({
       ref={ref as React.Ref<HTMLAnchorElement>}
       href={`/programs/${program.slug}`}
       className={cn(
-        "group relative isolate block text-[#dfe2eb] transition-[filter,transform] duration-500 ease-out hover:-translate-y-1",
+        "group relative isolate block text-[#dfe2eb]",
         className
       )}
     >
@@ -353,7 +353,7 @@ function FeaturedProgramCard({
           alt={program.country}
           fill
           priority={priority}
-          className="object-cover brightness-[0.92] saturate-[1.04] contrast-[1.08] transition-transform duration-700 ease-out group-hover:scale-[1.035]"
+          className="object-cover brightness-[0.92] saturate-[1.04] contrast-[1.08]"
           style={{ objectPosition: getProgramImagePosition(program) }}
           sizes="(min-width: 1280px) 32vw, (min-width: 1024px) 48vw, 100vw"
         />
@@ -581,14 +581,14 @@ function SimpleSnapshotCard({
   return (
     <Link
       href={`/programs/${program.slug}`}
-      className="group relative isolate flex min-h-[19rem] flex-col overflow-hidden rounded-[24px] border border-white/8 bg-[#0a0d18]/70 text-[#dfe2eb] shadow-[0_24px_40px_rgba(0,0,0,0.38)] transition-transform duration-500 ease-out hover:-translate-y-1 sm:min-h-[20rem]"
+      className="group relative isolate flex min-h-[19rem] flex-col overflow-hidden rounded-[24px] border border-white/8 bg-[#0a0d18]/70 text-[#dfe2eb] shadow-[0_24px_40px_rgba(0,0,0,0.38)] sm:min-h-[20rem]"
     >
       <Image
         src={getProgramImage(program)}
         alt={program.country}
         fill
         priority={priority}
-        className="object-cover brightness-[0.92] saturate-[1.04] contrast-[1.08] transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+        className="object-cover brightness-[0.92] saturate-[1.04] contrast-[1.08]"
         style={{ objectPosition: getProgramImagePosition(program) }}
         sizes="(min-width: 1280px) 0px, 100vw"
       />
