@@ -336,8 +336,9 @@ function FeaturedProgramCard({
   const { ref, clipPath, pathD, viewBox } = useTracedShape(shape?.pts ?? []);
   const glassBorderId = `snapshot-glass-border-${program.slug}`;
 
-  // Section-mouse-driven parallax translation. Each card translates with a
-  // depth multiplier so cards "in front" drift further than ones "behind".
+  // Section-mouse-driven parallax translation. Cards are *repelled* from
+  // the cursor (sign-inverted) and each card uses a depth multiplier so
+  // "front" cards drift further than ones "behind".
   const fallbackX = useMotionValue(0);
   const fallbackY = useMotionValue(0);
   const effectiveX = tiltX ?? fallbackX;
@@ -345,12 +346,12 @@ function FeaturedProgramCard({
   const x = useTransform(
     effectiveX,
     [-1, 1],
-    [-28 * tiltDepth, 28 * tiltDepth]
+    [28 * tiltDepth, -28 * tiltDepth]
   );
   const y = useTransform(
     effectiveY,
     [-1, 1],
-    [-18 * tiltDepth, 18 * tiltDepth]
+    [18 * tiltDepth, -18 * tiltDepth]
   );
 
   return (
