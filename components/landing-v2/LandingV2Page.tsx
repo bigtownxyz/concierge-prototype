@@ -365,7 +365,7 @@ function FeaturedProgramCard({
             "relative z-10 flex min-h-[inherit] flex-col p-[clamp(1.45rem,2vw,2.6rem)]",
             isCompact
               ? "gap-4 pb-[clamp(2.1rem,3vw,3.4rem)] xl:px-[clamp(1.95rem,2.6vw,2.75rem)] xl:pb-[clamp(4.6rem,5.4vw,5.9rem)]"
-              : "gap-6 pb-[clamp(2.35rem,3.4vw,3.9rem)] xl:px-[clamp(2.5rem,3.75vw,3.75rem)] xl:pb-[1.5rem]"
+              : "gap-6 pb-[clamp(2.35rem,3.4vw,3.9rem)] xl:px-[clamp(2.5rem,3.75vw,3.75rem)] xl:pb-2"
           )}
         >
           <div
@@ -419,7 +419,7 @@ function FeaturedProgramCard({
           <div
             className={cn(
               "mt-auto space-y-3.5",
-              !isCompact && "pt-12",
+              !isCompact && "pt-16",
               isCompact && "space-y-2.5 xl:ml-[3%] xl:w-[88%] xl:max-w-[16rem]"
             )}
           >
