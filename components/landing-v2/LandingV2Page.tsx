@@ -684,7 +684,14 @@ function SimpleSnapshotCard({
   );
 }
 
-export function LandingV2Page() {
+export function LandingV2Page({
+  hero,
+}: {
+  /** Optional override for the hero section (used by Landing-V3 to swap in
+   *  a different hero while reusing the rest of the page). When omitted the
+   *  default V2 shader-hero renders. */
+  hero?: React.ReactNode;
+} = {}) {
   const [openFaq, setOpenFaq] = useState(0);
   const snapshotsSectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress: snapshotsScroll } = useScroll({
@@ -696,6 +703,7 @@ export function LandingV2Page() {
 
   return (
     <div className="relative overflow-x-hidden bg-[#11101C] text-[#F5F5F6]">
+      {hero ?? (
       <section className="border-b border-white/8">
         <ShaderBackground>
           <div className="relative z-10 mx-auto max-w-7xl px-6 pb-[clamp(3rem,min(8vw,7vh),7.5rem)] pt-[clamp(3rem,min(8vw,7vh),7rem)] lg:px-8">
@@ -850,6 +858,7 @@ export function LandingV2Page() {
           </div>
         </ShaderBackground>
       </section>
+      )}
 
       <section className="border-b border-white/8 bg-[#151423] py-8 sm:py-10">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
