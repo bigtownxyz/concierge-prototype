@@ -46,7 +46,7 @@ export function ProgramCard({ program, className }: ProgramCardProps) {
             </span>
           )}
           {program.exclusive && (
-            <span className="rounded-full bg-luxury/15 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-luxury">
+            <span className="rounded-full bg-[#bbc4f7]/15 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#bbc4f7]">
               Exclusive
             </span>
           )}
@@ -56,7 +56,7 @@ export function ProgramCard({ program, className }: ProgramCardProps) {
       {/* Investment badge */}
       <div className="flex items-center gap-4 mb-5">
         <div className="flex items-center gap-1.5">
-          <TrendingUp className="h-3.5 w-3.5 text-luxury/70" />
+          <TrendingUp className="h-3.5 w-3.5 text-[#bbc4f7]/70" />
           <span className="text-sm font-semibold text-text-primary">
             {program.minInvestment === 0
               ? "No minimum"
@@ -93,9 +93,9 @@ export function ProgramCard({ program, className }: ProgramCardProps) {
                 className={cn(
                   "h-full rounded-full transition-all duration-700",
                   value > 80
-                    ? "bg-luxury/60"
+                    ? "bg-[#bbc4f7]/60"
                     : value > 50
-                      ? "bg-primary/50"
+                      ? "bg-[#bbc4f7]/35"
                       : "bg-text-muted/30"
                 )}
                 style={{ width: `${value}%` }}

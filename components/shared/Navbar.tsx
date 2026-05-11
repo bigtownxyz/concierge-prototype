@@ -362,7 +362,7 @@ export function Navbar() {
               ) : !loading ? (
                 <button
                   onClick={() => { setMobileOpen(false); window.dispatchEvent(new CustomEvent("open-qualify-modal")); }}
-                  className="flex items-center justify-center rounded-xl bg-luxury py-3.5 text-base font-semibold text-background transition-colors hover:bg-luxury-hover w-full"
+                  className="flex items-center justify-center rounded-xl bg-[#bbc4f7] py-3.5 text-base font-semibold text-[#242d58] transition-colors hover:bg-[#a9b3ea] w-full"
                 >
                   Get Started
                 </button>

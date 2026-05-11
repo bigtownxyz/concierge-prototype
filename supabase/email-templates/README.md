@@ -62,7 +62,7 @@ Supabase substitutes these at send time:
 
 Typography: Manrope 400/500/600/700, system fallbacks. Web fonts load in Apple Mail / iOS; Gmail/Outlook fall back to system — that's expected.
 
-Logo: PNG (not SVG — Outlook strips SVG). `public/logo.png` exposed at `/logo.png`.
+Logo: SVG to match the site exactly. `public/logo.svg` exposed at `/logo.svg`. Caveat: Outlook for Windows desktop strips SVG and shows alt text instead — modern Gmail / Apple Mail / Outlook web all render it fine.
 
 ## Testing in different email clients
 
