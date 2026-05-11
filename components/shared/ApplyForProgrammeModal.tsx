@@ -3,6 +3,23 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PROGRAMS, type Program } from "@/lib/constants";
+import {
+  COUNTRIES,
+  CONSTRAINT_OPTIONS,
+  TIMELINE_OPTIONS,
+  SLIDER_MIN,
+  SLIDER_MAX,
+  SLIDER_STEP,
+  SLIDER_TICKS,
+  formatAmount,
+  formatTickLabel,
+  FamilyMembersField,
+  CitizenshipSelector,
+  FormInput,
+  inputStyle,
+  type Timeline,
+  type FamilyMember,
+} from "./QualifyModal";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -15,64 +32,35 @@ export interface ApplyForProgrammeModalProps {
   onSubmit?: (data: ApplyFormData) => Promise<void> | void;
 }
 
-type Timeline = "immediate" | "strategic" | "long-term";
-type FamilyRelation = "spouse" | "parent" | "sibling" | "child";
-
-export interface FamilyMember {
-  id: string;
-  relation: FamilyRelation;
-  nationality: string;
-  age: number;
-}
-
 export interface ApplyFormData {
+  // Step 1
   selectedProgrammes: string[];
+  // Step 2
   investmentAmount: number;
+  // Step 3 — Profile
   timeline: Timeline | "";
   familyMembers: FamilyMember[];
   isUsCitizen: boolean | null;
+  consideringRenouncing: boolean | null;
+  // Step 4 — Contact
   name: string;
   email: string;
+  phone: string;
+  country: string;
+  nationality: string;
+  situation: string;
+  constraints: string[];
+  constraintDetail: string;
+  // Step 5 — Sign up
   password: string;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const TIMELINE_OPTIONS: { id: Timeline; label: string; icon: string; desc: string }[] = [
-  { id: "immediate", label: "Immediate", icon: "bolt", desc: "0–6 months — priority processing and rapid capital deployment." },
-  { id: "strategic", label: "Strategic", icon: "trending_up", desc: "6–18 months — standard processing window with proper structuring." },
-  { id: "long-term", label: "Long-term", icon: "schedule", desc: "18+ months — research phase, building toward a future application." },
-];
-
-const FAMILY_RELATIONS: { id: FamilyRelation; label: string; icon: string }[] = [
-  { id: "spouse", label: "Spouse", icon: "favorite" },
-  { id: "child", label: "Child", icon: "child_care" },
-  { id: "parent", label: "Parent", icon: "elderly" },
-  { id: "sibling", label: "Sibling", icon: "diversity_3" },
-];
-
-const SLIDER_MIN = 100_000;
-const SLIDER_MAX = 1_000_000;
-const SLIDER_STEP = 25_000;
-const SLIDER_TICKS = [100_000, 250_000, 500_000, 750_000, 1_000_000];
-
 const STEP_COUNT = 5;
-const STEP_DURATIONS = ["~30 sec", "~1 min", "~1 min", "~2 min", "~30 sec"];
+const STEP_DURATIONS = ["~30 sec", "~1 min", "~2 min", "~2 min", "~1 min"];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function formatAmount(n: number): string {
-  if (n >= 1_000_000) {
-    const m = n / 1_000_000;
-    return `$${m % 1 === 0 ? m : m.toFixed(1)}M`;
-  }
-  return `$${(n / 1_000).toFixed(0)}K`;
-}
-
-function formatTick(n: number): string {
-  if (n >= 1_000_000) return `$${n / 1_000_000}M`;
-  return `$${n / 1_000}K`;
-}
 
 function programmeFromSlug(slug: string): Program | undefined {
   return PROGRAMS.find((p) => p.slug === slug);
@@ -81,7 +69,9 @@ function programmeFromSlug(slug: string): Program | undefined {
 function programmeMinDisplay(p: Program): string {
   if (p.minInvestment === 0) return "No minimum";
   const sym = p.currency === "USD" ? "$" : p.currency === "EUR" ? "€" : `${p.currency} `;
-  if (p.minInvestment >= 1_000_000) return `${sym}${(p.minInvestment / 1_000_000).toFixed(p.minInvestment % 1_000_000 === 0 ? 0 : 1)}M`;
+  if (p.minInvestment >= 1_000_000) {
+    return `${sym}${(p.minInvestment / 1_000_000).toFixed(p.minInvestment % 1_000_000 === 0 ? 0 : 1)}M`;
+  }
   return `${sym}${(p.minInvestment / 1_000).toFixed(0)}K`;
 }
 
@@ -101,7 +91,6 @@ function programmeTypeLabel(t: Program["type"]): string {
 }
 
 function programmeShortLabel(p: Program): string {
-  // Two-letter tile content, e.g. "Dominica" → "DM", "St Kitts" → "KN", "Antigua & Barbuda" → "AG"
   const overrides: Record<string, string> = {
     dominica: "DM",
     "st-kitts-and-nevis": "KN",
@@ -136,16 +125,10 @@ function headerPillText(slugs: string[]): string {
   return `Applying for ${slugs.length} programmes`;
 }
 
-function timelineLabel(t: Timeline | ""): string {
-  if (!t) return "Not set";
-  return TIMELINE_OPTIONS.find((opt) => opt.id === t)?.label ?? t;
-}
-
-function timelineRange(t: Timeline | ""): string {
+function timelineLabelWithRange(t: Timeline | ""): string {
   const opt = TIMELINE_OPTIONS.find((o) => o.id === t);
-  if (!opt) return "";
-  // Pull the bit before the em-dash for the summary "Strategic (6–18 months)"
-  const m = opt.desc.match(/^([^—]+)/);
+  if (!opt) return "Not set";
+  const m = opt.desc.match(/^([^—-]+)/);
   return m ? `${opt.label} (${m[1].trim()})` : opt.label;
 }
 
@@ -161,33 +144,7 @@ function familySummary(members: FamilyMember[]): string {
   return parts.join(" + ");
 }
 
-function relationLabel(r: FamilyRelation): string {
-  return FAMILY_RELATIONS.find((x) => x.id === r)?.label ?? r;
-}
-
-function relationIcon(r: FamilyRelation): string {
-  return FAMILY_RELATIONS.find((x) => x.id === r)?.icon ?? "person";
-}
-
-// ─── Shared styles (matching QualifyModal tokens) ─────────────────────────────
-
-const eyebrowStyle = "text-[11px] font-semibold tracking-[0.12em] uppercase";
-const headingStyle = "text-xl font-semibold";
-const subStyle = "text-sm leading-relaxed";
-
-const inputStyle: React.CSSProperties = {
-  width: "100%",
-  background: "#0a0e14",
-  border: "1px solid rgba(69,71,75,0.4)",
-  borderRadius: "10px",
-  padding: "11px 14px",
-  color: "#dfe2eb",
-  fontSize: "14px",
-  fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
-  outline: "none",
-};
-
-// ─── Main component ───────────────────────────────────────────────────────────
+// ─── Empty state ──────────────────────────────────────────────────────────────
 
 const EMPTY: ApplyFormData = {
   selectedProgrammes: [],
@@ -195,10 +152,19 @@ const EMPTY: ApplyFormData = {
   timeline: "",
   familyMembers: [],
   isUsCitizen: null,
+  consideringRenouncing: null,
   name: "",
   email: "",
+  phone: "",
+  country: "",
+  nationality: "",
+  situation: "",
+  constraints: [],
+  constraintDetail: "",
   password: "",
 };
+
+// ─── Main component ───────────────────────────────────────────────────────────
 
 export function ApplyForProgrammeModal({
   isOpen,
@@ -214,7 +180,6 @@ export function ApplyForProgrammeModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Sync initialProgrammes when the modal opens so re-opens with different programmes work
   useEffect(() => {
     if (isOpen) {
       setStep(1);
@@ -238,15 +203,20 @@ export function ApplyForProgrammeModal({
       case 2:
         return data.investmentAmount >= SLIDER_MIN;
       case 3:
-        return data.timeline !== "";
+        if (data.timeline === "") return false;
+        if (data.isUsCitizen === null) return false;
+        if (data.isUsCitizen === true && data.consideringRenouncing === null) return false;
+        return true;
       case 4:
-        return data.isUsCitizen !== null;
-      case 5:
         return (
           data.name.trim().length > 0 &&
           /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email) &&
-          data.password.length >= 8
+          data.country.trim().length > 0 &&
+          data.nationality.trim().length > 0 &&
+          data.situation.trim().length > 0
         );
+      case 5:
+        return data.password.length >= 8;
       default:
         return false;
     }
@@ -258,7 +228,6 @@ export function ApplyForProgrammeModal({
       setStep(step + 1);
       return;
     }
-    // Final step → submit
     setLoading(true);
     setError(null);
     try {
@@ -292,7 +261,6 @@ export function ApplyForProgrammeModal({
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             key="apply-backdrop"
             initial={{ opacity: 0 }}
@@ -305,20 +273,19 @@ export function ApplyForProgrammeModal({
             aria-hidden="true"
           />
 
-          {/* Modal */}
           <motion.div
             key="apply-modal"
             initial={{ opacity: 0, scale: 0.97, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.97, y: 10 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.22 }}
             className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-8 pointer-events-none"
           >
             <div
               role="dialog"
               aria-modal="true"
               aria-label="Apply for programme"
-              className="pointer-events-auto w-full max-w-[560px] max-h-[92vh] overflow-y-auto rounded-2xl"
+              className="pointer-events-auto w-full max-w-[600px] max-h-[92vh] overflow-y-auto rounded-2xl"
               style={{
                 background: "#1c2026",
                 border: "1px solid rgba(69,71,75,0.25)",
@@ -327,21 +294,15 @@ export function ApplyForProgrammeModal({
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Header */}
-              <Header
-                step={step}
-                slugs={data.selectedProgrammes}
-                onClose={onClose}
-              />
+              <Header step={step} slugs={data.selectedProgrammes} onClose={onClose} />
 
-              {/* Body */}
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={step}
                   initial={{ opacity: 0, x: 16 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -16 }}
-                  transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ duration: 0.22 }}
                   className="px-7 pt-6 pb-2"
                 >
                   {step === 1 && (
@@ -358,31 +319,46 @@ export function ApplyForProgrammeModal({
                     />
                   )}
                   {step === 3 && (
-                    <StepTimeline
-                      selected={data.timeline}
-                      onChange={(t) => setField("timeline", t)}
+                    <StepProfile
+                      timeline={data.timeline}
+                      familyMembers={data.familyMembers}
+                      isUsCitizen={data.isUsCitizen}
+                      consideringRenouncing={data.consideringRenouncing}
+                      onTimelineChange={(t) => setField("timeline", t)}
+                      onFamilyMembersChange={(m) => setField("familyMembers", m)}
+                      onUsCitizenChange={(b) => {
+                        setField("isUsCitizen", b);
+                        if (!b) setField("consideringRenouncing", null);
+                      }}
+                      onRenouncingChange={(b) => setField("consideringRenouncing", b)}
                     />
                   )}
                   {step === 4 && (
-                    <StepFamilyAndStatus
-                      members={data.familyMembers}
-                      isUsCitizen={data.isUsCitizen}
-                      onMembersChange={(m) => setField("familyMembers", m)}
-                      onUsChange={(b) => setField("isUsCitizen", b)}
+                    <StepContact
+                      data={data}
+                      onChange={(key, value) =>
+                        setField(key as keyof ApplyFormData, value as never)
+                      }
+                      constraints={data.constraints}
+                      onConstraintsToggle={(v) => {
+                        const next = data.constraints.includes(v)
+                          ? data.constraints.filter((x) => x !== v)
+                          : [...data.constraints, v];
+                        setField("constraints", next);
+                      }}
+                      constraintDetail={data.constraintDetail}
+                      onConstraintDetailChange={(v) => setField("constraintDetail", v)}
                     />
                   )}
                   {step === 5 && (
-                    <StepAccount
+                    <StepConfirm
                       data={data}
-                      onNameChange={(v) => setField("name", v)}
-                      onEmailChange={(v) => setField("email", v)}
                       onPasswordChange={(v) => setField("password", v)}
                     />
                   )}
                 </motion.div>
               </AnimatePresence>
 
-              {/* Error banner */}
               {error && (
                 <div
                   className="mx-7 mt-2 mb-1 rounded-lg px-3 py-2 text-xs"
@@ -396,7 +372,6 @@ export function ApplyForProgrammeModal({
                 </div>
               )}
 
-              {/* Actions */}
               <div className="flex gap-2.5 px-7 pt-3 pb-7">
                 {step > 1 && (
                   <button
@@ -505,22 +480,19 @@ function Header({
         </button>
       </div>
 
-      {/* Progress bars */}
       <div className="flex gap-1">
         {Array.from({ length: STEP_COUNT }).map((_, i) => (
           <span
             key={i}
             className="h-[3px] flex-1 rounded-sm"
             style={{
-              background:
-                i < step ? "#bbc4f7" : "rgba(187,196,247,0.12)",
+              background: i < step ? "#bbc4f7" : "rgba(187,196,247,0.12)",
               transition: "background 0.2s",
             }}
           />
         ))}
       </div>
 
-      {/* Step meta */}
       <div className="mt-2.5 flex justify-between text-[10px] tracking-[0.04em]" style={{ color: "#8f9095" }}>
         <span>Step {step} of {STEP_COUNT}</span>
         <span>{STEP_DURATIONS[step - 1]}</span>
@@ -564,13 +536,13 @@ function StepProgrammes({
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <p className={eyebrowStyle} style={{ color: "#bbc4f7" }}>
+        <p className="text-[11px] font-semibold tracking-[0.12em] uppercase" style={{ color: "#bbc4f7" }}>
           Your Application
         </p>
-        <h3 className={`${headingStyle} mt-1.5`} style={{ color: "#dfe2eb", letterSpacing: "-0.015em" }}>
+        <h3 className="mt-1.5 text-xl font-semibold" style={{ color: "#dfe2eb", letterSpacing: "-0.015em" }}>
           Programmes you&apos;re applying for
         </h3>
-        <p className={`${subStyle} mt-1.5`} style={{ color: "#8f9095" }}>
+        <p className="mt-1.5 text-sm leading-relaxed" style={{ color: "#8f9095" }}>
           {selectedProgrammes.length === 1 && selectedProgrammes[0]
             ? `We've pre-selected ${selectedProgrammes[0].country} from the page you came from. Add more if you'd like to discuss several with your advisor, or remove and pick something else.`
             : "Add or remove programmes you'd like to discuss with your advisor."}
@@ -618,7 +590,6 @@ function StepProgrammes({
           </div>
         ))}
 
-        {/* Add another */}
         {!pickerOpen ? (
           <button
             type="button"
@@ -671,19 +642,11 @@ function StepProgrammes({
                     type="button"
                     onClick={() => add(p.slug)}
                     className="flex w-full items-center gap-3 rounded-lg px-2.5 py-2 text-left transition-colors hover:bg-[rgba(187,196,247,0.06)]"
-                    style={{
-                      background: "transparent",
-                      border: 0,
-                      color: "#dfe2eb",
-                      fontFamily: "inherit",
-                    }}
+                    style={{ background: "transparent", border: 0, color: "#dfe2eb", fontFamily: "inherit" }}
                   >
                     <span
                       className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md text-[10px] font-bold tracking-wide"
-                      style={{
-                        background: "rgba(187,196,247,0.12)",
-                        color: "#bbc4f7",
-                      }}
+                      style={{ background: "rgba(187,196,247,0.12)", color: "#bbc4f7" }}
                     >
                       {programmeShortLabel(p)}
                     </span>
@@ -743,13 +706,13 @@ function StepBudget({
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <p className={eyebrowStyle} style={{ color: "#bbc4f7" }}>
+        <p className="text-[11px] font-semibold tracking-[0.12em] uppercase" style={{ color: "#bbc4f7" }}>
           Target Deployment
         </p>
-        <h3 className={`${headingStyle} mt-1.5`} style={{ color: "#dfe2eb", letterSpacing: "-0.015em" }}>
+        <h3 className="mt-1.5 text-xl font-semibold" style={{ color: "#dfe2eb", letterSpacing: "-0.015em" }}>
           Estimated budget
         </h3>
-        <p className={`${subStyle} mt-1.5`} style={{ color: "#8f9095" }}>
+        <p className="mt-1.5 text-sm leading-relaxed" style={{ color: "#8f9095" }}>
           Indicate your anticipated investment threshold. Your advisor will use this to structure the application.
         </p>
       </div>
@@ -809,12 +772,11 @@ function StepBudget({
         />
         <div className="mt-3 flex justify-between text-[10px]" style={{ color: "#8f9095" }}>
           {SLIDER_TICKS.map((t) => (
-            <span key={t}>{formatTick(t)}</span>
+            <span key={t}>{formatTickLabel(t)}</span>
           ))}
         </div>
       </div>
 
-      {/* Inline styles for the range slider — kept here so the component is self-contained */}
       <style jsx>{`
         .apply-slider {
           -webkit-appearance: none;
@@ -856,378 +818,357 @@ function StepBudget({
   );
 }
 
-// ─── Step 3 — Timeline ────────────────────────────────────────────────────────
+// ─── Step 3 — Profile (Timeline + Family + US + Renouncing) ──────────────────
 
-function StepTimeline({
-  selected,
-  onChange,
+function StepProfile({
+  timeline,
+  familyMembers,
+  isUsCitizen,
+  consideringRenouncing,
+  onTimelineChange,
+  onFamilyMembersChange,
+  onUsCitizenChange,
+  onRenouncingChange,
 }: {
-  selected: Timeline | "";
-  onChange: (t: Timeline) => void;
+  timeline: Timeline | "";
+  familyMembers: FamilyMember[];
+  isUsCitizen: boolean | null;
+  consideringRenouncing: boolean | null;
+  onTimelineChange: (t: Timeline) => void;
+  onFamilyMembersChange: (m: FamilyMember[]) => void;
+  onUsCitizenChange: (b: boolean) => void;
+  onRenouncingChange: (b: boolean) => void;
 }) {
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-8">
       <div>
-        <p className={eyebrowStyle} style={{ color: "#bbc4f7" }}>
+        <p className="text-[11px] font-semibold tracking-[0.12em] uppercase" style={{ color: "#bbc4f7" }}>
           Your Profile
         </p>
-        <h3 className={`${headingStyle} mt-1.5`} style={{ color: "#dfe2eb", letterSpacing: "-0.015em" }}>
-          When are you looking to move?
+        <h3 className="mt-1.5 text-xl font-semibold" style={{ color: "#dfe2eb", letterSpacing: "-0.015em" }}>
+          Tell us about your situation
         </h3>
-        <p className={`${subStyle} mt-1.5`} style={{ color: "#8f9095" }}>
-          Your timeline shapes whether we expedite, stage, or sequence the applications.
+        <p className="mt-1.5 text-sm leading-relaxed" style={{ color: "#8f9095" }}>
+          This helps your advisor structure the application properly.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-3">
-        {TIMELINE_OPTIONS.map((opt) => {
-          const isSelected = selected === opt.id;
-          return (
+      {/* Timeline */}
+      <div>
+        <p className="text-xs font-semibold tracking-[0.12em] uppercase mb-1" style={{ color: "#8f9095" }}>
+          Preferred Timeline
+        </p>
+        <p className="text-sm mb-4" style={{ color: "#8f9095" }}>
+          Select the window that aligns with your objectives.
+        </p>
+        <div className="flex flex-col gap-2">
+          {TIMELINE_OPTIONS.map((opt) => (
             <button
               key={opt.id}
               type="button"
-              onClick={() => onChange(opt.id)}
-              className="rounded-xl p-4 text-left transition-all"
+              onClick={() => onTimelineChange(opt.id)}
+              className="flex items-center justify-between rounded-xl px-5 py-4 text-left transition-all duration-200"
               style={{
-                background: "#0a0e14",
-                border: isSelected
-                  ? "1px solid rgba(187,196,247,0.5)"
-                  : "1px solid rgba(69,71,75,0.4)",
-                boxShadow: isSelected ? "0 0 20px rgba(187,196,247,0.08)" : "none",
+                background: timeline === opt.id ? "rgba(187,196,247,0.08)" : "#0a0e14",
+                border:
+                  timeline === opt.id
+                    ? "1px solid rgba(187,196,247,0.4)"
+                    : "1px solid rgba(69,71,75,0.3)",
                 fontFamily: "inherit",
-                color: "inherit",
                 cursor: "pointer",
               }}
             >
-              <div className="mb-3.5 flex items-center justify-between">
-                <span
-                  className="material-symbols-outlined"
-                  style={{ fontSize: 20, color: isSelected ? "#bbc4f7" : "#8f9095" }}
-                >
-                  {opt.icon}
-                </span>
-                <span
-                  className="flex h-[18px] w-[18px] items-center justify-center rounded-full"
-                  style={{
-                    background: isSelected ? "#bbc4f7" : "transparent",
-                    border: isSelected
+              <div>
+                <p className="text-sm font-semibold" style={{ color: "#dfe2eb" }}>
+                  {opt.label}
+                </p>
+                <p className="text-xs mt-0.5" style={{ color: "#8f9095" }}>
+                  {opt.desc}
+                </p>
+              </div>
+              <div
+                className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{
+                  border:
+                    timeline === opt.id
                       ? "2px solid #bbc4f7"
-                      : "2px solid rgba(69,71,75,0.7)",
+                      : "2px solid rgba(69,71,75,0.5)",
+                  background: timeline === opt.id ? "#bbc4f7" : "transparent",
+                }}
+              >
+                {timeline === opt.id && (
+                  <span className="material-symbols-outlined" style={{ fontSize: 14, color: "#242d58" }}>
+                    check
+                  </span>
+                )}
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Family */}
+      <div className="pt-4" style={{ borderTop: "1px solid rgba(69,71,75,0.2)" }}>
+        <p className="text-xs font-semibold tracking-[0.12em] uppercase mb-1" style={{ color: "#8f9095" }}>
+          Family Members
+        </p>
+        <p className="text-sm mb-3" style={{ color: "#8f9095" }}>
+          Add anyone who will be included in the application. Their nationality and age affect programme eligibility.
+        </p>
+        <FamilyMembersField members={familyMembers} onChange={onFamilyMembersChange} />
+      </div>
+
+      {/* US Citizen */}
+      <div className="pt-4" style={{ borderTop: "1px solid rgba(69,71,75,0.2)" }}>
+        <p className="text-xs font-semibold tracking-[0.12em] uppercase mb-1" style={{ color: "#8f9095" }}>
+          US Citizenship
+        </p>
+        <p className="text-sm mb-3" style={{ color: "#8f9095" }}>
+          Are you a US citizen or permanent resident?
+        </p>
+        <div className="flex gap-3">
+          {[true, false].map((val) => (
+            <button
+              key={String(val)}
+              type="button"
+              onClick={() => onUsCitizenChange(val)}
+              className="flex-1 rounded-xl py-3 text-sm font-semibold transition-all"
+              style={{
+                background: isUsCitizen === val ? "rgba(187,196,247,0.1)" : "#0a0e14",
+                border:
+                  isUsCitizen === val
+                    ? "1px solid rgba(187,196,247,0.4)"
+                    : "1px solid rgba(69,71,75,0.3)",
+                color: isUsCitizen === val ? "#bbc4f7" : "#8f9095",
+                fontFamily: "inherit",
+                cursor: "pointer",
+              }}
+            >
+              {val ? "Yes" : "No"}
+            </button>
+          ))}
+        </div>
+        {isUsCitizen === true && (
+          <div className="mt-3">
+            <p className="text-sm mb-3" style={{ color: "#8f9095" }}>
+              Are you considering renouncing US citizenship?
+            </p>
+            <div className="flex gap-3">
+              {[true, false].map((val) => (
+                <button
+                  key={String(val)}
+                  type="button"
+                  onClick={() => onRenouncingChange(val)}
+                  className="flex-1 rounded-xl py-3 text-sm font-semibold transition-all"
+                  style={{
+                    background: consideringRenouncing === val ? "rgba(187,196,247,0.1)" : "#0a0e14",
+                    border:
+                      consideringRenouncing === val
+                        ? "1px solid rgba(187,196,247,0.4)"
+                        : "1px solid rgba(69,71,75,0.3)",
+                    color: consideringRenouncing === val ? "#bbc4f7" : "#8f9095",
+                    fontFamily: "inherit",
+                    cursor: "pointer",
                   }}
                 >
-                  {isSelected && (
-                    <span
-                      className="material-symbols-outlined"
-                      style={{
-                        fontSize: 12,
-                        color: "#242d58",
-                        fontVariationSettings: "'FILL' 1",
-                      }}
-                    >
-                      check
-                    </span>
-                  )}
-                </span>
-              </div>
-              <p className="text-sm font-semibold" style={{ color: isSelected ? "#dfe2eb" : "#c6c6cb" }}>
-                {opt.label}
-              </p>
-              <p className="mt-0.5 text-[11px] leading-relaxed" style={{ color: "#8f9095" }}>
-                {opt.desc}
-              </p>
-            </button>
-          );
-        })}
+                  {val ? "Yes" : "No"}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-// ─── Step 4 — Family + US citizen ─────────────────────────────────────────────
+// ─── Step 4 — Contact ─────────────────────────────────────────────────────────
 
-function StepFamilyAndStatus({
-  members,
-  isUsCitizen,
-  onMembersChange,
-  onUsChange,
+function StepContact({
+  data,
+  onChange,
+  constraints,
+  onConstraintsToggle,
+  constraintDetail,
+  onConstraintDetailChange,
 }: {
-  members: FamilyMember[];
-  isUsCitizen: boolean | null;
-  onMembersChange: (m: FamilyMember[]) => void;
-  onUsChange: (b: boolean) => void;
+  data: Pick<ApplyFormData, "name" | "email" | "phone" | "country" | "nationality" | "situation">;
+  onChange: <K extends keyof ApplyFormData>(key: K, value: string) => void;
+  constraints: string[];
+  onConstraintsToggle: (v: string) => void;
+  constraintDetail: string;
+  onConstraintDetailChange: (v: string) => void;
 }) {
-  const [adding, setAdding] = useState(false);
-  const [draftRelation, setDraftRelation] = useState<FamilyRelation>("spouse");
-  const [draftNationality, setDraftNationality] = useState("");
-  const [draftAge, setDraftAge] = useState("");
-
-  const canSave =
-    draftRelation && draftNationality.trim().length > 0 && draftAge !== "" && Number(draftAge) > 0;
-
-  const save = () => {
-    if (!canSave) return;
-    const m: FamilyMember = {
-      id:
-        typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
-          ? crypto.randomUUID()
-          : `fm-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-      relation: draftRelation,
-      nationality: draftNationality.trim(),
-      age: Number(draftAge),
-    };
-    onMembersChange([...members, m]);
-    setDraftRelation("spouse");
-    setDraftNationality("");
-    setDraftAge("");
-    setAdding(false);
-  };
-
-  const remove = (id: string) => onMembersChange(members.filter((m) => m.id !== id));
-
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <p className={eyebrowStyle} style={{ color: "#bbc4f7" }}>
-          Your Situation
+        <p className="text-[11px] font-semibold tracking-[0.12em] uppercase" style={{ color: "#bbc4f7" }}>
+          Contact Details
         </p>
-        <h3 className={`${headingStyle} mt-1.5`} style={{ color: "#dfe2eb", letterSpacing: "-0.015em" }}>
-          Family &amp; citizenship
+        <h3 className="mt-1.5 text-xl font-semibold" style={{ color: "#dfe2eb", letterSpacing: "-0.015em" }}>
+          Personal particulars
         </h3>
-        <p className={`${subStyle} mt-1.5`} style={{ color: "#8f9095" }}>
-          Dependants can often be included in your application. US citizenship affects structuring.
+        <p className="mt-1.5 text-sm leading-relaxed" style={{ color: "#8f9095" }}>
+          All information is held in strict confidence. No third parties. No spam.
         </p>
       </div>
 
-      {/* Family list */}
-      <div>
-        <p
-          className="mb-3 text-[10px] font-semibold tracking-[0.16em] uppercase"
-          style={{ color: "#8f9095" }}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <FormInput
+          label="Full Name *"
+          value={data.name}
+          onChange={(v) => onChange("name", v)}
+          placeholder="Your legal name"
+        />
+        <FormInput
+          label="Email Address *"
+          type="email"
+          value={data.email}
+          onChange={(v) => onChange("email", v)}
+          placeholder="you@domain.com"
+        />
+        <FormInput
+          label="Phone / WhatsApp"
+          type="tel"
+          value={data.phone}
+          onChange={(v) => onChange("phone", v)}
+          placeholder="+1 555 000 0000"
+        />
+        <div className="flex flex-col gap-1.5">
+          <label
+            className="text-xs font-semibold uppercase"
+            style={{ color: "#8f9095", letterSpacing: "0.04em" }}
+          >
+            Country of Residence *
+          </label>
+          <select
+            value={data.country}
+            onChange={(e) => onChange("country", e.target.value)}
+            style={{
+              ...inputStyle,
+              appearance: "none",
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238f9095' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`,
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "right 1rem center",
+              paddingRight: "2.5rem",
+            }}
+          >
+            <option value="" style={{ background: "#0a0e14" }}>
+              Select country...
+            </option>
+            {COUNTRIES.map((c) => (
+              <option key={c} value={c} style={{ background: "#0a0e14" }}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="sm:col-span-2 flex flex-col gap-1.5">
+          <label
+            className="text-xs font-semibold uppercase"
+            style={{ color: "#8f9095", letterSpacing: "0.04em" }}
+          >
+            Current Citizenships *{" "}
+            <span className="normal-case font-normal">(search and select)</span>
+          </label>
+          <CitizenshipSelector
+            value={data.nationality}
+            onChange={(v) => onChange("nationality", v)}
+          />
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <label
+          className="text-xs font-semibold uppercase"
+          style={{ color: "#8f9095", letterSpacing: "0.04em" }}
         >
-          Family members
+          Tell us a bit about your situation *
+        </label>
+        <textarea
+          rows={4}
+          value={data.situation}
+          placeholder="Share any relevant context — existing structures, specific concerns, what's prompting this move..."
+          onChange={(e) => onChange("situation", e.target.value)}
+          style={{
+            ...inputStyle,
+            resize: "vertical",
+            minHeight: "6rem",
+          }}
+        />
+      </div>
+
+      <div className="pt-4" style={{ borderTop: "1px solid rgba(69,71,75,0.2)" }}>
+        <p className="text-xs font-semibold tracking-[0.12em] uppercase mb-1" style={{ color: "#8f9095" }}>
+          Any constraints we should know about?
+        </p>
+        <p className="text-sm mb-3" style={{ color: "#8f9095" }}>
+          Select any that apply so we can account for them.
         </p>
         <div className="flex flex-col gap-2">
-          {members.map((m) => (
-            <div
-              key={m.id}
-              className="flex items-center gap-3 rounded-xl px-3.5 py-3"
-              style={{ background: "#0a0e14", border: "1px solid rgba(69,71,75,0.3)" }}
-            >
-              <span
-                className="material-symbols-outlined flex-shrink-0"
-                style={{ fontSize: 20, color: "#bbc4f7" }}
-              >
-                {relationIcon(m.relation)}
-              </span>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold" style={{ color: "#dfe2eb" }}>
-                  {relationLabel(m.relation)}
-                </p>
-                <p className="text-[11px]" style={{ color: "#8f9095" }}>
-                  {m.nationality} · {m.age} years old
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => remove(m.id)}
-                style={{ color: "#8f9095", background: "transparent", border: 0, cursor: "pointer" }}
-                aria-label="Remove family member"
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
-                  close
-                </span>
-              </button>
-            </div>
-          ))}
-
-          {!adding ? (
+          {CONSTRAINT_OPTIONS.map((opt) => (
             <button
+              key={opt}
               type="button"
-              onClick={() => setAdding(true)}
-              className="rounded-xl px-3.5 py-3 text-xs font-medium transition-colors hover:text-[#bbc4f7]"
+              onClick={() => onConstraintsToggle(opt)}
+              className="flex items-center gap-3 rounded-lg px-4 py-3 text-left text-sm transition-all"
               style={{
-                background: "transparent",
-                border: "1px dashed rgba(69,71,75,0.5)",
-                color: "#8f9095",
+                background: constraints.includes(opt)
+                  ? "rgba(187,196,247,0.06)"
+                  : "rgba(10,14,20,0.6)",
+                border: constraints.includes(opt)
+                  ? "1px solid rgba(187,196,247,0.3)"
+                  : "1px solid rgba(69,71,75,0.2)",
+                color: "#c6c6cb",
                 fontFamily: "inherit",
                 cursor: "pointer",
               }}
             >
-              + Add family member
-            </button>
-          ) : (
-            <div
-              className="rounded-xl p-3.5"
-              style={{ background: "#0a0e14", border: "1px solid rgba(187,196,247,0.2)" }}
-            >
-              {/* Relation pills */}
-              <div className="mb-3 grid grid-cols-4 gap-1.5">
-                {FAMILY_RELATIONS.map((r) => {
-                  const sel = draftRelation === r.id;
-                  return (
-                    <button
-                      key={r.id}
-                      type="button"
-                      onClick={() => setDraftRelation(r.id)}
-                      className="flex flex-col items-center gap-1 rounded-lg py-2 text-[10px] font-semibold transition-colors"
-                      style={{
-                        background: sel ? "rgba(187,196,247,0.12)" : "transparent",
-                        border: sel
-                          ? "1px solid rgba(187,196,247,0.4)"
-                          : "1px solid rgba(69,71,75,0.4)",
-                        color: sel ? "#dfe2eb" : "#8f9095",
-                        cursor: "pointer",
-                        fontFamily: "inherit",
-                      }}
-                    >
-                      <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-                        {r.icon}
-                      </span>
-                      {r.label}
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="grid grid-cols-2 gap-2 mb-3">
-                <input
-                  type="text"
-                  value={draftNationality}
-                  onChange={(e) => setDraftNationality(e.target.value)}
-                  placeholder="Nationality"
-                  style={inputStyle}
-                />
-                <input
-                  type="number"
-                  value={draftAge}
-                  onChange={(e) => setDraftAge(e.target.value)}
-                  placeholder="Age"
-                  min={0}
-                  max={120}
-                  style={inputStyle}
-                />
-              </div>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setAdding(false);
-                    setDraftNationality("");
-                    setDraftAge("");
-                  }}
-                  className="flex-1 rounded-lg py-2 text-xs font-medium"
-                  style={{
-                    background: "transparent",
-                    border: "1px solid rgba(69,71,75,0.4)",
-                    color: "#c6c6cb",
-                    cursor: "pointer",
-                    fontFamily: "inherit",
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={save}
-                  disabled={!canSave}
-                  className="flex-1 rounded-lg py-2 text-xs font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
-                  style={{
-                    background: "#bbc4f7",
-                    color: "#242d58",
-                    border: 0,
-                    cursor: canSave ? "pointer" : "not-allowed",
-                    fontFamily: "inherit",
-                  }}
-                >
-                  Add
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* US citizen */}
-      <div className="pt-4" style={{ borderTop: "1px solid rgba(69,71,75,0.2)" }}>
-        <p
-          className="mb-3 text-[10px] font-semibold tracking-[0.16em] uppercase"
-          style={{ color: "#8f9095" }}
-        >
-          US citizen?
-        </p>
-        <div className="grid grid-cols-2 gap-3">
-          {[
-            { val: true, label: "Yes", icon: "flag", desc: "We'll factor in US tax considerations." },
-            { val: false, label: "No", icon: "public", desc: "Standard application structure applies." },
-          ].map((opt) => {
-            const sel = isUsCitizen === opt.val;
-            return (
-              <button
-                key={opt.label}
-                type="button"
-                onClick={() => onUsChange(opt.val)}
-                className="rounded-xl p-4 text-left transition-all"
+              <div
+                className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0"
                 style={{
-                  background: "#0a0e14",
-                  border: sel ? "1px solid rgba(187,196,247,0.5)" : "1px solid rgba(69,71,75,0.4)",
-                  boxShadow: sel ? "0 0 20px rgba(187,196,247,0.08)" : "none",
-                  cursor: "pointer",
-                  fontFamily: "inherit",
+                  border: constraints.includes(opt)
+                    ? "2px solid #bbc4f7"
+                    : "2px solid rgba(69,71,75,0.5)",
+                  background: constraints.includes(opt) ? "#bbc4f7" : "transparent",
                 }}
               >
-                <div className="mb-3 flex items-center justify-between">
-                  <span
-                    className="material-symbols-outlined"
-                    style={{ fontSize: 20, color: sel ? "#bbc4f7" : "#8f9095" }}
-                  >
-                    {opt.icon}
+                {constraints.includes(opt) && (
+                  <span className="material-symbols-outlined" style={{ fontSize: 12, color: "#242d58" }}>
+                    check
                   </span>
-                  <span
-                    className="flex h-[18px] w-[18px] items-center justify-center rounded-full"
-                    style={{
-                      background: sel ? "#bbc4f7" : "transparent",
-                      border: sel ? "2px solid #bbc4f7" : "2px solid rgba(69,71,75,0.7)",
-                    }}
-                  >
-                    {sel && (
-                      <span
-                        className="material-symbols-outlined"
-                        style={{
-                          fontSize: 12,
-                          color: "#242d58",
-                          fontVariationSettings: "'FILL' 1",
-                        }}
-                      >
-                        check
-                      </span>
-                    )}
-                  </span>
-                </div>
-                <p className="text-sm font-semibold" style={{ color: sel ? "#dfe2eb" : "#c6c6cb" }}>
-                  {opt.label}
-                </p>
-                <p className="mt-0.5 text-[11px] leading-relaxed" style={{ color: "#8f9095" }}>
-                  {opt.desc}
-                </p>
-              </button>
-            );
-          })}
+                )}
+              </div>
+              {opt}
+            </button>
+          ))}
         </div>
+        {constraints.length > 0 && (
+          <textarea
+            rows={3}
+            value={constraintDetail}
+            placeholder="Please share more detail about your constraints..."
+            onChange={(e) => onConstraintDetailChange(e.target.value)}
+            className="mt-3 w-full"
+            style={{
+              ...inputStyle,
+              resize: "vertical",
+              minHeight: "4.5rem",
+            }}
+          />
+        )}
       </div>
     </div>
   );
 }
 
-// ─── Step 5 — Account + summary ───────────────────────────────────────────────
+// ─── Step 5 — Confirm + Sign up ───────────────────────────────────────────────
 
-function StepAccount({
+function StepConfirm({
   data,
-  onNameChange,
-  onEmailChange,
   onPasswordChange,
 }: {
   data: ApplyFormData;
-  onNameChange: (v: string) => void;
-  onEmailChange: (v: string) => void;
   onPasswordChange: (v: string) => void;
 }) {
   const programmes = useMemo(
@@ -1238,18 +1179,17 @@ function StepAccount({
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <p className={eyebrowStyle} style={{ color: "#bbc4f7" }}>
+        <p className="text-[11px] font-semibold tracking-[0.12em] uppercase" style={{ color: "#bbc4f7" }}>
           Almost done
         </p>
-        <h3 className={`${headingStyle} mt-1.5`} style={{ color: "#dfe2eb", letterSpacing: "-0.015em" }}>
-          Create your account
+        <h3 className="mt-1.5 text-xl font-semibold" style={{ color: "#dfe2eb", letterSpacing: "-0.015em" }}>
+          Confirm &amp; create account
         </h3>
-        <p className={`${subStyle} mt-1.5`} style={{ color: "#8f9095" }}>
-          We&apos;ll save your application and connect you with your advisor.
+        <p className="mt-1.5 text-sm leading-relaxed" style={{ color: "#8f9095" }}>
+          One last step. Set a password to save your application and connect with your advisor.
         </p>
       </div>
 
-      {/* Summary */}
       <div
         className="rounded-xl p-4"
         style={{ background: "#0a0e14", border: "1px solid rgba(69,71,75,0.3)" }}
@@ -1260,6 +1200,7 @@ function StepAccount({
         >
           Your application
         </p>
+
         <SummaryRow
           k="Programmes"
           v={
@@ -1281,42 +1222,45 @@ function StepAccount({
           }
         />
         <SummaryRow k="Budget" v={formatAmount(data.investmentAmount)} />
-        <SummaryRow k="Timeline" v={timelineRange(data.timeline)} />
+        <SummaryRow k="Timeline" v={timelineLabelWithRange(data.timeline)} />
         <SummaryRow k="Family" v={familySummary(data.familyMembers)} />
-        <SummaryRow k="US citizen" v={data.isUsCitizen ? "Yes" : "No"} />
+        <SummaryRow
+          k="US citizen"
+          v={
+            data.isUsCitizen
+              ? data.consideringRenouncing
+                ? "Yes · considering renouncing"
+                : "Yes"
+              : "No"
+          }
+        />
+        <SummaryRow k="Resides in" v={data.country || "—"} />
+        <SummaryRow
+          k="Citizenship"
+          v={data.nationality.split(",").map((s) => s.trim()).filter(Boolean).join(", ") || "—"}
+        />
+        <SummaryRow k="Name" v={data.name || "—"} />
+        <SummaryRow k="Email" v={data.email || "—"} />
       </div>
 
-      {/* Account form */}
-      <div className="flex flex-col gap-3">
-        <Field label="Full Name">
-          <input
-            type="text"
-            value={data.name}
-            onChange={(e) => onNameChange(e.target.value)}
-            placeholder="Your legal name"
-            style={inputStyle}
-          />
-        </Field>
-        <Field label="Email">
-          <input
-            type="email"
-            value={data.email}
-            onChange={(e) => onEmailChange(e.target.value)}
-            placeholder="you@example.com"
-            autoComplete="email"
-            style={inputStyle}
-          />
-        </Field>
-        <Field label="Password">
-          <input
-            type="password"
-            value={data.password}
-            onChange={(e) => onPasswordChange(e.target.value)}
-            placeholder="At least 8 characters"
-            autoComplete="new-password"
-            style={inputStyle}
-          />
-        </Field>
+      <div className="flex flex-col gap-1.5">
+        <label
+          className="text-xs font-semibold uppercase"
+          style={{ color: "#8f9095", letterSpacing: "0.04em" }}
+        >
+          Create Password *
+        </label>
+        <input
+          type="password"
+          value={data.password}
+          onChange={(e) => onPasswordChange(e.target.value)}
+          placeholder="At least 8 characters"
+          autoComplete="new-password"
+          style={inputStyle}
+        />
+        <p className="mt-1 text-[11px]" style={{ color: "#8f9095" }}>
+          You&apos;ll use this with your email above to sign in afterwards.
+        </p>
       </div>
     </div>
   );
@@ -1332,20 +1276,6 @@ function SummaryRow({ k, v }: { k: string; v: React.ReactNode }) {
       <span className="text-right font-semibold" style={{ color: "#dfe2eb" }}>
         {v}
       </span>
-    </div>
-  );
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <label
-        className="mb-1.5 block text-[10px] font-semibold tracking-[0.12em] uppercase"
-        style={{ color: "#8f9095" }}
-      >
-        {label}
-      </label>
-      {children}
     </div>
   );
 }

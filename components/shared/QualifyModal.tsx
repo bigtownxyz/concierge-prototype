@@ -21,28 +21,28 @@ export interface QualifyModalProps {
 }
 
 type StrategicFocus = "mobility" | "tax" | "family" | "assets";
-type Timeline = "immediate" | "strategic" | "long-term";
-type FamilyRelation = "spouse" | "parent" | "sibling" | "child";
+export type Timeline = "immediate" | "strategic" | "long-term";
+export type FamilyRelation = "spouse" | "parent" | "sibling" | "child";
 
-interface FamilyMember {
+export interface FamilyMember {
   id: string;
   relation: FamilyRelation;
   nationality: string;
   age: number;
 }
 
-const FAMILY_RELATIONS: { id: FamilyRelation; label: string; icon: string }[] = [
+export const FAMILY_RELATIONS: { id: FamilyRelation; label: string; icon: string }[] = [
   { id: "spouse", label: "Spouse", icon: "favorite" },
   { id: "child", label: "Child", icon: "child_care" },
   { id: "parent", label: "Parent", icon: "elderly" },
   { id: "sibling", label: "Sibling", icon: "diversity_3" },
 ];
 
-function relationLabel(relation: FamilyRelation): string {
+export function relationLabel(relation: FamilyRelation): string {
   return FAMILY_RELATIONS.find((r) => r.id === relation)?.label ?? relation;
 }
 
-function relationIcon(relation: FamilyRelation): string {
+export function relationIcon(relation: FamilyRelation): string {
   return FAMILY_RELATIONS.find((r) => r.id === relation)?.icon ?? "person";
 }
 
@@ -86,13 +86,13 @@ const EMPTY_FORM: FormData = {
   selectedPrograms: [],
 };
 
-const TIMELINE_OPTIONS: { id: Timeline; label: string; desc: string }[] = [
+export const TIMELINE_OPTIONS: { id: Timeline; label: string; desc: string }[] = [
   { id: "immediate", label: "Immediate", desc: "0-6 months \u2014 Priority processing and rapid capital deployment." },
   { id: "strategic", label: "Strategic", desc: "6-18 months \u2014 Optimised tax planning and jurisdictional vetting." },
   { id: "long-term", label: "Long-term Planning", desc: "Multigenerational wealth preservation and residency layering." },
 ];
 
-const COUNTRIES = [
+export const COUNTRIES = [
   "Afghanistan","Albania","Algeria","Andorra","Angola","Antigua and Barbuda","Argentina","Armenia","Australia","Austria",
   "Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bhutan","Bolivia",
   "Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria","Burkina Faso","Burundi","Cambodia","Cameroon",
@@ -115,7 +115,7 @@ const COUNTRIES = [
   "Uzbekistan","Vanuatu","Vatican City","Venezuela","Vietnam","Yemen","Zambia","Zimbabwe",
 ];
 
-const CONSTRAINT_OPTIONS = [
+export const CONSTRAINT_OPTIONS = [
   "Budget",
   "Timeline",
   "Family situation",
@@ -157,12 +157,12 @@ const STRATEGY_OPTIONS: {
   },
 ];
 
-const SLIDER_TICKS = [100_000, 250_000, 500_000, 750_000, 1_000_000];
-const SLIDER_MIN = 100_000;
-const SLIDER_MAX = 1_000_000;
-const SLIDER_STEP = 25_000;
+export const SLIDER_TICKS = [100_000, 250_000, 500_000, 750_000, 1_000_000];
+export const SLIDER_MIN = 100_000;
+export const SLIDER_MAX = 1_000_000;
+export const SLIDER_STEP = 25_000;
 
-function formatAmount(n: number): string {
+export function formatAmount(n: number): string {
   if (n >= 1_000_000) {
     const m = n / 1_000_000;
     return `$${m % 1 === 0 ? m : m.toFixed(1)}M`;
@@ -170,7 +170,7 @@ function formatAmount(n: number): string {
   return `$${(n / 1_000).toFixed(0)}K`;
 }
 
-function formatTickLabel(n: number): string {
+export function formatTickLabel(n: number): string {
   if (n >= 1_000_000) return `$${n / 1_000_000}M`;
   return `$${n / 1_000}K`;
 }
@@ -422,7 +422,7 @@ function StepInvestment({
 
 // ─── Family Members Field ────────────────────────────────────────────────────
 
-function FamilyMembersField({
+export function FamilyMembersField({
   members,
   onChange,
 }: {
@@ -836,7 +836,7 @@ function StepProfile({
 
 // ─── Step 3 ───────────────────────────────────────────────────────────────────
 
-const inputStyle: React.CSSProperties = {
+export const inputStyle: React.CSSProperties = {
   background: "#0a0e14",
   border: "1px solid rgba(69,71,75,0.3)",
   borderRadius: "0.625rem",
@@ -849,7 +849,7 @@ const inputStyle: React.CSSProperties = {
   transition: "border-color 0.15s",
 };
 
-function FormInput({
+export function FormInput({
   label,
   value,
   onChange,
@@ -887,7 +887,7 @@ function FormInput({
   );
 }
 
-function CitizenshipSelector({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+export function CitizenshipSelector({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
 
