@@ -1,0 +1,38 @@
+<!--
+  Shared visual shell for Concierge auth emails.
+  Reference only — the three production templates (confirm-signup.html,
+  magic-link.html, reset-password.html) inline this same structure with
+  template-specific copy.
+
+  Colour tokens:
+    Body bg          #11101C
+    Card bg          #1B1A2B
+    Card border      #2D2D45
+    Header bg        #181828
+    Gold hairline    #C89A4B  (linear-gradient transparent → gold → transparent)
+    Body text        #B8BAC7
+    Heading text     #F5F5F6
+    Muted/uppercase  #8D90A3
+    Button bg        #353A63
+    Button border    #5A6397
+    Button text      #F5F5F6
+
+  Typography:
+    Manrope 400/500/600/700, system-ui fallbacks. Note: web fonts only load in
+    Apple Mail / iOS. Gmail/Outlook fall back to the system stack — that's fine.
+
+  Logo:
+    Hosted at https://concierge-proto1231.vercel.app/logo.png (600×100 PNG).
+    PNG used instead of SVG because SVG support in email clients is patchy
+    (Outlook strips it entirely).
+
+  Supabase variables used:
+    {{ .ConfirmationURL }}  — the click-through link
+    {{ .Email }}            — recipient address (optional, used in disclaimer)
+    {{ .SiteURL }}          — your Site URL setting (not used in these templates)
+
+  Subject lines configured in Supabase Dashboard (not in HTML):
+    Confirm signup   →  "Confirm your email — Concierge"
+    Magic link       →  "Your sign-in link"
+    Reset password   →  "Reset your password"
+-->
