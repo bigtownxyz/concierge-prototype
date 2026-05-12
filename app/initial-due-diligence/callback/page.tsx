@@ -1,21 +1,21 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 /**
  * Invite-link callback.
  *
- * Supabase's email auth uses the implicit flow by default for admin-issued
- * invites — tokens arrive in the URL hash (#access_token=...), NOT the query
- * string. The hash never reaches the server, so this has to be a client
- * page (not a Route Handler).
+ * Supabase's Auth Admin /invite endpoint uses the implicit flow by default:
+ * tokens arrive in the URL hash (#access_token=...&refresh_token=...), not
+ * the query string. @supabase/ssr's browser client defaults to PKCE flow,
+ * which only processes ?code= — it ignores hash tokens entirely. So we
+ * parse the hash ourselves and call setSession explicitly.
  *
- * The @supabase/ssr browser client auto-detects URL hash tokens on init and
- * sets the cookie-backed session via createBrowserClient. We listen for the
- * SIGNED_IN event and route onward to /set-password. We also handle the
- * PKCE ?code= case for completeness, since some flows use that.
+ * Also handles the PKCE ?code= branch for forward compatibility.
+ *
+ * Must be a client page (not Route Handler) because URL hash is browser-only.
  */
 
 const SURFACE_BG = "#10141a";
@@ -23,14 +23,6 @@ const INK_SOFT = "#8f9095";
 const FONT = "var(--font-manrope, 'Manrope', sans-serif)";
 
 export default function DdCallbackPage() {
-  return (
-    <Suspense fallback={<Shell label="Signing you in…" />}>
-      <DdCallbackInner />
-    </Suspense>
-  );
-}
-
-function DdCallbackInner() {
   const router = useRouter();
   const [status, setStatus] = useState("Signing you in…");
 
@@ -43,65 +35,76 @@ function DdCallbackInner() {
     const goLoginError = () =>
       router.replace("/initial-due-diligence/login?error=auth");
 
-    // SIGNED_IN fires once the browser client finishes processing URL hash
-    // tokens (or once exchangeCodeForSession resolves for PKCE).
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (cancelled) return;
-      if ((event === "SIGNED_IN" || event === "INITIAL_SESSION") && session) {
-        goSetPassword();
-      }
-    });
-
     (async () => {
-      // 1. PKCE branch: ?code= present, exchange it explicitly.
-      const params = new URL(window.location.href).searchParams;
-      const code = params.get("code");
+      // ─── 1. Implicit flow (Supabase Auth Admin /invite default) ──────────
+      // Hash looks like: #access_token=...&refresh_token=...&type=invite&...
+      const hash = window.location.hash.startsWith("#")
+        ? window.location.hash.slice(1)
+        : window.location.hash;
+      if (hash) {
+        const params = new URLSearchParams(hash);
+        const access_token = params.get("access_token");
+        const refresh_token = params.get("refresh_token");
+        if (access_token && refresh_token) {
+          const { error } = await supabase.auth.setSession({
+            access_token,
+            refresh_token,
+          });
+          if (cancelled) return;
+          if (error) {
+            console.error("[dd-callback] setSession failed", error);
+            setStatus(
+              "This link has expired or already been used. Redirecting…"
+            );
+            setTimeout(goLoginError, 1400);
+            return;
+          }
+          // Clear the hash from the address bar — cosmetic, and prevents a
+          // reload from re-processing stale tokens.
+          window.history.replaceState(
+            null,
+            "",
+            window.location.pathname + window.location.search
+          );
+          goSetPassword();
+          return;
+        }
+      }
+
+      // ─── 2. PKCE flow (?code=...) ──────────────────────────────────────
+      const code = new URL(window.location.href).searchParams.get("code");
       if (code) {
         const { error } = await supabase.auth.exchangeCodeForSession(code);
         if (cancelled) return;
         if (error) {
-          setStatus("This link has expired or already been used. Redirecting…");
+          console.error("[dd-callback] exchangeCodeForSession failed", error);
+          setStatus(
+            "This link has expired or already been used. Redirecting…"
+          );
           setTimeout(goLoginError, 1400);
+          return;
         }
-        // Success path is handled by onAuthStateChange.
+        goSetPassword();
         return;
       }
 
-      // 2. Implicit branch: tokens come in the hash, the client auto-detects.
-      // Give that a moment, then sanity-check.
-      await new Promise((r) => setTimeout(r, 800));
-      if (cancelled) return;
-      const { data } = await supabase.auth.getSession();
-      if (!data.session) {
-        // No tokens in hash either — bad/expired link.
-        setStatus("This link has expired or already been used. Redirecting…");
-        setTimeout(goLoginError, 1400);
-      }
-      // Success path: onAuthStateChange already routed.
+      // ─── 3. Neither — bad link ─────────────────────────────────────────
+      setStatus("This link is invalid or has expired. Redirecting…");
+      setTimeout(goLoginError, 1400);
     })();
 
     return () => {
       cancelled = true;
-      subscription.unsubscribe();
     };
   }, [router]);
 
-  return <Shell label={status} />;
-}
-
-function Shell({ label }: { label: string }) {
   return (
     <div
       className="flex min-h-screen items-center justify-center px-6"
       style={{ background: SURFACE_BG }}
     >
-      <p
-        className="text-sm"
-        style={{ color: INK_SOFT, fontFamily: FONT }}
-      >
-        {label}
+      <p className="text-sm" style={{ color: INK_SOFT, fontFamily: FONT }}>
+        {status}
       </p>
     </div>
   );
