@@ -24,6 +24,100 @@ const COMMON_REFERENCE_PLATFORMS = [
   "Personal website",
 ];
 
+// ─── Validation ──────────────────────────────────────────────────────────────
+// Per-step required-field checks. Returns a list of missing-field labels so
+// we can render a clear "you still need to fill X, Y, Z" banner. Each step's
+// rules are deliberately conservative — block forward navigation if anything
+// critical is empty, but leave optional sections (references, net worth)
+// alone unless the data is internally inconsistent.
+
+const trimmed = (v: string | null | undefined): string =>
+  (typeof v === "string" ? v.trim() : "");
+
+function validateStep(step: number, d: DdSubmission): string[] {
+  const errs: string[] = [];
+  switch (step) {
+    case 1: {
+      if (!trimmed(d.first_name)) errs.push("First name");
+      if (!trimmed(d.last_name)) errs.push("Last name");
+      if (!trimmed(d.country_of_birth)) errs.push("Country of birth");
+      if (!trimmed(d.date_of_birth)) errs.push("Date of birth");
+      if (d.has_government_birth_certificate === null)
+        errs.push("Birth-certificate question");
+      if (!trimmed(d.address_street)) errs.push("Street address");
+      if (!trimmed(d.address_city)) errs.push("City");
+      if (!trimmed(d.address_country)) errs.push("Country");
+      if (!trimmed(d.address_postcode)) errs.push("Post / ZIP code");
+      if (!trimmed(d.marital_status)) errs.push("Marital status");
+      break;
+    }
+    case 2: {
+      if (!trimmed(d.passport_issuing_country))
+        errs.push("Passport issuing country");
+      if (!trimmed(d.passport_file_path)) errs.push("Passport upload");
+      break;
+    }
+    case 3: {
+      if (d.is_sole_applicant === null) errs.push("Sole-applicant question");
+      if (d.is_sole_applicant === false) {
+        const additional = d.additional_applicants ?? [];
+        if (additional.length === 0) {
+          errs.push("At least one additional applicant");
+        } else {
+          const incomplete = additional.some(
+            (a) => !trimmed(a.name) || !trimmed(a.relationship)
+          );
+          if (incomplete)
+            errs.push("Name and relationship for every additional applicant");
+        }
+      }
+      break;
+    }
+    case 4: {
+      // References optional — but enforce consistency: if a row has one of
+      // platform/url, it must have the other.
+      const refs = d.personal_references ?? [];
+      const inconsistent = refs.some(
+        (r) =>
+          (trimmed(r.platform) && !trimmed(r.url)) ||
+          (!trimmed(r.platform) && trimmed(r.url))
+      );
+      if (inconsistent)
+        errs.push("References need both a platform name and a URL");
+      break;
+    }
+    case 5: {
+      if (!trimmed(d.employment_status)) errs.push("Employment status");
+      if (!trimmed(d.funds_source)) errs.push("Source of funds");
+      if (!d.investment_method) errs.push("Investment method");
+      break;
+    }
+    case 6:
+      // Net worth — all optional; no blocking rules.
+      break;
+    case 7: {
+      if (d.security_visa_denied === null)
+        errs.push("Visa / permit / citizenship denial question");
+      if (d.security_criminal_investigation === null)
+        errs.push("Criminal-investigation question");
+      if (d.security_threat === null) errs.push("Security-threat question");
+      if (d.security_communicable_disease === null)
+        errs.push("Communicable-disease question");
+      if (d.security_prior_cbi_application === null)
+        errs.push("Prior CBI-application question");
+      break;
+    }
+    case 8: {
+      if (!trimmed(d.police_records_notes))
+        errs.push(
+          "Police-records notes (write “Nothing to disclose” if applicable)"
+        );
+      break;
+    }
+  }
+  return errs;
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface AdditionalApplicant {
@@ -443,6 +537,19 @@ export function DdWizard({
   // Save the current `data` to Supabase and advance to `nextStep` (or stay).
   const saveAndAdvance = useCallback(
     async (nextStep: number) => {
+      // Block advance if required fields aren't filled. Validation runs
+      // client-side here AND on the server side via the submit API guard for
+      // step 8 — belt and braces.
+      const missing = validateStep(step, data);
+      if (missing.length > 0) {
+        setError(
+          `Please complete the following before continuing: ${missing.join(
+            ", "
+          )}.`
+        );
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
       setSaving(true);
       setError(null);
       try {
@@ -485,7 +592,7 @@ export function DdWizard({
         setSaving(false);
       }
     },
-    [data, supabase, userId, router, patch]
+    [data, step, supabase, userId, router, patch]
   );
 
   const goBack = useCallback(() => {
@@ -495,6 +602,17 @@ export function DdWizard({
   }, [step]);
 
   const submitFinal = useCallback(async () => {
+    // Validate the last step (police-records notes) before firing the submit.
+    const missing = validateStep(step, data);
+    if (missing.length > 0) {
+      setError(
+        `Please complete the following before submitting: ${missing.join(
+          ", "
+        )}.`
+      );
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
     setSaving(true);
     setError(null);
     try {
@@ -523,7 +641,7 @@ export function DdWizard({
     } finally {
       setSaving(false);
     }
-  }, [data.police_records_notes, supabase, userId, router]);
+  }, [data, step, supabase, userId, router]);
 
   // ─── Per-step content ─────────────────────────────────────────────────────
 
