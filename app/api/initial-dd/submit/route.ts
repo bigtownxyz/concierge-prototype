@@ -139,6 +139,9 @@ export async function POST(request: Request) {
   const additionalApplicants: { name?: string; relationship?: string }[] =
     Array.isArray(row.additional_applicants) ? row.additional_applicants : [];
 
+  const personalReferences: { platform?: string; url?: string }[] =
+    Array.isArray(row.personal_references) ? row.personal_references : [];
+
   const text = `Initial Due Diligence submitted
 
 Applicant: ${fullName}
@@ -162,6 +165,11 @@ Sole applicant:         ${fmtBool(row.is_sole_applicant)}
 ${additionalApplicants.length > 0
   ? additionalApplicants.map((a, i) => `  ${i + 1}. ${a.name ?? "(no name)"} — ${a.relationship ?? "(no relationship)"}`).join("\n")
   : "(none)"}
+
+— PERSONAL REFERENCES
+${personalReferences.length > 0
+  ? personalReferences.map((r, i) => `  ${i + 1}. ${r.platform ?? "(no platform)"}: ${r.url ?? "(no url)"}`).join("\n")
+  : "(none provided)"}
 
 — FUNDS
 Employment status:      ${row.employment_status ?? "—"}

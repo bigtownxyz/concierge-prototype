@@ -4,12 +4,36 @@ import { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Logo } from "@/components/shared/Logo";
+import { COUNTRIES, FAMILY_RELATIONS } from "@/components/shared/QualifyModal";
+
+// Relationship options shown in the "additional applicants" picker.
+// Mirrors the existing qualify-flow set + Other as a free-text fallback.
+const APPLICANT_RELATIONSHIPS: string[] = [
+  ...FAMILY_RELATIONS.map((r) => r.label),
+  "Domestic partner",
+  "Other",
+];
+
+// Common platforms shown as quick-add chips on the References step.
+// The user can also add free-form rows (e.g. Substack, GitHub, niche forum).
+const COMMON_REFERENCE_PLATFORMS = [
+  "LinkedIn",
+  "Twitter / X",
+  "Instagram",
+  "Facebook",
+  "Personal website",
+];
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface AdditionalApplicant {
   name: string;
   relationship: string;
+}
+
+export interface PersonalReference {
+  platform: string;
+  url: string;
 }
 
 export interface DdSubmission {
@@ -34,6 +58,8 @@ export interface DdSubmission {
   // APPLICANTS
   is_sole_applicant: boolean | null;
   additional_applicants: AdditionalApplicant[] | null;
+  // REFERENCES
+  personal_references: PersonalReference[] | null;
   // FUNDS
   employment_status: string | null;
   funds_source: string | null;
@@ -97,6 +123,7 @@ const STEP_LABELS = [
   "Start",
   "Passport",
   "Applicants",
+  "References",
   "Funds",
   "Net worth",
   "Security",
@@ -516,12 +543,14 @@ export function DdWizard({
       case 3:
         return <StepApplicants data={data} patch={patch} />;
       case 4:
-        return <StepFunds data={data} patch={patch} />;
+        return <StepReferences data={data} patch={patch} />;
       case 5:
-        return <StepNetWorth data={data} patch={patch} />;
+        return <StepFunds data={data} patch={patch} />;
       case 6:
-        return <StepSecurity data={data} patch={patch} />;
+        return <StepNetWorth data={data} patch={patch} />;
       case 7:
+        return <StepSecurity data={data} patch={patch} />;
+      case 8:
         return <StepPolice data={data} patch={patch} />;
       default:
         return null;
@@ -721,9 +750,11 @@ function StepStart({
 
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Country of birth" required>
-          <TextInput
+          <Select
             value={data.country_of_birth ?? ""}
             onChange={(v) => patch("country_of_birth", v)}
+            options={COUNTRIES}
+            placeholder="Select country…"
           />
         </Field>
         <Field label="Date of birth" required>
@@ -775,9 +806,11 @@ function StepStart({
       </div>
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Country" required>
-          <TextInput
+          <Select
             value={data.address_country ?? ""}
             onChange={(v) => patch("address_country", v)}
+            options={COUNTRIES}
+            placeholder="Select country…"
           />
         </Field>
         <Field label="Post / ZIP code" required>
@@ -866,9 +899,11 @@ function StepPassport({
         body="The passport you intend to use for the application."
       />
       <Field label="Issuing country" required>
-        <TextInput
+        <Select
           value={data.passport_issuing_country ?? ""}
           onChange={(v) => patch("passport_issuing_country", v)}
+          options={COUNTRIES}
+          placeholder="Select country…"
         />
       </Field>
       <Field
@@ -1023,10 +1058,11 @@ function StepApplicants({
                   />
                 </Field>
                 <Field label="Relationship to you">
-                  <TextInput
+                  <Select
                     value={row.relationship}
                     onChange={(v) => updateRow(i, "relationship", v)}
-                    placeholder="e.g. Spouse, Son, Parent"
+                    options={APPLICANT_RELATIONSHIPS}
+                    placeholder="Select…"
                   />
                 </Field>
                 <button
@@ -1060,6 +1096,148 @@ function StepApplicants({
           </button>
         </div>
       )}
+    </div>
+  );
+}
+
+function StepReferences({
+  data,
+  patch,
+}: {
+  data: DdSubmission;
+  patch: PatchFn;
+}) {
+  const refs = data.personal_references ?? [];
+
+  const setRefs = (next: PersonalReference[]) =>
+    patch("personal_references", next);
+
+  const addRow = (platform: string = "") => {
+    setRefs([...refs, { platform, url: "" }]);
+  };
+
+  const updateRow = (i: number, key: keyof PersonalReference, value: string) => {
+    setRefs(refs.map((row, idx) => (idx === i ? { ...row, [key]: value } : row)));
+  };
+
+  const removeRow = (i: number) => {
+    setRefs(refs.filter((_, idx) => idx !== i));
+  };
+
+  // Pre-existing platforms in the list (so quick-add chips can grey-out
+  // ones already used — small UX courtesy)
+  const usedPlatforms = new Set(
+    refs.map((r) => r.platform.trim().toLowerCase()).filter(Boolean)
+  );
+
+  return (
+    <div className="flex flex-col gap-6">
+      <SectionHeading
+        title="Personal references"
+        body="Links to your professional and personal online profiles. Helps your advisor verify identity and confirm your public footprint matches your application."
+      />
+
+      {/* Quick-add chips */}
+      <div className="flex flex-wrap gap-2">
+        {COMMON_REFERENCE_PLATFORMS.map((p) => {
+          const used = usedPlatforms.has(p.toLowerCase());
+          return (
+            <button
+              key={p}
+              type="button"
+              onClick={() => addRow(p)}
+              disabled={used}
+              className="rounded-full px-3 py-1.5 text-xs font-semibold transition-all disabled:opacity-40"
+              style={{
+                background: used ? "transparent" : "rgba(187,196,247,0.10)",
+                border: `1px solid ${used ? HAIRLINE : "rgba(187,196,247,0.30)"}`,
+                color: used ? INK_SOFT : PRIMARY,
+                fontFamily: FONT,
+                cursor: used ? "not-allowed" : "pointer",
+              }}
+            >
+              + {p}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Rows */}
+      {refs.length === 0 ? (
+        <p
+          className="text-sm leading-6"
+          style={{ color: INK_SOFT, fontFamily: FONT }}
+        >
+          No references added yet. Tap a chip above, or use &ldquo;Add
+          another&rdquo; for something not listed.
+        </p>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {refs.map((row, i) => (
+            <div
+              key={i}
+              className="rounded-xl p-4"
+              style={{
+                background: SURFACE_DEEP,
+                border: `1px solid ${HAIRLINE}`,
+              }}
+            >
+              <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto] sm:items-end">
+                <Field label={`Platform`}>
+                  <TextInput
+                    value={row.platform}
+                    onChange={(v) => updateRow(i, "platform", v)}
+                    placeholder="e.g. LinkedIn"
+                  />
+                </Field>
+                <Field label="URL or handle">
+                  <TextInput
+                    value={row.url}
+                    onChange={(v) => updateRow(i, "url", v)}
+                    placeholder="https://… or @handle"
+                    inputMode="url"
+                  />
+                </Field>
+                <button
+                  type="button"
+                  onClick={() => removeRow(i)}
+                  className="rounded-lg px-3 py-2 text-xs"
+                  style={{
+                    background: "transparent",
+                    border: `1px solid ${HAIRLINE}`,
+                    color: INK_SOFT,
+                    fontFamily: FONT,
+                  }}
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <button
+        type="button"
+        onClick={() => addRow("")}
+        className="self-start rounded-xl px-4 py-2.5 text-sm font-semibold"
+        style={{
+          background: "rgba(187,196,247,0.12)",
+          border: `1px solid ${PRIMARY}`,
+          color: PRIMARY,
+          fontFamily: FONT,
+        }}
+      >
+        + Add another
+      </button>
+
+      <p
+        className="text-xs leading-6"
+        style={{ color: INK_SOFT, fontFamily: FONT }}
+      >
+        Adding references is optional but recommended. The more public
+        verification you provide, the faster the DD review.
+      </p>
     </div>
   );
 }
