@@ -54,10 +54,21 @@ function loadEnv() {
 
 async function main() {
   const email = process.argv[2];
+  // Optional second arg lets you pre-seed the profile full_name. If absent,
+  // we use a placeholder derived from the email — the existing handle_new_user
+  // trigger requires profiles.full_name to be NOT NULL, and the applicant will
+  // overwrite it on Step 1 of the wizard.
+  const fullNameArg = process.argv[3];
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    console.error("Usage: node scripts/invite-dd-applicant.mjs <email>");
+    console.error(
+      "Usage: node scripts/invite-dd-applicant.mjs <email> [\"Full Name\"]"
+    );
     process.exit(1);
   }
+  const fullName =
+    fullNameArg && fullNameArg.trim()
+      ? fullNameArg.trim()
+      : email.split("@")[0].replace(/[._-]+/g, " ");
 
   const env = loadEnv();
   const url = env.NEXT_PUBLIC_SUPABASE_URL;
@@ -81,6 +92,7 @@ async function main() {
   const redirectTo = `${redirectBase.replace(/\/+$/, "")}/initial-due-diligence/callback`;
 
   console.log(`→ Inviting  ${email}`);
+  console.log(`→ Full name ${fullName} (placeholder — the wizard overwrites this)`);
   console.log(`→ Redirect  ${redirectTo}`);
 
   const res = await fetch(`${url.replace(/\/+$/, "")}/auth/v1/invite`, {
@@ -92,7 +104,13 @@ async function main() {
     },
     body: JSON.stringify({
       email,
-      data: { source: "dd-invite-script" },
+      // `data` becomes raw_user_meta_data on auth.users. The existing
+      // handle_new_user trigger reads full_name from here when seeding
+      // public.profiles (NOT NULL constraint).
+      data: {
+        full_name: fullName,
+        source: "dd-invite-script",
+      },
       // Supabase reads `redirect_to` and verifies it against the allowlist.
       redirect_to: redirectTo,
     }),
