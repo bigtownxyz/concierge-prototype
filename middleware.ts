@@ -16,18 +16,40 @@ const HOLDING_HOSTS = new Set([
   "www.thecitizenshipconcierge.com",
 ]);
 
+// Public sub-routes inside /initial-due-diligence — anyone (no session) may
+// reach these. Everything else under /initial-due-diligence requires a session.
+const DD_PUBLIC_PATHS = new Set([
+  "/initial-due-diligence/login",
+  "/initial-due-diligence/callback",
+]);
+
 export async function middleware(request: NextRequest) {
-  // Holding-page short-circuit: on the public domain, rewrite every path to
-  // /coming-soon. Skip locale routing and Supabase session refresh entirely —
-  // there's nothing on the holding page that needs them.
   const host = (request.headers.get("host") || "").toLowerCase().split(":")[0];
+  const { pathname } = request.nextUrl;
+
+  // DD applicant portal — lives outside the [locale] tree, runs Supabase
+  // session refresh but NOT next-intl. Treat it the same on every host so
+  // /initial-due-diligence works on both vercel.app AND
+  // thecitizenshipconcierge.com (the holding-host rewrite below is bypassed).
+  if (pathname.startsWith("/initial-due-diligence")) {
+    const { supabaseResponse, user } = await updateSession(request);
+    const isPublic = DD_PUBLIC_PATHS.has(pathname);
+    if (!user && !isPublic) {
+      const loginUrl = new URL("/initial-due-diligence/login", request.url);
+      loginUrl.searchParams.set("next", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    return supabaseResponse;
+  }
+
+  // Holding-page short-circuit: on the public domain, rewrite every other
+  // path to /coming-soon. Skip locale routing and Supabase session refresh
+  // entirely — there's nothing on the holding page that needs them.
   if (HOLDING_HOSTS.has(host)) {
     const url = request.nextUrl.clone();
     url.pathname = "/coming-soon";
     return NextResponse.rewrite(url);
   }
-
-  const { pathname } = request.nextUrl;
 
   // Strip locale prefix to get the raw path for matching
   // e.g. /en/portal/dashboard -> /portal/dashboard
