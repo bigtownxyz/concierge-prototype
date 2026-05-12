@@ -86,8 +86,28 @@ export default function SetPasswordPage() {
         setError(updateError.message);
         return;
       }
+      // Clear the must_change_password flag (service-role only, hence the
+      // API call). If this fails, the user is still stuck in /set-password
+      // by middleware — log but don't show error since the password update
+      // itself succeeded.
+      try {
+        const flagRes = await fetch("/api/initial-dd/password-changed", {
+          method: "POST",
+        });
+        if (!flagRes.ok) {
+          console.error(
+            "[set-password] failed to clear flag",
+            await flagRes.text()
+          );
+        }
+      } catch (flagErr) {
+        console.error("[set-password] flag-clear request failed", flagErr);
+      }
       setSuccess(true);
       setTimeout(() => {
+        // router.refresh() forces middleware to re-evaluate with the new
+        // session state (now must_change_password=false).
+        router.refresh();
         router.push("/initial-due-diligence");
       }, 1400);
     } catch (err) {

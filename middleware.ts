@@ -39,6 +39,24 @@ export async function middleware(request: NextRequest) {
       loginUrl.searchParams.set("next", pathname);
       return NextResponse.redirect(loginUrl);
     }
+    // Force password change on first sign-in for invited applicants.
+    // app_metadata.must_change_password is stamped by the invite script and
+    // cleared (via service-role API) once the applicant updates their pw.
+    // The applicant cannot touch app_metadata from the browser, so this flag
+    // can't be self-cleared.
+    const mustChangePassword =
+      (user?.app_metadata as { must_change_password?: boolean } | undefined)
+        ?.must_change_password === true;
+    if (
+      user &&
+      mustChangePassword &&
+      pathname !== "/initial-due-diligence/set-password" &&
+      !isPublic
+    ) {
+      return NextResponse.redirect(
+        new URL("/initial-due-diligence/set-password", request.url)
+      );
+    }
     return supabaseResponse;
   }
 

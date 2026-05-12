@@ -1,28 +1,36 @@
 #!/usr/bin/env node
 /**
- * Invite a Due Diligence applicant.
+ * Invite a Due Diligence applicant with a temporary password.
  *
  * Usage:
  *   node scripts/invite-dd-applicant.mjs client@example.com
+ *   node scripts/invite-dd-applicant.mjs client@example.com "Real Name"
+ *   node scripts/invite-dd-applicant.mjs client@example.com "Real Name" "ChosenTempPass!"
  *
  * What it does:
- *   1. Reads NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY from .env.local.
- *   2. Calls Supabase Auth Admin "invite" REST endpoint with a `redirect_to`
- *      pointing at our /initial-due-diligence/callback route.
- *   3. Logs the result. Supabase emails the applicant a magic link with
- *      `?code=...` so they land on the callback and can set their password.
+ *   1. Creates an auth user with the email + a temporary password (random by
+ *      default, or supplied as the 3rd arg). The email is auto-confirmed so
+ *      they can sign in immediately — no magic-link round-trip.
+ *   2. Stamps app_metadata = { is_dd_applicant: true, must_change_password: true }
+ *      so the middleware pins them to the DD portal AND forces a password
+ *      change on first sign-in (their temp password becomes useless after).
+ *   3. Seeds user_metadata.full_name so the existing handle_new_user trigger
+ *      doesn't choke on the profiles NOT NULL constraint.
+ *   4. Prints the three things you email to your client:
+ *        Login URL · email · temporary password
  *
- * Notes:
- *   - Run this from the project root.
- *   - The redirect target host defaults to the vercel.app URL because DNS
- *     for thecitizenshipconcierge.com may not be live yet. Override with
- *     INVITE_REDIRECT_BASE if you want to invite via the public domain.
- *   - Add the redirect URL to Supabase Auth → URL Configuration → Redirect
- *     URLs allowlist BEFORE running this, or Supabase will refuse the invite.
+ * Send those three lines to your client over any channel (email, Telegram,
+ * Signal, however). No URLs to prefetch, no one-time tokens that vendors
+ * can consume by accident.
+ *
+ * If a user with that email already exists, run this with the `--reset`
+ * flag (1st arg) to delete + recreate them first:
+ *   node scripts/invite-dd-applicant.mjs --reset client@example.com
  */
 
 import fs from "node:fs";
 import path from "node:path";
+import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -52,26 +60,74 @@ function loadEnv() {
   return env;
 }
 
+// Friendly 12-char password — readable but not guessable. Skips ambiguous
+// chars (0/O, 1/l/I). Designed for "send in an email" usability.
+function generateTempPassword() {
+  const upper = "ABCDEFGHJKMNPQRSTUVWXYZ";
+  const lower = "abcdefghjkmnpqrstuvwxyz";
+  const digit = "23456789";
+  const symbol = "!@#$%^*+=";
+  const all = upper + lower + digit + symbol;
+  const pick = (set) => set[crypto.randomInt(0, set.length)];
+  const chars = [pick(upper), pick(lower), pick(digit), pick(symbol)];
+  for (let i = chars.length; i < 12; i++) chars.push(pick(all));
+  // Fisher-Yates shuffle so the guaranteed-class chars aren't all at the start
+  for (let i = chars.length - 1; i > 0; i--) {
+    const j = crypto.randomInt(0, i + 1);
+    [chars[i], chars[j]] = [chars[j], chars[i]];
+  }
+  return chars.join("");
+}
+
+async function findUser(url, headers, email) {
+  let page = 1;
+  while (true) {
+    const r = await fetch(
+      `${url}/auth/v1/admin/users?page=${page}&per_page=200`,
+      { headers }
+    );
+    const j = await r.json();
+    const list = j.users ?? [];
+    const hit = list.find((u) => (u.email || "").toLowerCase() === email);
+    if (hit) return hit;
+    if (list.length < 200) return null;
+    page++;
+  }
+}
+
+async function deleteUser(url, headers, userId) {
+  await fetch(`${url}/rest/v1/qualifications?user_id=eq.${userId}`, {
+    method: "DELETE",
+    headers,
+  });
+  await fetch(`${url}/rest/v1/due_diligence_submissions?user_id=eq.${userId}`, {
+    method: "DELETE",
+    headers,
+  });
+  const r = await fetch(`${url}/auth/v1/admin/users/${userId}`, {
+    method: "DELETE",
+    headers,
+  });
+  return r.status;
+}
+
 async function main() {
-  const email = process.argv[2];
-  // Optional second arg lets you pre-seed the profile full_name. If absent,
-  // we use a placeholder derived from the email — the existing handle_new_user
-  // trigger requires profiles.full_name to be NOT NULL, and the applicant will
-  // overwrite it on Step 1 of the wizard.
-  const fullNameArg = process.argv[3];
+  const args = process.argv.slice(2);
+  const reset = args[0] === "--reset";
+  const positional = reset ? args.slice(1) : args;
+  const email = positional[0]?.toLowerCase();
+  const fullNameArg = positional[1];
+  const passwordArg = positional[2];
+
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     console.error(
-      "Usage: node scripts/invite-dd-applicant.mjs <email> [\"Full Name\"]"
+      'Usage: node scripts/invite-dd-applicant.mjs [--reset] <email> ["Full Name"] ["TempPass"]'
     );
     process.exit(1);
   }
-  const fullName =
-    fullNameArg && fullNameArg.trim()
-      ? fullNameArg.trim()
-      : email.split("@")[0].replace(/[._-]+/g, " ");
 
   const env = loadEnv();
-  const url = env.NEXT_PUBLIC_SUPABASE_URL;
+  const url = env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/+$/, "");
   const key = env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url) {
     console.error("✗ NEXT_PUBLIC_SUPABASE_URL not set in .env.local");
@@ -81,65 +137,81 @@ async function main() {
     console.error("✗ SUPABASE_SERVICE_ROLE_KEY not set in .env.local");
     process.exit(1);
   }
+  const headers = {
+    apikey: key,
+    Authorization: `Bearer ${key}`,
+    "Content-Type": "application/json",
+  };
 
-  // Default to the vercel.app URL because DNS for the public domain may not
-  // be live yet. Override via INVITE_REDIRECT_BASE if needed.
-  const redirectBase =
-    process.env.INVITE_REDIRECT_BASE ||
-    env.NEXT_PUBLIC_SITE_URL ||
-    "https://concierge-proto1231.vercel.app";
+  // Login URL is canonical on the public domain. Override via INVITE_LOGIN_URL
+  // if you want to send via the vercel.app URL for testing.
+  const loginUrl =
+    process.env.INVITE_LOGIN_URL ||
+    `${(env.NEXT_PUBLIC_SITE_URL || "https://thecitizenshipconcierge.com").replace(/\/+$/, "")}/initial-due-diligence/login`;
 
-  const redirectTo = `${redirectBase.replace(/\/+$/, "")}/initial-due-diligence/callback`;
+  const fullName =
+    fullNameArg?.trim() ||
+    email.split("@")[0].replace(/[._-]+/g, " ");
+  const tempPassword = passwordArg?.trim() || generateTempPassword();
 
-  console.log(`→ Inviting  ${email}`);
-  console.log(`→ Full name ${fullName} (placeholder — the wizard overwrites this)`);
-  console.log(`→ Redirect  ${redirectTo}`);
+  // Optional cleanup
+  const existing = await findUser(url, headers, email);
+  if (existing) {
+    if (reset) {
+      console.log(`→ --reset: deleting existing user ${existing.id}`);
+      const status = await deleteUser(url, headers, existing.id);
+      console.log(`  delete status: ${status}`);
+    } else {
+      console.error(
+        `✗ User ${email} already exists (id ${existing.id}).\n` +
+          `  Run with --reset as the first argument to wipe + reinvite:\n` +
+          `    node scripts/invite-dd-applicant.mjs --reset ${email}`
+      );
+      process.exit(1);
+    }
+  }
 
-  const res = await fetch(`${url.replace(/\/+$/, "")}/auth/v1/invite`, {
+  console.log(`→ Creating  ${email}`);
+  console.log(`→ Full name ${fullName} (placeholder — wizard overwrites)`);
+
+  const create = await fetch(`${url}/auth/v1/admin/users`, {
     method: "POST",
-    headers: {
-      apikey: key,
-      Authorization: `Bearer ${key}`,
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify({
       email,
-      // `data` becomes raw_user_meta_data on auth.users. The existing
-      // handle_new_user trigger reads full_name from here when seeding
-      // public.profiles (NOT NULL constraint).
-      data: {
-        full_name: fullName,
-        source: "dd-invite-script",
-      },
-      // app_metadata is server-only — applicants cannot edit it from the
-      // browser. The middleware uses this flag to pin DD applicants to
-      // /initial-due-diligence and prevent them from loading the
-      // marketing site (no /results, /programs, etc.).
+      password: tempPassword,
+      // Confirm so they can log in without a verification round-trip
+      email_confirm: true,
+      // Trigger reads full_name from raw_user_meta_data
+      user_metadata: { full_name: fullName, source: "dd-invite-script" },
+      // Server-only flags the middleware reads
       app_metadata: {
         is_dd_applicant: true,
+        must_change_password: true,
       },
-      // Supabase reads `redirect_to` and verifies it against the allowlist.
-      redirect_to: redirectTo,
     }),
   });
 
-  const json = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    console.error("✗ Invite failed:", res.status, json);
-    if (
-      json?.msg?.toLowerCase().includes("not allowed") ||
-      json?.error_description?.toLowerCase().includes("redirect")
-    ) {
-      console.error(
-        "\nTip: add this redirect URL to Supabase Auth → URL Configuration → Redirect URLs:\n  " +
-          redirectTo
-      );
-    }
+  if (!create.ok) {
+    const body = await create.text();
+    console.error("✗ Create user failed:", create.status, body);
     process.exit(1);
   }
+  const user = await create.json();
 
-  console.log("✓ Invite sent. Supabase user id:", json.id ?? "(see response below)");
-  console.log(json);
+  console.log("");
+  console.log("════════════════════════════════════════════════════════════");
+  console.log(" Send these three lines to your client:");
+  console.log("════════════════════════════════════════════════════════════");
+  console.log(`  URL:      ${loginUrl}`);
+  console.log(`  Email:    ${email}`);
+  console.log(`  Password: ${tempPassword}`);
+  console.log("════════════════════════════════════════════════════════════");
+  console.log("");
+  console.log("  On first sign-in, they'll be forced to set their own password");
+  console.log("  before they can access the wizard.");
+  console.log("");
+  console.log(`  Supabase user id: ${user.id}`);
 }
 
 main().catch((err) => {

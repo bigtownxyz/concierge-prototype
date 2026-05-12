@@ -41,27 +41,38 @@ link is clicked. The vercel.app one works today.)
 
 ## Inviting an applicant
 
-### Option A — script (one command)
+### Option A — script (recommended)
 
 From the project root:
 
 ```powershell
 node scripts/invite-dd-applicant.mjs client@example.com
+node scripts/invite-dd-applicant.mjs client@example.com "Real Name"
+node scripts/invite-dd-applicant.mjs client@example.com "Real Name" "ChosenTempPass!"
 ```
 
 The script:
 
 1. Reads `NEXT_PUBLIC_SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` from
    `.env.local`.
-2. POSTs to Supabase Auth Admin `/auth/v1/invite` with
-   `redirect_to=https://concierge-proto1231.vercel.app/initial-due-diligence/callback`.
-3. Supabase emails the applicant a magic link.
+2. Creates an auth user with a temporary password (random, or the value
+   you pass as the 3rd arg). Email is auto-confirmed — no magic link.
+3. Stamps `app_metadata`:
+   - `is_dd_applicant: true` — middleware pins them to the DD portal
+   - `must_change_password: true` — middleware forces a password change
+     on first sign-in before they can see the wizard
+4. Prints three lines: **Login URL · Email · Temp password**
 
-Override the redirect base if you want to send via the public domain:
+Send those three lines to your client over any channel (email, Telegram,
+Signal, etc.). On first sign-in they'll be routed to `/set-password`
+automatically; once they change it, the must-change flag is cleared by
+the server and they proceed to the wizard.
+
+If a user with that email already exists, run with `--reset` to wipe
+and re-invite:
 
 ```powershell
-$env:INVITE_REDIRECT_BASE = "https://thecitizenshipconcierge.com"
-node scripts/invite-dd-applicant.mjs client@example.com
+node scripts/invite-dd-applicant.mjs --reset client@example.com
 ```
 
 ### Option B — Supabase Dashboard
