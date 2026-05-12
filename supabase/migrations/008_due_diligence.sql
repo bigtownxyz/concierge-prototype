@@ -119,13 +119,18 @@ CREATE POLICY "dd: applicant creates own submission"
 -- Applicant can update their own row ONLY while it's not yet submitted.
 -- This is the critical compliance guard — without it a client could re-edit
 -- a finalized DD by calling supabase.from().update() in the browser console.
+--
+-- USING is evaluated against the EXISTING row (gates which rows are even
+-- visible/targetable). WITH CHECK is evaluated against the row's POST-UPDATE
+-- state, so it must NOT require submitted_at IS NULL — otherwise the act of
+-- setting submitted_at = now() would fail its own check predicate.
 DROP POLICY IF EXISTS "dd: applicant updates own submission while open"
   ON public.due_diligence_submissions;
 CREATE POLICY "dd: applicant updates own submission while open"
   ON public.due_diligence_submissions
   FOR UPDATE
   USING (auth.uid() = user_id AND submitted_at IS NULL)
-  WITH CHECK (auth.uid() = user_id AND submitted_at IS NULL);
+  WITH CHECK (auth.uid() = user_id);
 
 -- ──────────────────────────────────────────────────────────────────────────
 -- Storage bucket for passport uploads
