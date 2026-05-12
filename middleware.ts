@@ -8,7 +8,25 @@ const intlMiddleware = createIntlMiddleware(routing);
 // Routes that require an active session (matched against path WITHOUT locale prefix)
 const PROTECTED_PREFIXES = ["/portal", "/admin"];
 
+// Hosts that should show the coming-soon holding page instead of the full app.
+// Lowercase, no port. The full app stays accessible on the vercel.app URL.
+// Delete this block (and the early-return below) to flip the new domain live.
+const HOLDING_HOSTS = new Set([
+  "thecitizenshipconcierge.com",
+  "www.thecitizenshipconcierge.com",
+]);
+
 export async function middleware(request: NextRequest) {
+  // Holding-page short-circuit: on the public domain, rewrite every path to
+  // /coming-soon. Skip locale routing and Supabase session refresh entirely —
+  // there's nothing on the holding page that needs them.
+  const host = (request.headers.get("host") || "").toLowerCase().split(":")[0];
+  if (HOLDING_HOSTS.has(host)) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/coming-soon";
+    return NextResponse.rewrite(url);
+  }
+
   const { pathname } = request.nextUrl;
 
   // Strip locale prefix to get the raw path for matching
@@ -54,6 +72,8 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    // Exclude /coming-soon so the holding page renders cleanly without
+    // re-entering locale routing (which would redirect to /en/coming-soon).
+    "/((?!api|_next/static|_next/image|favicon.ico|coming-soon|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };
