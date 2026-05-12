@@ -7,7 +7,8 @@
   overflow: hidden;
   background: #04060f;
   color: #ffffff;
-  font-family: 'Geist', ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
+  /* Match programme-snapshots typography: Manrope display + body. */
+  font-family: var(--font-manrope), 'Manrope', ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
   font-feature-settings: "ss01", "ss02";
   -webkit-font-smoothing: antialiased;
 }
@@ -100,15 +101,19 @@
 }
 
 /* ---------- Eyebrow + headline ---------- */
+/* Text styling mirrors the snapshots eyebrow (0.72rem semibold, .24em tracking,
+   color #bbc4f7); pill chrome (border, background, blur) is retained because
+   it's hero affordance, not text styling. */
 .eyebrow {
   display: inline-flex; align-items: center; gap: 10px;
   border: 1px solid var(--hairline);
   background: rgba(207, 204, 255, 0.06);
-  color: var(--ink-soft);
+  color: #bbc4f7;
   padding: 9px 18px;
   border-radius: 999px;
-  font-size: 12px;
-  letter-spacing: 0.18em;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -120,33 +125,40 @@
 }
 
 .headline {
-  font-size: clamp(48px, 6.2vw, 92px);
-  line-height: 0.98;
-  letter-spacing: -0.035em;
+  /* Snapshots h2: clamp(3rem, 5.6vw, 5.15rem) / leading 0.96 / -0.045em / #f4f6fb. */
+  font-size: clamp(3rem, 5.6vw, 5.15rem);
+  line-height: 0.96;
+  letter-spacing: -0.045em;
   font-weight: 400;
   margin-top: 28px;
   text-wrap: pretty;
-  color: #f1eeff;
+  color: #f4f6fb;
 }
 .headline em {
-  font-style: normal;
-  background: linear-gradient(180deg, #ffffff 0%, #cfccff 65%, #8884d6 100%);
-  -webkit-background-clip: text;
-          background-clip: text;
-  color: transparent;
+  /* Snapshots em: Instrument Serif italic, weight 400, -0.01em, inherits color. */
+  font-family: var(--font-instrument-serif), 'Instrument Serif', Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: inherit;
+  background: none;
+  -webkit-background-clip: initial;
+          background-clip: initial;
   display: inline;
 }
 .headline .tail {
+  /* No counterpart in snapshots — keep as a subordinated subline, same Manrope. */
   color: var(--ink-soft);
   font-weight: 300;
 }
 
 .lede {
+  /* Snapshots body p: text-base / leading-8 / #d7d9e1 (16px, 32px line-height). */
   margin-top: 28px;
   max-width: 520px;
-  color: var(--ink-soft);
-  font-size: 17px;
-  line-height: 1.55;
+  color: #d7d9e1;
+  font-size: 1rem;
+  line-height: 2;
   font-weight: 400;
 }
 
