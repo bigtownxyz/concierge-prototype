@@ -45,7 +45,8 @@ export default function ComingSoonPage() {
     <ShaderBackground>
       <main className="absolute inset-0 z-20 flex items-center justify-center px-6">
         <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-          {/* Wordmark — small, quiet identifier at the top */}
+          {/* Wordmark — the dominant element. Logo is the brand moment;
+              everything below it is supporting copy. */}
           <Image
             src="/logo.svg"
             alt="Concierge"
@@ -55,22 +56,21 @@ export default function ComingSoonPage() {
             priority
           />
 
-          {/* Eyebrow pill — same pattern as the LandingV2 hero */}
-          <div className="mt-14 inline-flex items-center gap-2 rounded-full border border-[#bbc4f7]/20 bg-[#23233A]/70 px-4 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[#bbc4f7] sm:mt-16">
+          {/* Tagline — Manrope + Instrument Serif italic accent. Deliberately
+              sized below the logo so the wordmark stays the primary read. */}
+          <p
+            className="mt-7 text-[clamp(1.35rem,2.4vw,1.85rem)] leading-tight tracking-[-0.02em] text-[#dfe2eb] sm:mt-8"
+            style={DISPLAY_FONT}
+          >
+            Citizenship by <span style={SERIF_ITALIC}>design.</span>
+          </p>
+
+          {/* Eyebrow pill — same pattern as the LandingV2 hero. Smallest
+              element in the stack; reads as a quiet status footnote. */}
+          <div className="mt-7 inline-flex items-center gap-2 rounded-full border border-[#bbc4f7]/20 bg-[#23233A]/70 px-4 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[#bbc4f7] sm:mt-8">
             <span className="h-2 w-2 rounded-full bg-[#bbc4f7]" />
             Launching soon
           </div>
-
-          {/* Headline — Manrope display, Instrument Serif italic accent on
-              "design." Matches the hero's scale (clamp 3rem → 6.15rem). */}
-          <h1
-            className="mt-7 text-balance text-[clamp(3rem,7vw,6.15rem)] leading-[0.92] tracking-[-0.05em] text-[#dfe2eb]"
-            style={DISPLAY_FONT}
-          >
-            Citizenship by
-            <br />
-            <span style={SERIF_ITALIC}>design.</span>
-          </h1>
         </div>
       </main>
     </ShaderBackground>
