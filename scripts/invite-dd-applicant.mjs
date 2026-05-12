@@ -111,6 +111,13 @@ async function main() {
         full_name: fullName,
         source: "dd-invite-script",
       },
+      // app_metadata is server-only — applicants cannot edit it from the
+      // browser. The middleware uses this flag to pin DD applicants to
+      // /initial-due-diligence and prevent them from loading the
+      // marketing site (no /results, /programs, etc.).
+      app_metadata: {
+        is_dd_applicant: true,
+      },
       // Supabase reads `redirect_to` and verifies it against the allowlist.
       redirect_to: redirectTo,
     }),

@@ -65,7 +65,22 @@ export async function middleware(request: NextRequest) {
   // 1. Refresh Supabase session on every request
   const { supabaseResponse, user } = await updateSession(request);
 
-  // 2. Guard portal routes — redirect to /login with ?next= if no session
+  // 2. DD applicants are pinned to their portal. If a user with the
+  //    app_metadata.is_dd_applicant flag tries to load any non-DD route,
+  //    bounce them back to /initial-due-diligence. Prevents marketing-site
+  //    bleed even if they paste in /login, /results, /programs, etc.
+  //    app_metadata can only be set server-side (service role) — applicants
+  //    cannot escape the flag from the browser.
+  const isDdApplicant =
+    (user?.app_metadata as { is_dd_applicant?: boolean } | undefined)
+      ?.is_dd_applicant === true;
+  if (isDdApplicant) {
+    return NextResponse.redirect(
+      new URL("/initial-due-diligence", request.url)
+    );
+  }
+
+  // 3. Guard portal routes — redirect to /login with ?next= if no session
   if (isProtected && !user) {
     // Determine the locale segment so we redirect to the right locale's login
     const localeMatch = pathname.match(/^\/([a-z]{2}(-[A-Z]{2})?)\//);
