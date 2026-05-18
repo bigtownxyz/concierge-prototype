@@ -511,6 +511,16 @@ export default function ResultsPage() {
         .eq("user_id", user.id)
         .maybeSingle();
 
+      // Enquiry users (programme-first flow) have no strategic focus — they
+      // picked programmes, they didn't take the discovery quiz. /results is
+      // the quiz destination and would show them empty "recommendations".
+      // Send them to /application-received, which lists their selected
+      // programmes + the consultation booking.
+      if (qual && (!qual.strategic_focus || qual.strategic_focus.length === 0)) {
+        router.replace("/application-received");
+        return;
+      }
+
       setQualification(qual ?? null);
 
       if (qual) {
