@@ -10,6 +10,10 @@ import { formatCurrency } from "@/lib/utils";
 import { RadarChart } from "@/components/shared/RadarChart";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { QualifyModal } from "@/components/shared/QualifyModal";
+import {
+  ApplyForProgrammeModal,
+  type ApplyFormData,
+} from "@/components/shared/ApplyForProgrammeModal";
 
 // ---------------------------------------------------------------------------
 // Benefit icon mapping
@@ -254,42 +258,69 @@ function GlassCard({
 export function ProgramDetail({ program }: { program: Program }) {
   const [qualifyOpen, setQualifyOpen] = useState(false);
   const { user } = useUser();
-  const [hasQualification, setHasQualification] = useState(false);
-  const [qualId, setQualId] = useState<string | null>(null);
-  const [addedToApp, setAddedToApp] = useState(false);
+  const [applyOpen, setApplyOpen] = useState(false);
+  // Returning, already-qualified users get the apply modal pre-filled with
+  // their saved profile + qualification, with this programme added.
+  const [applyProgrammes, setApplyProgrammes] = useState<string[]>([program.slug]);
+  const [applyPrefill, setApplyPrefill] = useState<Partial<ApplyFormData> | undefined>();
 
   useEffect(() => {
     if (!user) return;
     const supabase = createClient();
-    supabase
-      .from("qualifications")
-      .select("id")
-      .eq("user_id", user.id)
-      .maybeSingle()
-      .then(({ data }) => { if (data) { setHasQualification(true); setQualId(data.id); } });
-  }, [user]);
 
-  const handleAddToApplication = async () => {
-    if (!qualId || !user) return;
-    const supabase = createClient();
-    // Check if already added
-    const { data: existing } = await supabase
-      .from("qualification_programs")
-      .select("id")
-      .eq("qualification_id", qualId)
-      .eq("program_slug", program.slug)
-      .maybeSingle();
-    if (existing) {
-      setAddedToApp(true);
-      return;
+    async function loadPrefill() {
+      const [{ data: profile }, { data: qual }] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("full_name, email, phone, country, nationality")
+          .eq("id", user!.id)
+          .maybeSingle(),
+        supabase
+          .from("qualifications")
+          .select(
+            "id, investment_amount, timeline, family_members, is_us_citizen, considering_renouncing, constraints, constraint_detail, situation"
+          )
+          .eq("user_id", user!.id)
+          .maybeSingle(),
+      ]);
+
+      if (!qual) return;
+
+      const { data: progs } = await supabase
+        .from("qualification_programs")
+        .select("program_slug")
+        .eq("qualification_id", qual.id);
+
+      const existingSlugs = (progs ?? []).map(
+        (r: { program_slug: string }) => r.program_slug
+      );
+      setApplyProgrammes(
+        Array.from(new Set([program.slug, ...existingSlugs]))
+      );
+
+      setApplyPrefill({
+        investmentAmount: qual.investment_amount ?? 500_000,
+        timeline: qual.timeline ?? "",
+        familyMembers: Array.isArray(qual.family_members)
+          ? qual.family_members
+          : [],
+        isUsCitizen: qual.is_us_citizen,
+        consideringRenouncing: qual.considering_renouncing,
+        constraints: qual.constraints ?? [],
+        constraintDetail: qual.constraint_detail ?? "",
+        situation: qual.situation ?? "",
+        name: profile?.full_name ?? "",
+        email: profile?.email ?? "",
+        phone: profile?.phone ?? "",
+        country: profile?.country ?? "",
+        nationality: profile?.nationality ?? "",
+      });
     }
-    await supabase.from("qualification_programs").insert({
-      qualification_id: qualId,
-      program_slug: program.slug,
-      match_score: 80,
-    });
-    setAddedToApp(true);
-  };
+
+    loadPrefill();
+  }, [user, program.slug]);
+
+  const openApply = () => setApplyOpen(true);
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -573,19 +604,28 @@ export function ProgramDetail({ program }: { program: Program }) {
                   </div>
                 </div>
 
-                {/* CTA button */}
+                {/* Primary CTA — apply for this programme */}
                 <button
                   type="button"
-                  onClick={hasQualification ? handleAddToApplication : () => setQualifyOpen(true)}
+                  onClick={openApply}
                   className="flex items-center justify-center gap-2 w-full rounded-xl py-3.5 text-sm font-semibold transition-all"
                   style={{
-                    background: addedToApp ? "rgba(62,143,120,0.2)" : "var(--color-obsidian-primary)",
-                    color: addedToApp ? "#3e8f78" : "var(--color-obsidian-on-primary)",
-                    border: addedToApp ? "1px solid rgba(62,143,120,0.3)" : "none",
+                    background: "var(--color-obsidian-primary)",
+                    color: "var(--color-obsidian-on-primary)",
+                    border: "none",
                   }}
                 >
-                  {addedToApp ? "Added to Application" : hasQualification ? "Add to Application" : "Check Eligibility"}
-                  {addedToApp ? <span className="material-symbols-outlined" style={{ fontSize: 16 }}>check</span> : <ArrowRight className="h-4 w-4" />}
+                  Enquire
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+                {/* Secondary — discovery path for the unsure */}
+                <button
+                  type="button"
+                  onClick={() => setQualifyOpen(true)}
+                  className="mt-2.5 w-full text-center text-xs transition-colors"
+                  style={{ color: "rgba(198,198,203,0.55)", background: "transparent", border: 0, cursor: "pointer" }}
+                >
+                  Not sure this is the right fit? Take the 2-min quiz →
                 </button>
               </GlassCard>
             </motion.div>
@@ -1155,7 +1195,7 @@ export function ProgramDetail({ program }: { program: Program }) {
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <button
                     type="button"
-                    onClick={() => setQualifyOpen(true)}
+                    onClick={openApply}
                     className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl text-sm font-semibold transition-all"
                     style={{
                       background: "var(--color-obsidian-primary)",
@@ -1163,9 +1203,9 @@ export function ProgramDetail({ program }: { program: Program }) {
                     }}
                   >
                     <span className="material-symbols-outlined text-[16px]">
-                      checklist
+                      send
                     </span>
-                    {hasQualification ? "Add to Application" : "Check Qualification"}
+                    Enquire
                   </button>
                   <Link
                     href="/contact"
@@ -1187,8 +1227,16 @@ export function ProgramDetail({ program }: { program: Program }) {
                   className="mt-6 text-xs"
                   style={{ color: "rgba(198, 198, 203, 0.35)" }}
                 >
-                  Free assessment &nbsp;&middot;&nbsp; 2 minutes &nbsp;&middot;&nbsp; No commitment
+                  No commitment &nbsp;&middot;&nbsp; Strictly confidential &nbsp;&middot;&nbsp; Advisor-led
                 </p>
+                <button
+                  type="button"
+                  onClick={() => setQualifyOpen(true)}
+                  className="mt-3 text-xs transition-colors"
+                  style={{ color: "rgba(198,198,203,0.55)", background: "transparent", border: 0, cursor: "pointer" }}
+                >
+                  Not sure {program.name} is the right fit? Take the 2-min quiz →
+                </button>
               </div>
             </div>
           </motion.div>
@@ -1204,8 +1252,16 @@ export function ProgramDetail({ program }: { program: Program }) {
       {/*   100..700,0..1,-50..200" />                                         */}
       {/* ------------------------------------------------------------------ */}
 
-      {/* Qualify modal */}
+      {/* Discovery path — quiz for the unsure */}
       <QualifyModal isOpen={qualifyOpen} onClose={() => setQualifyOpen(false)} />
+
+      {/* Primary path — apply for this programme directly */}
+      <ApplyForProgrammeModal
+        isOpen={applyOpen}
+        onClose={() => setApplyOpen(false)}
+        initialProgrammes={applyProgrammes}
+        initialData={applyPrefill}
+      />
     </div>
   );
 }

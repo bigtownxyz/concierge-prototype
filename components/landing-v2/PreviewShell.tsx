@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { Logo } from "@/components/shared/Logo";
 import { useUser } from "@/hooks/useUser";
-import { OpenQualifyButton } from "./OpenQualifyButton";
+import { OpenApplyButton } from "./OpenApplyButton";
 
 const previewLinks = [
   { href: "/programs", label: "Programmes" },
@@ -74,10 +74,10 @@ export function PreviewShell({ children }: { children: React.ReactNode }) {
                 <Link href="/login" className={ghostLinkClass}>
                   Sign In
                 </Link>
-                <OpenQualifyButton className={primaryButtonClass}>
-                  Get Qualified
+                <OpenApplyButton className={primaryButtonClass}>
+                  Enquire
                   <ArrowRight className="h-4 w-4" />
-                </OpenQualifyButton>
+                </OpenApplyButton>
               </>
             )}
           </div>

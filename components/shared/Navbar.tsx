@@ -239,10 +239,10 @@ export function Navbar() {
                   Sign In
                 </Link>
                 <button
-                  onClick={() => window.dispatchEvent(new CustomEvent("open-qualify-modal"))}
+                  onClick={() => window.dispatchEvent(new CustomEvent("open-apply-modal"))}
                   className="inline-flex items-center gap-2 rounded-full px-5 py-2 bg-foreground hover:bg-foreground/90 text-background text-sm font-medium transition-all duration-200"
                 >
-                  Get Qualified
+                  Apply
                 </button>
               </div>
             ) : null}
@@ -361,10 +361,10 @@ export function Navbar() {
                 </>
               ) : !loading ? (
                 <button
-                  onClick={() => { setMobileOpen(false); window.dispatchEvent(new CustomEvent("open-qualify-modal")); }}
+                  onClick={() => { setMobileOpen(false); window.dispatchEvent(new CustomEvent("open-apply-modal")); }}
                   className="flex items-center justify-center rounded-xl bg-[#bbc4f7] py-3.5 text-base font-semibold text-[#242d58] transition-colors hover:bg-[#a9b3ea] w-full"
                 >
-                  Get Started
+                  Apply
                 </button>
               ) : null}
             </div>

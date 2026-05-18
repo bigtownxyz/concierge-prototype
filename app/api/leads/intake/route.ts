@@ -45,6 +45,9 @@ const PostSchema = z.object({
   qualification: QualificationSchema,
   signedUp: z.boolean().optional(),
   conciergeUserId: z.uuid().nullable().optional(),
+  // Lead origin. Absent → legacy quiz submissions, so default "quiz".
+  // The programme-first enquiry flow sends "enquiry".
+  source: z.enum(["quiz", "enquiry"]).default("quiz"),
 });
 
 const PatchSchema = z.object({

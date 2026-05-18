@@ -6,7 +6,6 @@ import Image from "next/image";
 import { PROGRAMS, REGIONS, type Program } from "@/lib/constants";
 import { Link } from "@/i18n/navigation";
 import { formatCurrency } from "@/lib/utils";
-import { QualifyModal } from "@/components/shared/QualifyModal";
 import { useUser } from "@/hooks/useUser";
 
 // ─── Type maps ────────────────────────────────────────────────────────────────
@@ -78,13 +77,11 @@ function matchesRange(min: number, range: InvestmentRange): boolean {
 function ProgramCard({
   program,
   index,
-  onInquire,
-  hasQualification,
+  onApply,
 }: {
   program: Program;
   index: number;
-  onInquire: () => void;
-  hasQualification: boolean;
+  onApply: () => void;
 }) {
   const gradient = REGION_GRADIENTS[program.region] ?? REGION_GRADIENTS.global;
   const accent = REGION_ACCENT[program.region] ?? REGION_ACCENT.global;
@@ -359,29 +356,27 @@ function ProgramCard({
             </span>
             Breakdown
           </Link>
-          {!hasQualification && (
-            <button
-              type="button"
-              onClick={onInquire}
-              className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200"
-              style={{
-                background: "#bbc4f7",
-                color: "#242d58",
-                fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background = "#cdd4fa";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background = "#bbc4f7";
-              }}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-                mail
-              </span>
-              Inquire
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={onApply}
+            className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200"
+            style={{
+              background: "#bbc4f7",
+              color: "#242d58",
+              fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = "#cdd4fa";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = "#bbc4f7";
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
+              arrow_forward
+            </span>
+            Enquire
+          </button>
         </div>
       </div>
     </motion.div>
@@ -740,7 +735,6 @@ export function ProgramsGrid() {
   const [activeType, setActiveType] = useState<string>("all");
   const [activeRegion, setActiveRegion] = useState<string>("all");
   const [activeRange, setActiveRange] = useState<InvestmentRange>("all");
-  const [qualifyOpen, setQualifyOpen] = useState(false);
   const { user } = useUser();
   const [qualPrograms, setQualPrograms] = useState<
     { program_slug: string; match_score: number }[]
@@ -779,6 +773,14 @@ export function ProgramsGrid() {
         });
     });
   }, [user]);
+
+  // Flow A: a card's "Apply" opens the form with that programme preselected.
+  // Multiple programmes are handled inside the form's Step 1. No cart.
+  const handleApply = (slug: string) => {
+    window.dispatchEvent(
+      new CustomEvent("open-apply-modal", { detail: { slug } })
+    );
+  };
 
   const filtered = useMemo(() => {
     return PROGRAMS.filter((p) => {
@@ -1046,8 +1048,7 @@ export function ProgramsGrid() {
                   key={program.slug}
                   program={program}
                   index={i}
-                  onInquire={() => setQualifyOpen(true)}
-                  hasQualification={!!(user && qualPrograms.length > 0)}
+                  onApply={() => handleApply(program.slug)}
                 />
               ))}
             </motion.div>
@@ -1096,9 +1097,6 @@ export function ProgramsGrid() {
 
       {/* ── Comparison section ────────────────────────────────────────────── */}
       <ComparisonSection />
-
-      {/* ── Qualify modal ────────────────────────────────────────────────── */}
-      <QualifyModal isOpen={qualifyOpen} onClose={() => setQualifyOpen(false)} />
     </>
   );
 }

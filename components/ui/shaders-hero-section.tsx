@@ -190,10 +190,10 @@ export function HeroContent() {
         {/* CTAs */}
         <div className="flex items-center justify-center gap-3 flex-wrap mb-10">
           <button
-            onClick={() => window.dispatchEvent(new CustomEvent("open-qualify-modal"))}
+            onClick={() => window.dispatchEvent(new CustomEvent("open-apply-modal"))}
             className="px-7 py-2.5 rounded-full bg-white text-[#0D0D1A] font-medium text-xs tracking-wide transition-all duration-200 hover:bg-white/90"
           >
-            Get Qualified Free
+            Enquire
           </button>
           <Link
             href="/programs"

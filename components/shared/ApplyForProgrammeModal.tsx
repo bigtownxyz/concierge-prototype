@@ -2,7 +2,15 @@
 
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLocale } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { PROGRAMS, type Program } from "@/lib/constants";
+import { createClient } from "@/lib/supabase/client";
+import {
+  submitApplicationSignup,
+  persistAuthedApplication,
+  logEnquiryToCrm,
+} from "@/lib/concierge-apply-signup";
 import {
   COUNTRIES,
   CONSTRAINT_OPTIONS,
@@ -28,7 +36,13 @@ export interface ApplyForProgrammeModalProps {
   onClose: () => void;
   /** Programme slugs the user arrived with (typically the page they clicked from) */
   initialProgrammes?: string[];
-  /** Called after a successful submission. Phase 2 will wire signup + DB write here. */
+  /** Pre-fill for a returning, already-qualified user (saved profile + qualification). */
+  initialData?: Partial<ApplyFormData>;
+  /**
+   * Optional override. When provided (e.g. the internal preview route) it is
+   * called instead of the real signup pipeline. In production this is omitted
+   * and the modal runs submitApplicationSignup itself.
+   */
   onSubmit?: (data: ApplyFormData) => Promise<void> | void;
 }
 
@@ -116,13 +130,13 @@ function headerPillText(slugs: string[]): string {
   if (slugs.length === 0) return "No programmes selected";
   if (slugs.length === 1) {
     const p = programmeFromSlug(slugs[0]);
-    return p ? `Applying for ${p.country}` : "Applying for 1 programme";
+    return p ? `Enquiring about ${p.country}` : "Enquiring about 1 programme";
   }
   if (slugs.length === 2) {
     const first = programmeFromSlug(slugs[0]);
-    return first ? `Applying for ${first.country} + 1` : "Applying for 2 programmes";
+    return first ? `Enquiring about ${first.country} + 1` : "Enquiring about 2 programmes";
   }
-  return `Applying for ${slugs.length} programmes`;
+  return `Enquiring about ${slugs.length} programmes`;
 }
 
 function timelineLabelWithRange(t: Timeline | ""): string {
@@ -170,27 +184,56 @@ export function ApplyForProgrammeModal({
   isOpen,
   onClose,
   initialProgrammes = [],
+  initialData,
   onSubmit,
 }: ApplyForProgrammeModalProps) {
+  const locale = useLocale();
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [data, setData] = useState<ApplyFormData>({
     ...EMPTY,
-    selectedProgrammes: initialProgrammes,
+    ...initialData,
+    selectedProgrammes:
+      initialProgrammes.length > 0
+        ? initialProgrammes
+        : initialData?.selectedProgrammes ?? [],
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirmEmail, setConfirmEmail] = useState(false);
+  // Returning signed-in users skip account creation entirely.
+  const [authedEmail, setAuthedEmail] = useState<string | null>(null);
+  const isAuthed = authedEmail !== null;
+
+  useEffect(() => {
+    if (!isOpen) return;
+    let active = true;
+    createClient()
+      .auth.getUser()
+      .then(({ data }) => {
+        if (active) setAuthedEmail(data.user?.email ?? null);
+      });
+    return () => {
+      active = false;
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     if (isOpen) {
       setStep(1);
       setError(null);
+      setConfirmEmail(false);
       setData((prev) => ({
         ...prev,
+        ...initialData,
         selectedProgrammes:
-          initialProgrammes.length > 0 ? initialProgrammes : prev.selectedProgrammes,
+          initialProgrammes.length > 0
+            ? initialProgrammes
+            : initialData?.selectedProgrammes ?? prev.selectedProgrammes,
       }));
     }
-  }, [isOpen, initialProgrammes]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, initialProgrammes, initialData]);
 
   const setField = useCallback(<K extends keyof ApplyFormData>(key: K, value: ApplyFormData[K]) => {
     setData((d) => ({ ...d, [key]: value }));
@@ -216,23 +259,55 @@ export function ApplyForProgrammeModal({
           data.situation.trim().length > 0
         );
       case 5:
-        return data.password.length >= 8;
+        return isAuthed || data.password.length >= 8;
       default:
         return false;
     }
-  }, [step, data]);
+  }, [step, data, isAuthed]);
 
   const handleNext = async () => {
     if (!canContinue) return;
     if (step < STEP_COUNT) {
+      // Leaving the contact step (4 → 5): log the lead to the CRM now, before
+      // the account gate, so an abandoner is still captured. Mirrors the
+      // QualifyModal step-4 POST. Skipped for the preview-override route.
+      if (step === 4 && !onSubmit) {
+        void logEnquiryToCrm(data);
+      }
       setStep(step + 1);
       return;
     }
     setLoading(true);
     setError(null);
     try {
-      if (onSubmit) await onSubmit(data);
-      else console.log("[ApplyForProgrammeModal] submit (no handler wired)", data);
+      if (onSubmit) {
+        await onSubmit(data);
+        return;
+      }
+      const result = isAuthed
+        ? await persistAuthedApplication({ data })
+        : await submitApplicationSignup({
+            data,
+            locale,
+            password: data.password,
+          });
+      switch (result.status) {
+        case "session":
+          router.push("/application-received");
+          router.refresh();
+          return;
+        case "confirm-email":
+          setConfirmEmail(true);
+          return;
+        case "existing-account":
+          setError(
+            "An account already exists for this email. Sign in to add this to your enquiry."
+          );
+          return;
+        case "error":
+          setError(result.message);
+          return;
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong. Please try again.");
     } finally {
@@ -284,7 +359,7 @@ export function ApplyForProgrammeModal({
             <div
               role="dialog"
               aria-modal="true"
-              aria-label="Apply for programme"
+              aria-label="Enquire about a programme"
               className="pointer-events-auto w-full max-w-[600px] max-h-[92vh] overflow-y-auto rounded-2xl"
               style={{
                 background: "#1c2026",
@@ -296,6 +371,10 @@ export function ApplyForProgrammeModal({
             >
               <Header step={step} slugs={data.selectedProgrammes} onClose={onClose} />
 
+              {confirmEmail ? (
+                <ConfirmEmailPanel email={data.email} onClose={onClose} />
+              ) : (
+                <>
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={step}
@@ -354,6 +433,7 @@ export function ApplyForProgrammeModal({
                     <StepConfirm
                       data={data}
                       onPasswordChange={(v) => setField("password", v)}
+                      authedEmail={authedEmail}
                     />
                   )}
                 </motion.div>
@@ -418,18 +498,66 @@ export function ApplyForProgrammeModal({
                     Privacy Policy
                   </a>
                   .
-                  <br />
-                  Already have an account?{" "}
-                  <a href="/login" style={{ color: "#bbc4f7", textDecoration: "none" }}>
-                    Sign in
-                  </a>
+                  {!isAuthed && (
+                    <>
+                      <br />
+                      Already have an account?{" "}
+                      <a href="/login" style={{ color: "#bbc4f7", textDecoration: "none" }}>
+                        Sign in
+                      </a>
+                    </>
+                  )}
                 </p>
+              )}
+                </>
               )}
             </div>
           </motion.div>
         </>
       )}
     </AnimatePresence>
+  );
+}
+
+// ─── Confirm-email panel ──────────────────────────────────────────────────────
+
+function ConfirmEmailPanel({ email, onClose }: { email: string; onClose: () => void }) {
+  return (
+    <div className="px-7 pt-8 pb-9 flex flex-col items-center text-center gap-5">
+      <div
+        className="flex h-14 w-14 items-center justify-center rounded-full"
+        style={{ background: "rgba(187,196,247,0.08)", border: "1px solid rgba(187,196,247,0.2)" }}
+      >
+        <span className="material-symbols-outlined" style={{ fontSize: 28, color: "#bbc4f7" }}>
+          mark_email_unread
+        </span>
+      </div>
+      <div>
+        <h3 className="text-xl font-semibold" style={{ color: "#dfe2eb", letterSpacing: "-0.015em" }}>
+          Confirm your email
+        </h3>
+        <p className="mt-2 text-sm leading-relaxed" style={{ color: "#8f9095" }}>
+          Your enquiry is saved. We&apos;ve sent a confirmation link to{" "}
+          <span style={{ color: "#c6c6cb", fontWeight: 600 }}>{email}</span>. Open it to activate
+          your account and view the programmes you&apos;re interested in.
+        </p>
+      </div>
+      <button
+        type="button"
+        onClick={onClose}
+        className="rounded-xl px-6 py-3 text-sm font-semibold transition-all"
+        style={{ background: "#bbc4f7", color: "#242d58" }}
+      >
+        Got it
+      </button>
+      <p className="text-[11px]" style={{ color: "#8f9095" }}>
+        Didn&apos;t get it? Check spam, or{" "}
+        <a href="/login" style={{ color: "#bbc4f7", textDecoration: "none" }}>
+          sign in
+        </a>{" "}
+        once confirmed.
+      </p>
+    </div>
   );
 }
 
@@ -537,10 +665,10 @@ function StepProgrammes({
     <div className="flex flex-col gap-5">
       <div>
         <p className="text-[11px] font-semibold tracking-[0.12em] uppercase" style={{ color: "#bbc4f7" }}>
-          Your Application
+          Your Enquiry
         </p>
         <h3 className="mt-1.5 text-xl font-semibold" style={{ color: "#dfe2eb", letterSpacing: "-0.015em" }}>
-          Programmes you&apos;re applying for
+          Programmes you&apos;re interested in
         </h3>
         <p className="mt-1.5 text-sm leading-relaxed" style={{ color: "#8f9095" }}>
           {selectedProgrammes.length === 1 && selectedProgrammes[0]
@@ -713,7 +841,7 @@ function StepBudget({
           Estimated budget
         </h3>
         <p className="mt-1.5 text-sm leading-relaxed" style={{ color: "#8f9095" }}>
-          Indicate your anticipated investment threshold. Your advisor will use this to structure the application.
+          Indicate your anticipated investment threshold. Your advisor will use this to guide your options.
         </p>
       </div>
 
@@ -849,7 +977,7 @@ function StepProfile({
           Tell us about your situation
         </h3>
         <p className="mt-1.5 text-sm leading-relaxed" style={{ color: "#8f9095" }}>
-          This helps your advisor structure the application properly.
+          This helps your advisor prepare for your consultation.
         </p>
       </div>
 
@@ -913,7 +1041,7 @@ function StepProfile({
           Family Members
         </p>
         <p className="text-sm mb-3" style={{ color: "#8f9095" }}>
-          Add anyone who will be included in the application. Their nationality and age affect programme eligibility.
+          Add anyone who would be included alongside you. Their nationality and age affect programme eligibility.
         </p>
         <FamilyMembersField members={familyMembers} onChange={onFamilyMembersChange} />
       </div>
@@ -1167,9 +1295,11 @@ function StepContact({
 function StepConfirm({
   data,
   onPasswordChange,
+  authedEmail,
 }: {
   data: ApplyFormData;
   onPasswordChange: (v: string) => void;
+  authedEmail: string | null;
 }) {
   const programmes = useMemo(
     () => data.selectedProgrammes.map(programmeFromSlug).filter((p): p is Program => !!p),
@@ -1183,10 +1313,12 @@ function StepConfirm({
           Almost done
         </p>
         <h3 className="mt-1.5 text-xl font-semibold" style={{ color: "#dfe2eb", letterSpacing: "-0.015em" }}>
-          Confirm &amp; create account
+          {authedEmail ? "Confirm & submit" : "Confirm & create account"}
         </h3>
         <p className="mt-1.5 text-sm leading-relaxed" style={{ color: "#8f9095" }}>
-          One last step. Set a password to save your application and connect with your advisor.
+          {authedEmail
+            ? "Review your enquiry below, then send it to your advisor."
+            : "One last step. Set a password to save your enquiry and connect with your advisor."}
         </p>
       </div>
 
@@ -1198,7 +1330,7 @@ function StepConfirm({
           className="mb-3 text-[10px] font-semibold tracking-[0.14em] uppercase"
           style={{ color: "#8f9095" }}
         >
-          Your application
+          Your enquiry
         </p>
 
         <SummaryRow
@@ -1243,25 +1375,48 @@ function StepConfirm({
         <SummaryRow k="Email" v={data.email || "—"} />
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <label
-          className="text-xs font-semibold uppercase"
-          style={{ color: "#8f9095", letterSpacing: "0.04em" }}
+      {authedEmail ? (
+        <div
+          className="flex items-center gap-2.5 rounded-xl px-3.5 py-3 text-xs"
+          style={{
+            background: "rgba(187,196,247,0.05)",
+            border: "1px solid rgba(187,196,247,0.12)",
+            color: "#c6c6cb",
+          }}
         >
-          Create Password *
-        </label>
-        <input
-          type="password"
-          value={data.password}
-          onChange={(e) => onPasswordChange(e.target.value)}
-          placeholder="At least 8 characters"
-          autoComplete="new-password"
-          style={inputStyle}
-        />
-        <p className="mt-1 text-[11px]" style={{ color: "#8f9095" }}>
-          You&apos;ll use this with your email above to sign in afterwards.
-        </p>
-      </div>
+          <span
+            className="material-symbols-outlined flex-shrink-0"
+            style={{ fontSize: 16, color: "#bbc4f7" }}
+          >
+            verified_user
+          </span>
+          <span>
+            Signed in as{" "}
+            <span style={{ color: "#dfe2eb", fontWeight: 600 }}>{authedEmail}</span>. This will be
+            added to your enquiry.
+          </span>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-1.5">
+          <label
+            className="text-xs font-semibold uppercase"
+            style={{ color: "#8f9095", letterSpacing: "0.04em" }}
+          >
+            Create Password *
+          </label>
+          <input
+            type="password"
+            value={data.password}
+            onChange={(e) => onPasswordChange(e.target.value)}
+            placeholder="At least 8 characters"
+            autoComplete="new-password"
+            style={inputStyle}
+          />
+          <p className="mt-1 text-[11px]" style={{ color: "#8f9095" }}>
+            You&apos;ll use this with your email above to sign in afterwards.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

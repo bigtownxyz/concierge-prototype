@@ -20,6 +20,7 @@ import {
 import { cn, formatCurrency } from "@/lib/utils";
 import { ShaderBackground } from "@/components/ui/shaders-hero-section";
 import { OpenQualifyButton } from "./OpenQualifyButton";
+import { OpenApplyButton } from "./OpenApplyButton";
 import { useTracedShape } from "@/hooks/useTracedShape";
 import { CARD_SHAPES } from "@/lib/cardShapes";
 
@@ -729,21 +730,21 @@ export function LandingV2Page({
                   >
                     Concierge advises founders, investors, and globally mobile
                     families on second citizenship, residency planning, and
-                    international positioning. Start with a discreet
-                    qualification review, then move forward with a route built
-                    around your actual constraints.
+                    international positioning. Explore programmes directly if you
+                    know your route, or take a discreet qualification review and
+                    we&apos;ll build one around your actual constraints.
                   </p>
                 </div>
 
                 <div className="flex w-full flex-col items-start gap-4 sm:flex-row">
-                  <OpenQualifyButton className={primaryButtonClass}>
-                    Get Qualified
+                  <Link href="/programs" className={primaryButtonClass}>
+                    Explore Programmes
                     <ArrowRight className="h-4 w-4" />
-                  </OpenQualifyButton>
-                  <Link href="/programs" className={secondaryButtonClass}>
-                    Browse Programmes
-                    <ArrowUpRight className="h-4 w-4" />
                   </Link>
+                  <OpenQualifyButton className={primaryButtonClass}>
+                    Help Me Choose
+                    <ArrowUpRight className="h-4 w-4" />
+                  </OpenQualifyButton>
                 </div>
 
                 </div>
@@ -1285,10 +1286,10 @@ export function LandingV2Page({
 
                 <div className="space-y-5">
                   <div className="flex flex-col items-start gap-4 sm:flex-row sm:flex-wrap">
-                    <OpenQualifyButton className={primaryButtonClass}>
-                      Get Qualified
+                    <OpenApplyButton className={primaryButtonClass}>
+                      Enquire
                       <ArrowRight className="h-4 w-4" />
-                    </OpenQualifyButton>
+                    </OpenApplyButton>
                     <Link href="/programs" className={darkSecondaryButtonClass}>
                       Browse Programmes
                       <ArrowUpRight className="h-4 w-4" />

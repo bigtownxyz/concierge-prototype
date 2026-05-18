@@ -1,4 +1,5 @@
 import { QualifyModalGlobal } from "@/components/shared/QualifyModalGlobal";
+import { ApplyModalGlobal } from "@/components/shared/ApplyModalGlobal";
 
 export default function AuthLayout({
   children,
@@ -9,6 +10,7 @@ export default function AuthLayout({
     <>
       {children}
       <QualifyModalGlobal />
+      <ApplyModalGlobal />
     </>
   );
 }

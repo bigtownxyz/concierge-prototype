@@ -33,6 +33,8 @@ export interface LcQualificationIntakePayload {
   };
   signedUp?: boolean;
   conciergeUserId?: string | null;
+  /** Lead origin: "quiz" (discovery questionnaire) or "enquiry" (programme-first apply flow). */
+  source?: "quiz" | "enquiry";
 }
 
 interface LcSignupUpdatePayload {
