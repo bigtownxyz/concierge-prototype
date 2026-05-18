@@ -8,7 +8,6 @@ import { PROGRAMS, type Program } from "@/lib/constants";
 import { useUser } from "@/hooks/useUser";
 import { createClient } from "@/lib/supabase/client";
 import type { PendingQualification } from "@/lib/supabase/qualification-claim";
-import { buildAbsoluteUrl } from "@/lib/utils";
 import { Logo } from "@/components/shared/Logo";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -1394,7 +1393,11 @@ function CreateAccountForm({
             full_name: name,
             pending_qualification: pendingQualification,
           },
-          emailRedirectTo: buildAbsoluteUrl(callbackPath),
+          // Same-origin callback (not NEXT_PUBLIC_SITE_URL): the branded
+          // domain is in soft-launch holding mode and rewrites /callback to
+          // /coming-soon, dead-ending email confirmation. Keep the user on
+          // the origin they signed up on so /callback actually runs.
+          emailRedirectTo: `${window.location.origin}${callbackPath}`,
         },
       });
 

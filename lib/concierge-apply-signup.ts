@@ -1,7 +1,6 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
-import { buildAbsoluteUrl } from "@/lib/utils";
 import { claimPendingQualification } from "@/lib/supabase/qualification-claim";
 import type { ApplyFormData } from "@/components/shared/ApplyForProgrammeModal";
 import type { PendingQualification } from "@/lib/supabase/qualification-claim";
@@ -266,7 +265,15 @@ export async function submitApplicationSignup({
           full_name: data.name,
           pending_qualification: toPendingQualification(data),
         },
-        emailRedirectTo: buildAbsoluteUrl(callbackPath),
+        // Return the user to the SAME origin they signed up on, not
+        // NEXT_PUBLIC_SITE_URL. That env points at the canonical/branded
+        // domain (thecitizenshipconcierge.com) which is in soft-launch
+        // holding mode — its middleware rewrites /callback to /coming-soon,
+        // so the confirmation link would dead-end on the holding page and
+        // the session/claim would never run. window.location.origin keeps
+        // the user on the working app (e.g. the vercel.app URL). Once the
+        // live domain leaves holding mode this still resolves to it.
+        emailRedirectTo: `${window.location.origin}${callbackPath}`,
       },
     });
 
