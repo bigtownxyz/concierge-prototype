@@ -321,14 +321,8 @@ export function ApplyForProgrammeModal({
 
   const ctaLabel = useMemo(() => {
     if (step < STEP_COUNT) return "Continue";
-    const count = data.selectedProgrammes.length;
-    if (count === 0) return "Confirm";
-    if (count === 1) {
-      const p = programmeFromSlug(data.selectedProgrammes[0]);
-      return p ? `Confirm fit for ${p.country}` : "Confirm fit";
-    }
-    return `Confirm fit for these ${count}`;
-  }, [step, data.selectedProgrammes]);
+    return "Submit enquiry";
+  }, [step]);
 
   // ─── Render ─────────────────────────────────────────────────────────────────
 
