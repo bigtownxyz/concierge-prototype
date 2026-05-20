@@ -4,9 +4,10 @@ import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { PROGRAMS, REGIONS, type Program } from "@/lib/constants";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { formatCurrency } from "@/lib/utils";
 import { useUser } from "@/hooks/useUser";
+import { addProgrammeToApplication } from "@/lib/concierge-apply-signup";
 
 // ─── Type maps ────────────────────────────────────────────────────────────────
 
@@ -78,10 +79,14 @@ function ProgramCard({
   program,
   index,
   onApply,
+  applyLabel = "Enquire",
+  applyDisabled = false,
 }: {
   program: Program;
   index: number;
   onApply: () => void;
+  applyLabel?: string;
+  applyDisabled?: boolean;
 }) {
   const gradient = REGION_GRADIENTS[program.region] ?? REGION_GRADIENTS.global;
   const accent = REGION_ACCENT[program.region] ?? REGION_ACCENT.global;
@@ -359,23 +364,26 @@ function ProgramCard({
           <button
             type="button"
             onClick={onApply}
-            className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200"
+            disabled={applyDisabled}
+            className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
             style={{
               background: "#bbc4f7",
               color: "#242d58",
               fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
             }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = "#cdd4fa";
+              if (!applyDisabled)
+                (e.currentTarget as HTMLButtonElement).style.background = "#cdd4fa";
             }}
             onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = "#bbc4f7";
+              if (!applyDisabled)
+                (e.currentTarget as HTMLButtonElement).style.background = "#bbc4f7";
             }}
           >
             <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
               arrow_forward
             </span>
-            Enquire
+            {applyLabel}
           </button>
         </div>
       </div>
@@ -736,9 +744,15 @@ export function ProgramsGrid() {
   const [activeRegion, setActiveRegion] = useState<string>("all");
   const [activeRange, setActiveRange] = useState<InvestmentRange>("all");
   const { user } = useUser();
+  const router = useRouter();
   const [qualPrograms, setQualPrograms] = useState<
     { program_slug: string; match_score: number }[]
   >([]);
+  // Returning users with an existing enquiry skip the full modal — clicking
+  // Enquire on a new programme just adds it to their application.
+  const [hasApplication, setHasApplication] = useState(false);
+  const [applicationSlugs, setApplicationSlugs] = useState<string[]>([]);
+  const [addingSlug, setAddingSlug] = useState<string | null>(null);
 
   // Fetch qualification data and compute recommendations client-side
   useEffect(() => {
@@ -747,11 +761,23 @@ export function ProgramsGrid() {
       const supabase = createClient();
       supabase
         .from("qualifications")
-        .select("strategic_focus, investment_amount")
+        .select("id, strategic_focus, investment_amount")
         .eq("user_id", user.id)
         .maybeSingle()
-        .then(({ data: qual }) => {
+        .then(async ({ data: qual }) => {
           if (!qual) return;
+          setHasApplication(true);
+
+          // Track which programmes are already on this user's application —
+          // we want to label the button differently for those.
+          const { data: progs } = await supabase
+            .from("qualification_programs")
+            .select("program_slug")
+            .eq("qualification_id", qual.id);
+          setApplicationSlugs(
+            (progs ?? []).map((r: { program_slug: string }) => r.program_slug)
+          );
+
           const focus = (qual.strategic_focus || []) as string[];
           const budget = qual.investment_amount || 500000;
           // Score programs using same logic as the form
@@ -775,11 +801,33 @@ export function ProgramsGrid() {
   }, [user]);
 
   // Flow A: a card's "Apply" opens the form with that programme preselected.
-  // Multiple programmes are handled inside the form's Step 1. No cart.
-  const handleApply = (slug: string) => {
+  // Returning users with an existing application skip the modal — the
+  // programme is silently added to their saved enquiry and they land on
+  // /application with the updated list.
+  const handleApply = async (slug: string) => {
+    if (user && hasApplication) {
+      setAddingSlug(slug);
+      const result = await addProgrammeToApplication(slug);
+      setAddingSlug(null);
+      if (result.ok) {
+        setApplicationSlugs((prev) =>
+          prev.includes(slug) ? prev : [...prev, slug]
+        );
+        router.push("/application");
+        return;
+      }
+      // Fall through to modal on any unexpected failure
+    }
     window.dispatchEvent(
       new CustomEvent("open-apply-modal", { detail: { slug } })
     );
+  };
+
+  const labelForProgramme = (slug: string): string => {
+    if (addingSlug === slug) return "Adding…";
+    if (!hasApplication) return "Enquire";
+    if (applicationSlugs.includes(slug)) return "On your application";
+    return "Add to my application";
   };
 
   const filtered = useMemo(() => {
@@ -1049,6 +1097,8 @@ export function ProgramsGrid() {
                   program={program}
                   index={i}
                   onApply={() => handleApply(program.slug)}
+                  applyLabel={labelForProgramme(program.slug)}
+                  applyDisabled={addingSlug === program.slug}
                 />
               ))}
             </motion.div>

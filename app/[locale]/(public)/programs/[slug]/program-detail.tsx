@@ -14,6 +14,8 @@ import {
   ApplyForProgrammeModal,
   type ApplyFormData,
 } from "@/components/shared/ApplyForProgrammeModal";
+import { addProgrammeToApplication } from "@/lib/concierge-apply-signup";
+import { useRouter } from "@/i18n/navigation";
 
 // ---------------------------------------------------------------------------
 // Benefit icon mapping
@@ -320,7 +322,32 @@ export function ProgramDetail({ program }: { program: Program }) {
     loadPrefill();
   }, [user, program.slug]);
 
-  const openApply = () => setApplyOpen(true);
+  const router = useRouter();
+  const [adding, setAdding] = useState(false);
+  // Returning users with an existing application skip the modal — the
+  // programme is silently added to their saved enquiry. Anyone else opens
+  // the full enquire modal.
+  const hasExistingApplication = !!applyPrefill;
+
+  const openApply = async () => {
+    if (user && hasExistingApplication) {
+      setAdding(true);
+      const result = await addProgrammeToApplication(program.slug);
+      setAdding(false);
+      if (result.ok) {
+        router.push("/application");
+        return;
+      }
+      // Unexpected failure — fall through to the full modal.
+    }
+    setApplyOpen(true);
+  };
+
+  const enquireLabel = adding
+    ? "Adding…"
+    : hasExistingApplication
+    ? "Add to my application"
+    : "Enquire";
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -608,14 +635,15 @@ export function ProgramDetail({ program }: { program: Program }) {
                 <button
                   type="button"
                   onClick={openApply}
-                  className="flex items-center justify-center gap-2 w-full rounded-xl py-3.5 text-sm font-semibold transition-all"
+                  disabled={adding}
+                  className="flex items-center justify-center gap-2 w-full rounded-xl py-3.5 text-sm font-semibold transition-all disabled:opacity-60"
                   style={{
                     background: "var(--color-obsidian-primary)",
                     color: "var(--color-obsidian-on-primary)",
                     border: "none",
                   }}
                 >
-                  Enquire
+                  {enquireLabel}
                   <ArrowRight className="h-4 w-4" />
                 </button>
                 {/* Secondary — discovery path for the unsure */}
@@ -1196,7 +1224,8 @@ export function ProgramDetail({ program }: { program: Program }) {
                   <button
                     type="button"
                     onClick={openApply}
-                    className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl text-sm font-semibold transition-all"
+                    disabled={adding}
+                    className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl text-sm font-semibold transition-all disabled:opacity-60"
                     style={{
                       background: "var(--color-obsidian-primary)",
                       color: "var(--color-obsidian-on-primary)",
@@ -1205,7 +1234,7 @@ export function ProgramDetail({ program }: { program: Program }) {
                     <span className="material-symbols-outlined text-[16px]">
                       send
                     </span>
-                    Enquire
+                    {enquireLabel}
                   </button>
                   <Link
                     href="/contact"

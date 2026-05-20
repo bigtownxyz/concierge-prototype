@@ -231,6 +231,54 @@ export async function persistAuthedApplication({
 }
 
 /**
+ * One-click "add this programme to my existing application" for a returning,
+ * authed user. Skips the modal entirely — they already gave us everything.
+ *
+ * Returns "no-application" when the user has no qualification yet (caller
+ * should fall back to the full enquire modal in that case).
+ */
+export async function addProgrammeToApplication(
+  slug: string
+): Promise<{ ok: true } | { ok: false; reason: "unauth" | "no-application" | "error"; message?: string }> {
+  try {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return { ok: false, reason: "unauth" };
+
+    const { data: qual } = await supabase
+      .from("qualifications")
+      .select("id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    if (!qual) return { ok: false, reason: "no-application" };
+
+    const { data: existing } = await supabase
+      .from("qualification_programs")
+      .select("id")
+      .eq("qualification_id", qual.id)
+      .eq("program_slug", slug)
+      .maybeSingle();
+    if (existing) return { ok: true };
+
+    const { error } = await supabase.from("qualification_programs").insert({
+      qualification_id: qual.id,
+      program_slug: slug,
+      match_score: 80,
+    });
+    if (error) return { ok: false, reason: "error", message: error.message };
+    return { ok: true };
+  } catch (e) {
+    return {
+      ok: false,
+      reason: "error",
+      message: e instanceof Error ? e.message : "Could not add programme.",
+    };
+  }
+}
+
+/**
  * New (unauthenticated) user. Creates the account, signs in if possible,
  * persists the application via the pending_qualification metadata claimed at
  * /callback, and pushes the lead to the LC CRM.
