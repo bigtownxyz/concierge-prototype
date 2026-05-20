@@ -371,7 +371,7 @@ export const PROGRAMS: Program[] = [
     country: "Panama",
     type: "Residency",
     region: "central_america",
-    minInvestment: 0,
+    minInvestment: 300000,
     maxInvestment: 300000,
     currency: "USD",
     processingTimeMonths: 6,
