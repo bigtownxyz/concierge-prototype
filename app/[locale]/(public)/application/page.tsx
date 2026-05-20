@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { PROGRAMS, type Program } from "@/lib/constants";
+import { PROGRAMS, programHasImage, type Program } from "@/lib/constants";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -194,14 +194,23 @@ export default function ApplicationReceivedPage() {
                   >
                     <div
                       className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg overflow-hidden"
-                      style={{ border: "1px solid rgba(187,196,247,0.2)" }}
+                      style={{
+                        border: "1px solid rgba(187,196,247,0.2)",
+                        background: "rgba(187,196,247,0.08)",
+                      }}
                     >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={`/images/programs/${p.slug}.jpg`}
-                        alt={p.country}
-                        className="h-full w-full object-cover"
-                      />
+                      {programHasImage(p.slug) ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={`/images/programs/${p.slug}.jpg`}
+                          alt={p.country}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-base" aria-hidden="true">
+                          {p.flagEmoji}
+                        </span>
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold" style={{ color: "#dfe2eb" }}>

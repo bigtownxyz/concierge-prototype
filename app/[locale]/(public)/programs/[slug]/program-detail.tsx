@@ -16,6 +16,7 @@ import {
 } from "@/components/shared/ApplyForProgrammeModal";
 import { addProgrammeToApplication } from "@/lib/concierge-apply-signup";
 import { useRouter } from "@/i18n/navigation";
+import { programHasImage } from "@/lib/constants";
 
 // ---------------------------------------------------------------------------
 // Benefit icon mapping
@@ -388,17 +389,19 @@ export function ProgramDetail({ program }: { program: Program }) {
         {/* Background gradient base */}
         <div className={`absolute inset-0 bg-gradient-to-b ${heroGradient}`} />
 
-        {/* Country hero image with parallax */}
+        {/* Country hero image with parallax — gradient-only when no artwork */}
         <motion.div
           className="absolute inset-0"
           style={{ scale: heroScale, opacity: heroOpacity }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={`/images/programs/${program.slug}.jpg`}
-            alt={program.country}
-            className="absolute inset-0 w-full h-full object-cover"
-          />
+          {programHasImage(program.slug) && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={`/images/programs/${program.slug}.jpg`}
+              alt={program.country}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          )}
           {/* Dark overlay for text legibility */}
           <div className="absolute inset-0 bg-black/50" />
         </motion.div>

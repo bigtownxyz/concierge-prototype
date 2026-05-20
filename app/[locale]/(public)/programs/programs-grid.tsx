@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { PROGRAMS, REGIONS, type Program } from "@/lib/constants";
+import { PROGRAMS, REGIONS, programHasImage, type Program } from "@/lib/constants";
 import { Link, useRouter } from "@/i18n/navigation";
 import { formatCurrency } from "@/lib/utils";
 import { useUser } from "@/hooks/useUser";
@@ -120,14 +120,16 @@ function ProgramCard({
         className="relative h-64 overflow-hidden"
         style={{ background: gradient }}
       >
-        {/* Country image */}
-        <Image
-          src={`/images/programs/${program.slug}.jpg`}
-          alt={program.country}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover transition-transform duration-700 group-hover:scale-110"
-        />
+        {/* Country image — falls back to gradient when no artwork exists */}
+        {programHasImage(program.slug) && (
+          <Image
+            src={`/images/programs/${program.slug}.jpg`}
+            alt={program.country}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition-transform duration-700 group-hover:scale-110"
+          />
+        )}
 
         {/* Dark overlay for text legibility */}
         <div className="absolute inset-0 bg-black/30 transition-opacity duration-500 group-hover:bg-black/20" />

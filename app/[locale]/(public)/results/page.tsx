@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { PROGRAMS, type Program } from "@/lib/constants";
+import { PROGRAMS, programHasImage, type Program } from "@/lib/constants";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -128,14 +128,22 @@ function ProgramCard({
         fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
       }}
     >
-      {/* Image area */}
-      <div className="relative h-44 overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={`/images/programs/${program.slug}.jpg`}
-          alt={program.country}
-          className="w-full h-full object-cover"
-        />
+      {/* Image area — gradient-only when artwork missing */}
+      <div
+        className="relative h-44 overflow-hidden"
+        style={{
+          background:
+            "linear-gradient(135deg, #0f1320 0%, #1a2138 40%, #0f1830 70%, #060914 100%)",
+        }}
+      >
+        {programHasImage(program.slug) && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={`/images/programs/${program.slug}.jpg`}
+            alt={program.country}
+            className="w-full h-full object-cover"
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-[#1c2026] via-transparent to-transparent" />
 
         {/* Country badge top-left */}

@@ -15,6 +15,35 @@ export const STAGES = [
   { stage: 7, label: "Approval & Issuance", description: "Citizenship or residency granted" },
 ] as const;
 
+/**
+ * Slugs that have a hero image at /images/programs/{slug}.jpg.
+ * Programmes not listed here render with the region gradient only —
+ * keeps cards visually clean instead of showing broken-image icons.
+ * Drop a JPG in /public/images/programs/ and add the slug here to enable.
+ */
+export const PROGRAM_IMAGE_SLUGS = new Set<string>([
+  "antigua-and-barbuda",
+  "argentina",
+  "asset-protection-trust",
+  "chile",
+  "dominica",
+  "dubai",
+  "el-salvador",
+  "georgia",
+  "greece",
+  "grenada",
+  "panama",
+  "portugal",
+  "serbia",
+  "slovakia",
+  "st-kitts-and-nevis",
+  "st-lucia",
+]);
+
+export function programHasImage(slug: string): boolean {
+  return PROGRAM_IMAGE_SLUGS.has(slug);
+}
+
 export const REGIONS = [
   { value: "caribbean", label: "Caribbean", emoji: "🌴" },
   { value: "europe", label: "Europe", emoji: "🏰" },
