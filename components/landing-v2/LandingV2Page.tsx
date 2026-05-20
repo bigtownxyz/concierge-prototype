@@ -32,7 +32,10 @@ const BODY_FONT = {
   fontFamily: "var(--font-manrope), 'Manrope', sans-serif",
 };
 const SERIF_FONT = {
-  fontFamily: "var(--font-manrope), 'Manrope', sans-serif",
+  fontFamily:
+    "var(--font-instrument-serif), 'Instrument Serif', Georgia, serif",
+  fontStyle: "italic" as const,
+  letterSpacing: "-0.015em",
 };
 
 const primaryButtonClass =
@@ -1035,221 +1038,534 @@ export function LandingV2Page({
         </div>
       </section>
 
-      <section className={cn("border-b border-white/8 bg-[#151423]", sectionPaddingClass)}>
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
+      <section
+        className={cn(
+          "relative overflow-hidden border-b border-white/8 bg-[#11101C]",
+          sectionPaddingClass
+        )}
+      >
+        {/* Atmospheric backdrop */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-90"
+          style={{
+            background:
+              "radial-gradient(ellipse 60% 80% at 18% 15%, rgba(187,196,247,0.08), transparent 65%), radial-gradient(ellipse 50% 70% at 85% 92%, rgba(140,165,240,0.06), transparent 70%)",
+          }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#bbc4f7]/30 to-transparent"
+        />
+
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="grid gap-16 lg:grid-cols-12 lg:gap-12">
             <Reveal className="lg:col-span-4">
-              <p className={eyebrowClass} style={BODY_FONT}>
-                Advisory process
-              </p>
-              <h2 className={sectionTitleClass} style={DISPLAY_FONT}>
-                A quieter process, handled with more rigor.
-              </h2>
-              <p className={sectionBodyClass} style={BODY_FONT}>
-                The goal is not to overwhelm you with options. It is to reduce
-                noise quickly, then run one route with discipline.
-              </p>
+              <div className="lg:sticky lg:top-28">
+                <p className={eyebrowClass} style={BODY_FONT}>
+                  Advisory process
+                </p>
+                <h2 className={sectionTitleClass} style={DISPLAY_FONT}>
+                  A quieter process,{" "}
+                  <span style={SERIF_FONT} className="font-normal">
+                    handled with more rigor.
+                  </span>
+                </h2>
+                <p className={sectionBodyClass} style={BODY_FONT}>
+                  The goal is not to overwhelm you with options. It is to
+                  reduce noise quickly, then run one route with discipline.
+                </p>
+                <div className="mt-10 flex items-center gap-3 text-[#8f9095]">
+                  <span className="h-px w-12 bg-[#bbc4f7]/40" />
+                  <span
+                    className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[#bbc4f7]/70"
+                    style={BODY_FONT}
+                  >
+                    Four stages · No surprises
+                  </span>
+                </div>
+              </div>
             </Reveal>
 
-            <div className="space-y-5 lg:col-span-8">
-              {processSteps.map((step, index) => (
-                <Reveal key={step.step} delay={index * 0.05}>
-                  <div className="grid gap-5 rounded-[28px] border border-white/8 bg-[#1B1A2B] p-6 md:grid-cols-[5.5rem_minmax(0,1fr)] md:gap-6 md:p-7 lg:grid-cols-[5.5rem_minmax(0,1fr)_14rem] lg:gap-7">
-                    <div
-                      className="text-[2.8rem] leading-none tracking-[-0.05em] text-[#bbc4f7] sm:text-[3.2rem]"
-                      style={DISPLAY_FONT}
-                    >
-                      {step.step}
-                    </div>
-                    <div>
-                      <h3 className="text-2xl text-[#dfe2eb]" style={DISPLAY_FONT}>
-                        {step.title}
-                      </h3>
-                      <p className="mt-3 max-w-[58ch] text-sm leading-7 text-[#c6c6cb]" style={BODY_FONT}>
-                        {step.description}
-                      </p>
-                    </div>
-                    <div className="border-t border-white/8 pt-4 md:col-span-2 lg:col-span-1 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
-                      <p
-                        className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#bbc4f7]"
-                        style={BODY_FONT}
+            <div className="relative lg:col-span-8">
+              {/* Vertical connector glow */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute left-[2.1rem] top-8 bottom-8 hidden w-px sm:block"
+                style={{
+                  background:
+                    "linear-gradient(to bottom, transparent, rgba(187,196,247,0.35) 12%, rgba(187,196,247,0.18) 85%, transparent)",
+                }}
+              />
+
+              <div className="space-y-7">
+                {processSteps.map((step, index) => (
+                  <Reveal key={step.step} delay={index * 0.06}>
+                    <article className="group relative grid gap-5 sm:grid-cols-[5.5rem_minmax(0,1fr)] sm:gap-7">
+                      {/* Step numeral with serif italic */}
+                      <div className="relative">
+                        <div
+                          aria-hidden
+                          className="absolute -left-3 -top-2 h-16 w-16 rounded-full bg-[#bbc4f7]/10 blur-2xl transition-opacity duration-500 group-hover:opacity-100 sm:opacity-60"
+                        />
+                        <div className="relative flex items-baseline gap-1">
+                          <span
+                            className="text-[4.5rem] leading-none text-[#dfe2eb] sm:text-[5rem]"
+                            style={SERIF_FONT}
+                          >
+                            {step.step}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Card body */}
+                      <div
+                        className="relative overflow-hidden rounded-[28px] border border-white/10 bg-gradient-to-br from-[#1B1A2B] via-[#1B1A2B] to-[#23233A] p-7 transition-all duration-500 group-hover:border-[#bbc4f7]/25 group-hover:from-[#1B1A2B] group-hover:to-[#2a2840] sm:p-8"
                       >
-                        Outcome
-                      </p>
-                      <p className="mt-3 max-w-[22ch] text-sm leading-7 text-[#c6c6cb]" style={BODY_FONT}>
-                        {step.outcome}
-                      </p>
-                    </div>
-                  </div>
-                </Reveal>
-              ))}
+                        {/* Decorative top-right glyph */}
+                        <span
+                          aria-hidden
+                          className="material-symbols-outlined absolute right-7 top-7 text-[#bbc4f7]/30 transition-colors duration-500 group-hover:text-[#bbc4f7]/55"
+                          style={{ fontSize: 22 }}
+                        >
+                          {
+                            ["search", "tune", "verified", "rocket_launch"][
+                              index
+                            ]
+                          }
+                        </span>
+
+                        <h3
+                          className="max-w-[20ch] text-[clamp(1.65rem,2.4vw,2.05rem)] leading-[1.05] tracking-[-0.025em] text-[#dfe2eb]"
+                          style={DISPLAY_FONT}
+                        >
+                          {step.title}
+                        </h3>
+                        <p
+                          className="mt-4 max-w-[58ch] text-[0.95rem] leading-7 text-[#c6c6cb]"
+                          style={BODY_FONT}
+                        >
+                          {step.description}
+                        </p>
+
+                        <div className="mt-6 flex items-start gap-3 rounded-2xl border border-[#bbc4f7]/15 bg-[#bbc4f7]/[0.04] px-4 py-3">
+                          <span
+                            aria-hidden
+                            className="material-symbols-outlined mt-0.5 flex-shrink-0 text-[#bbc4f7]"
+                            style={{ fontSize: 16 }}
+                          >
+                            arrow_forward
+                          </span>
+                          <div>
+                            <p
+                              className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[#bbc4f7]"
+                              style={BODY_FONT}
+                            >
+                              Outcome
+                            </p>
+                            <p
+                              className="mt-1 text-[0.88rem] leading-6 text-[#dfe2eb]"
+                              style={BODY_FONT}
+                            >
+                              {step.outcome}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </article>
+                  </Reveal>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className={cn("border-b border-white/8", sectionPaddingClass)}>
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <section
+        className={cn(
+          "relative overflow-hidden border-b border-white/8 bg-[#0d0c18]",
+          sectionPaddingClass
+        )}
+      >
+        {/* Atmospheric gradient orb */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-32 top-1/4 h-[40rem] w-[40rem] rounded-full opacity-50 blur-[120px]"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(140,165,240,0.18), transparent 70%)",
+          }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-40 bottom-0 h-[36rem] w-[36rem] rounded-full opacity-40 blur-[140px]"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(255,200,100,0.07), transparent 70%)",
+          }}
+        />
+
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
           <Reveal className="max-w-3xl">
             <p className={eyebrowClass} style={BODY_FONT}>
               Why Concierge
             </p>
             <h2 className={sectionTitleClass} style={DISPLAY_FONT}>
-              Strategic guidance for people who want optionality, not noise.
+              Strategic guidance for{" "}
+              <span style={SERIF_FONT} className="font-normal">
+                people who want optionality, not noise.
+              </span>
             </h2>
             <p className={sectionBodyClass} style={BODY_FONT}>
-              This version shifts the page away from abstract luxury signals and
-              toward the qualities that matter more in this category: judgment,
-              discretion, and execution.
+              Judgment, discretion, and execution. Three qualities that
+              actually matter once paperwork starts moving.
             </p>
           </Reveal>
 
-          <div className="mt-12 grid gap-5 lg:grid-cols-3">
-            {valuePillars.map((pillar, index) => (
-              <Reveal key={pillar.title} delay={index * 0.06}>
-                <article className="h-full rounded-[30px] border border-white/8 bg-[#1B1A2B] p-7">
-                  <p
-                    className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#bbc4f7]"
-                    style={BODY_FONT}
-                  >
-                    Pillar {index + 1}
-                  </p>
+          {/* Bento layout: hero pillar takes left half on desktop, others stack on right */}
+          <div className="mt-14 grid gap-5 lg:grid-cols-12">
+            {/* Hero pillar */}
+            <Reveal className="lg:col-span-7">
+              <article
+                className="group relative h-full overflow-hidden rounded-[36px] border border-white/10 p-8 transition-all duration-500 hover:border-[#bbc4f7]/30 sm:p-12"
+                style={{
+                  background:
+                    "linear-gradient(155deg, #1f1e35 0%, #1B1A2B 45%, #11101C 100%)",
+                }}
+              >
+                {/* Decorative film grain + serif numeral watermark */}
+                <span
+                  aria-hidden
+                  className="absolute -right-6 -top-8 select-none text-[16rem] leading-none text-[#bbc4f7]/[0.07] transition-all duration-700 group-hover:text-[#bbc4f7]/[0.12]"
+                  style={SERIF_FONT}
+                >
+                  01
+                </span>
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 opacity-40"
+                  style={{
+                    backgroundImage:
+                      "radial-gradient(circle at 80% 20%, rgba(187,196,247,0.12), transparent 50%)",
+                  }}
+                />
+
+                <div className="relative flex h-full flex-col">
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#bbc4f7]/30 bg-[#bbc4f7]/10"
+                    >
+                      <span
+                        aria-hidden
+                        className="material-symbols-outlined text-[#bbc4f7]"
+                        style={{ fontSize: 18 }}
+                      >
+                        shield_lock
+                      </span>
+                    </span>
+                    <p
+                      className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[#bbc4f7]"
+                      style={BODY_FONT}
+                    >
+                      Pillar 01 · Discretion
+                    </p>
+                  </div>
+
                   <h3
-                    className="mt-5 max-w-[11ch] text-balance text-[clamp(2rem,3vw,2.5rem)] leading-[0.97] tracking-[-0.04em] text-[#dfe2eb]"
+                    className="mt-12 max-w-[10ch] text-balance text-[clamp(2.75rem,5vw,4.25rem)] leading-[0.94] tracking-[-0.04em] text-[#f4f6fb]"
                     style={DISPLAY_FONT}
                   >
-                    {pillar.title}
+                    Sensitive planning,
+                    <span style={SERIF_FONT} className="font-normal">
+                      {" "}
+                      private-client tone.
+                    </span>
                   </h3>
-                  <p className="mt-4 max-w-[34ch] text-sm leading-7 text-[#c6c6cb]" style={BODY_FONT}>
-                    {pillar.body}
+                  <p
+                    className="mt-6 max-w-[44ch] text-base leading-8 text-[#c6c6cb]"
+                    style={BODY_FONT}
+                  >
+                    {valuePillars[0].body}
                   </p>
-                </article>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      <section className={cn("border-b border-white/8 bg-[#151423]", sectionPaddingClass)}>
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <Reveal className="max-w-3xl">
-            <p className={eyebrowClass} style={BODY_FONT}>
-              Testimonials
-            </p>
-            <h2 className={sectionTitleClass} style={DISPLAY_FONT}>
-              A calmer way to present client proof.
-            </h2>
-          </Reveal>
-
-          <div className="mt-12 grid gap-5 lg:grid-cols-12">
-            <Reveal className="lg:col-span-7" delay={0.04}>
-              <article className="h-full rounded-[34px] border border-white/8 bg-[#23233A] p-8 text-[#dfe2eb] sm:p-10">
-                <p className={eyebrowClass} style={BODY_FONT}>
-                  Client perspective
-                </p>
-                <blockquote
-                  className="mt-6 max-w-[17ch] text-balance text-[clamp(1.9rem,3vw,3rem)] leading-[1.05] tracking-[-0.04em] text-[#dfe2eb]"
-                  style={DISPLAY_FONT}
-                >
-                  “{TESTIMONIALS[0].quote}”
-                </blockquote>
-                <div className="mt-10 border-t border-white/10 pt-6">
-                  <p className="text-base font-semibold text-[#dfe2eb]" style={BODY_FONT}>
-                    {TESTIMONIALS[0].name}
-                  </p>
-                  <p className="mt-1 text-sm text-[#c6c6cb]" style={BODY_FONT}>
-                    {TESTIMONIALS[0].role} · {TESTIMONIALS[0].program}
-                  </p>
+                  <div className="mt-auto pt-12">
+                    <div className="flex items-center gap-2 text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-[#bbc4f7]/80">
+                      <span className="h-px w-10 bg-[#bbc4f7]/40" />
+                      <span style={BODY_FONT}>NDA · Encrypted intake · Off-record consult</span>
+                    </div>
+                  </div>
                 </div>
               </article>
             </Reveal>
 
-            <div className="grid gap-5 lg:col-span-5">
-              {TESTIMONIALS.slice(1).map((testimonial, index) => (
-                <Reveal key={testimonial.name} delay={0.08 + index * 0.05}>
-                  <article className="rounded-[28px] border border-white/8 bg-[#1B1A2B] p-7">
-                    <blockquote
-                      className="max-w-[18ch] text-balance text-[clamp(1.35rem,2vw,1.7rem)] leading-[1.12] tracking-[-0.03em] text-[#dfe2eb]"
-                      style={DISPLAY_FONT}
+            {/* Two supporting pillars stacked */}
+            <div className="flex flex-col gap-5 lg:col-span-5">
+              {valuePillars.slice(1).map((pillar, idx) => {
+                const order = idx + 2;
+                const orderStr = String(order).padStart(2, "0");
+                const accentIcon = idx === 0 ? "route" : "track_changes";
+                return (
+                  <Reveal key={pillar.title} delay={0.08 + idx * 0.06}>
+                    <article
+                      className="group relative h-full overflow-hidden rounded-[28px] border border-white/8 p-7 transition-all duration-500 hover:border-[#bbc4f7]/25 sm:p-8"
+                      style={{
+                        background:
+                          idx === 0
+                            ? "linear-gradient(145deg, #1B1A2B 0%, #23233A 100%)"
+                            : "linear-gradient(145deg, #19182a 0%, #1B1A2B 100%)",
+                      }}
                     >
-                      “{testimonial.quote}”
-                    </blockquote>
-                    <div className="mt-8 border-t border-white/8 pt-5">
-                      <p className="text-sm font-semibold text-[#dfe2eb]" style={BODY_FONT}>
-                        {testimonial.name}
-                      </p>
-                      <p className="mt-1 text-sm text-[#c6c6cb]" style={BODY_FONT}>
-                        {testimonial.role} · {testimonial.program}
-                      </p>
-                    </div>
-                  </article>
-                </Reveal>
-              ))}
+                      <span
+                        aria-hidden
+                        className="absolute -right-2 top-0 select-none text-[8rem] leading-none text-[#bbc4f7]/[0.06] transition-all duration-700 group-hover:text-[#bbc4f7]/[0.11]"
+                        style={SERIF_FONT}
+                      >
+                        {orderStr}
+                      </span>
+
+                      <div className="relative">
+                        <div className="flex items-center gap-3">
+                          <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#bbc4f7]/25 bg-[#bbc4f7]/[0.08]">
+                            <span
+                              aria-hidden
+                              className="material-symbols-outlined text-[#bbc4f7]"
+                              style={{ fontSize: 15 }}
+                            >
+                              {accentIcon}
+                            </span>
+                          </span>
+                          <p
+                            className="text-[0.64rem] font-semibold uppercase tracking-[0.22em] text-[#bbc4f7]"
+                            style={BODY_FONT}
+                          >
+                            Pillar {orderStr} · {pillar.title}
+                          </p>
+                        </div>
+                        <h3
+                          className="mt-6 max-w-[12ch] text-balance text-[clamp(1.6rem,2.4vw,2.05rem)] leading-[1.02] tracking-[-0.025em] text-[#dfe2eb]"
+                          style={DISPLAY_FONT}
+                        >
+                          {idx === 0 ? (
+                            <>
+                              Route selection,{" "}
+                              <span style={SERIF_FONT} className="font-normal">
+                                framed honestly.
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              Stays involved,{" "}
+                              <span style={SERIF_FONT} className="font-normal">
+                                end to end.
+                              </span>
+                            </>
+                          )}
+                        </h3>
+                        <p
+                          className="mt-3 max-w-[38ch] text-sm leading-7 text-[#c6c6cb]"
+                          style={BODY_FONT}
+                        >
+                          {pillar.body}
+                        </p>
+                      </div>
+                    </article>
+                  </Reveal>
+                );
+              })}
             </div>
           </div>
         </div>
       </section>
 
-      <section className={cn("border-b border-white/8", sectionPaddingClass)}>
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
-            <Reveal className="lg:col-span-4">
-              <div className="max-w-[28rem]">
-                <p className={eyebrowClass} style={BODY_FONT}>
-                FAQ
-                </p>
-                <h2
-                  className="mt-4 max-w-[12ch] text-balance text-[clamp(2rem,3vw,3.35rem)] leading-[1.01] tracking-[-0.04em] text-[#dfe2eb]"
-                  style={DISPLAY_FONT}
+      <section
+        className={cn(
+          "relative overflow-hidden border-b border-white/8 bg-[#151423]",
+          sectionPaddingClass
+        )}
+      >
+        {/* Atmospheric backdrop */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-100"
+          style={{
+            background:
+              "radial-gradient(ellipse 70% 60% at 70% 25%, rgba(187,196,247,0.07), transparent 60%), radial-gradient(ellipse 50% 80% at 5% 75%, rgba(255,200,100,0.045), transparent 60%)",
+          }}
+        />
+        {/* Subtle grain */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.025]"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 30% 40%, rgba(255,255,255,0.4) 0 1px, transparent 1.2px), radial-gradient(circle at 70% 80%, rgba(255,255,255,0.4) 0 1px, transparent 1.2px)",
+            backgroundSize: "32px 32px, 28px 28px",
+          }}
+        />
+
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
+          <Reveal className="max-w-3xl">
+            <p className={eyebrowClass} style={BODY_FONT}>
+              In their words
+            </p>
+            <h2 className={sectionTitleClass} style={DISPLAY_FONT}>
+              What clients{" "}
+              <span style={SERIF_FONT} className="font-normal">
+                actually say,
+              </span>{" "}
+              after the paperwork is done.
+            </h2>
+          </Reveal>
+
+          <div className="mt-14 grid gap-6 lg:grid-cols-12 lg:gap-7">
+            {/* Hero testimonial with giant decorative quote mark */}
+            <Reveal className="lg:col-span-7" delay={0.04}>
+              <article
+                className="relative h-full overflow-hidden rounded-[36px] border border-white/10 p-8 sm:p-12"
+                style={{
+                  background:
+                    "linear-gradient(155deg, #2b2945 0%, #23233A 50%, #1B1A2B 100%)",
+                }}
+              >
+                {/* Massive serif italic quote glyph as design element */}
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute -left-6 -top-16 select-none text-[24rem] leading-none text-[#bbc4f7]/[0.08]"
+                  style={SERIF_FONT}
                 >
-                Questions that usually come up in the first conversation.
-                </h2>
-                <p className="mt-5 max-w-[42ch] text-base leading-7 text-[#c6c6cb]" style={BODY_FONT}>
-                The answers stay factual and specific. The tone should feel
-                closer to an informed briefing than a sales page.
-                </p>
-              </div>
-            </Reveal>
+                  &ldquo;
+                </span>
 
-            <div className="space-y-3 lg:col-span-8">
-              {FAQ_ITEMS.map((item, index) => {
-                const isOpen = openFaq === index;
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0"
+                  style={{
+                    backgroundImage:
+                      "radial-gradient(circle at 85% 15%, rgba(187,196,247,0.1), transparent 50%)",
+                  }}
+                />
 
-                return (
-                  <Reveal key={item.question} delay={index * 0.04}>
-                    <article className="rounded-[26px] border border-white/8 bg-[#1B1A2B] px-6 py-5 sm:px-7">
-                      <button
-                        type="button"
-                        className="flex w-full items-start justify-between gap-6 text-left"
-                        onClick={() =>
-                          setOpenFaq((current) => (current === index ? -1 : index))
-                        }
-                      >
-                        <span
-                          className="max-w-[22ch] text-balance text-[clamp(1.3rem,2.2vw,1.65rem)] leading-[1.12] tracking-[-0.03em] text-[#dfe2eb]"
-                          style={DISPLAY_FONT}
-                        >
-                          {item.question}
-                        </span>
-                        <span
-                          className={cn(
-                            "mt-1 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-[#23233A] transition-transform duration-300",
-                            isOpen && "rotate-180"
-                          )}
-                        >
-                          <ChevronDown className="h-4 w-4 text-[#bbc4f7]" />
-                        </span>
-                      </button>
-                      <div
-                        className="grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-out"
+                <div className="relative flex h-full flex-col">
+                  <p
+                    className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[#bbc4f7]"
+                    style={BODY_FONT}
+                  >
+                    Featured client
+                  </p>
+
+                  <blockquote
+                    className="mt-10 max-w-[20ch] text-balance text-[clamp(2rem,3.2vw,3.1rem)] leading-[1.05] tracking-[-0.035em] text-[#f4f6fb]"
+                    style={DISPLAY_FONT}
+                  >
+                    <span style={SERIF_FONT} className="font-normal text-[#bbc4f7]">
+                      &ldquo;
+                    </span>
+                    {TESTIMONIALS[0].quote}
+                    <span style={SERIF_FONT} className="font-normal text-[#bbc4f7]">
+                      &rdquo;
+                    </span>
+                  </blockquote>
+
+                  <div className="mt-auto pt-12">
+                    <div className="flex items-center gap-4">
+                      <span
+                        className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-[#bbc4f7]/30 text-base font-semibold text-[#bbc4f7]"
                         style={{
-                          gridTemplateRows: isOpen ? "1fr" : "0fr",
-                          opacity: isOpen ? 1 : 0.5,
+                          background:
+                            "linear-gradient(135deg, rgba(187,196,247,0.18), rgba(187,196,247,0.04))",
+                          fontFamily: "var(--font-manrope), 'Manrope', sans-serif",
                         }}
                       >
-                        <div className="overflow-hidden">
-                          <p className="max-w-[60ch] pt-5 text-sm leading-7 text-[#c6c6cb]" style={BODY_FONT}>
-                            {item.answer}
+                        {TESTIMONIALS[0].name
+                          .split(" ")
+                          .map((w) => w[0])
+                          .join("")}
+                      </span>
+                      <div>
+                        <p
+                          className="text-base font-semibold text-[#dfe2eb]"
+                          style={BODY_FONT}
+                        >
+                          {TESTIMONIALS[0].name}
+                        </p>
+                        <p
+                          className="mt-0.5 text-sm text-[#8f9095]"
+                          style={BODY_FONT}
+                        >
+                          {TESTIMONIALS[0].role}
+                        </p>
+                      </div>
+                      <span
+                        className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-[#bbc4f7]/25 bg-[#bbc4f7]/10 px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[#bbc4f7]"
+                        style={BODY_FONT}
+                      >
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#bbc4f7]" />
+                        {TESTIMONIALS[0].program}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </Reveal>
+
+            {/* Secondary testimonials — smaller pull quotes */}
+            <div className="flex flex-col gap-6 lg:col-span-5">
+              {TESTIMONIALS.slice(1).map((testimonial, index) => {
+                const initials = testimonial.name
+                  .split(" ")
+                  .map((w) => w[0])
+                  .join("");
+                return (
+                  <Reveal
+                    key={testimonial.name}
+                    delay={0.08 + index * 0.05}
+                  >
+                    <article
+                      className="group relative overflow-hidden rounded-[28px] border border-white/8 p-7 transition-all duration-500 hover:border-[#bbc4f7]/25"
+                      style={{
+                        background:
+                          "linear-gradient(145deg, #1B1A2B 0%, #1f1e35 100%)",
+                      }}
+                    >
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute -right-4 -top-10 select-none text-[10rem] leading-none text-[#bbc4f7]/[0.06] transition-all duration-700 group-hover:text-[#bbc4f7]/[0.11]"
+                        style={SERIF_FONT}
+                      >
+                        &ldquo;
+                      </span>
+
+                      <blockquote
+                        className="relative max-w-[22ch] text-balance text-[clamp(1.25rem,1.8vw,1.55rem)] leading-[1.18] tracking-[-0.02em] text-[#dfe2eb]"
+                        style={DISPLAY_FONT}
+                      >
+                        {testimonial.quote}
+                      </blockquote>
+
+                      <div className="relative mt-7 flex items-center gap-3 border-t border-white/8 pt-5">
+                        <span
+                          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-[#bbc4f7]/25 text-xs font-semibold text-[#bbc4f7]"
+                          style={{
+                            background:
+                              "linear-gradient(135deg, rgba(187,196,247,0.14), rgba(187,196,247,0.03))",
+                            fontFamily:
+                              "var(--font-manrope), 'Manrope', sans-serif",
+                          }}
+                        >
+                          {initials}
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p
+                            className="truncate text-sm font-semibold text-[#dfe2eb]"
+                            style={BODY_FONT}
+                          >
+                            {testimonial.name}
+                          </p>
+                          <p
+                            className="mt-0.5 truncate text-xs text-[#8f9095]"
+                            style={BODY_FONT}
+                          >
+                            {testimonial.role} · {testimonial.program}
                           </p>
                         </div>
                       </div>
@@ -1257,6 +1573,146 @@ export function LandingV2Page({
                   </Reveal>
                 );
               })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        className={cn(
+          "relative overflow-hidden border-b border-white/8 bg-[#11101C]",
+          sectionPaddingClass
+        )}
+      >
+        {/* Atmospheric backdrop */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-32 top-1/3 h-[34rem] w-[34rem] rounded-full opacity-50 blur-[120px]"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(187,196,247,0.1), transparent 70%)",
+          }}
+        />
+
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="grid gap-12 lg:grid-cols-12 lg:gap-12">
+            <Reveal className="lg:col-span-4">
+              <div className="max-w-[28rem] lg:sticky lg:top-28">
+                <p className={eyebrowClass} style={BODY_FONT}>
+                  FAQ
+                </p>
+                <h2
+                  className="mt-4 max-w-[14ch] text-balance text-[clamp(2.2rem,3.4vw,3.55rem)] leading-[0.99] tracking-[-0.035em] text-[#dfe2eb]"
+                  style={DISPLAY_FONT}
+                >
+                  Questions that{" "}
+                  <span style={SERIF_FONT} className="font-normal">
+                    usually come up
+                  </span>{" "}
+                  in the first conversation.
+                </h2>
+                <p
+                  className="mt-6 max-w-[42ch] text-[0.95rem] leading-7 text-[#c6c6cb]"
+                  style={BODY_FONT}
+                >
+                  Factual, specific, and closer to a briefing than a sales
+                  page. If something here doesn&apos;t cover your situation,
+                  ask your advisor directly.
+                </p>
+                <div className="mt-10 flex items-center gap-3">
+                  <span className="h-px w-12 bg-[#bbc4f7]/40" />
+                  <span
+                    className="text-[0.66rem] font-semibold uppercase tracking-[0.24em] text-[#bbc4f7]/70"
+                    style={BODY_FONT}
+                  >
+                    {FAQ_ITEMS.length} most-asked
+                  </span>
+                </div>
+              </div>
+            </Reveal>
+
+            <div className="relative lg:col-span-8">
+              <div className="divide-y divide-white/8 border-y border-white/8">
+                {FAQ_ITEMS.map((item, index) => {
+                  const isOpen = openFaq === index;
+                  const numStr = String(index + 1).padStart(2, "0");
+
+                  return (
+                    <Reveal key={item.question} delay={index * 0.035}>
+                      <article
+                        className={cn(
+                          "group relative transition-colors duration-300",
+                          isOpen && "bg-[#bbc4f7]/[0.025]"
+                        )}
+                      >
+                        <button
+                          type="button"
+                          className="flex w-full items-start gap-6 py-7 text-left sm:gap-8"
+                          onClick={() =>
+                            setOpenFaq((current) =>
+                              current === index ? -1 : index
+                            )
+                          }
+                        >
+                          <span
+                            className={cn(
+                              "min-w-[2.5rem] flex-shrink-0 text-[2rem] leading-none transition-colors duration-300 sm:text-[2.5rem]",
+                              isOpen
+                                ? "text-[#bbc4f7]"
+                                : "text-[#bbc4f7]/40 group-hover:text-[#bbc4f7]/75"
+                            )}
+                            style={SERIF_FONT}
+                          >
+                            {numStr}
+                          </span>
+                          <span
+                            className={cn(
+                              "flex-1 max-w-[34ch] text-balance text-[clamp(1.25rem,2vw,1.6rem)] leading-[1.18] tracking-[-0.02em] transition-colors duration-300",
+                              isOpen ? "text-[#f4f6fb]" : "text-[#dfe2eb]"
+                            )}
+                            style={DISPLAY_FONT}
+                          >
+                            {item.question}
+                          </span>
+                          <span
+                            className={cn(
+                              "mt-1 inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border transition-all duration-300",
+                              isOpen
+                                ? "border-[#bbc4f7]/40 bg-[#bbc4f7]/15"
+                                : "border-white/10 bg-[#1B1A2B] group-hover:border-[#bbc4f7]/30 group-hover:bg-[#bbc4f7]/8"
+                            )}
+                          >
+                            <ChevronDown
+                              className={cn(
+                                "h-4 w-4 text-[#bbc4f7] transition-transform duration-300",
+                                isOpen && "rotate-180"
+                              )}
+                            />
+                          </span>
+                        </button>
+                        <div
+                          className="grid overflow-hidden transition-[grid-template-rows,opacity,padding] duration-300 ease-out"
+                          style={{
+                            gridTemplateRows: isOpen ? "1fr" : "0fr",
+                            opacity: isOpen ? 1 : 0,
+                          }}
+                        >
+                          <div className="overflow-hidden">
+                            <div className="ml-[3.5rem] max-w-[60ch] pb-7 pr-12 sm:ml-[4.5rem]">
+                              <p
+                                className="text-[0.95rem] leading-8 text-[#c6c6cb]"
+                                style={BODY_FONT}
+                              >
+                                {item.answer}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </article>
+                    </Reveal>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
