@@ -346,19 +346,26 @@ export function ProgramDetail({ program }: { program: Program }) {
     setApplyOpen(true);
   };
 
-  const enquireLabel = adding
+  const enquireLabel = program.comingSoon
+    ? "Coming soon"
+    : adding
     ? "Adding…"
     : hasExistingApplication
     ? "Add"
     : "Enquire";
 
-  const enquireIcon = !hasExistingApplication
+  const enquireIcon = program.comingSoon
+    ? "schedule"
+    : !hasExistingApplication
     ? "arrow_forward"
     : alreadyOnApplication
     ? "check"
     : "add";
 
-  const enquireDisabled = adding || (hasExistingApplication && alreadyOnApplication);
+  const enquireDisabled =
+    !!program.comingSoon ||
+    adding ||
+    (hasExistingApplication && alreadyOnApplication);
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,

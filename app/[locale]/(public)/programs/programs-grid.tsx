@@ -68,6 +68,46 @@ const INVESTMENT_RANGES: { label: string; value: InvestmentRange }[] = [
   { label: "$1M+", value: "1m+" },
 ];
 
+type SortKey =
+  | "alpha-asc"
+  | "alpha-desc"
+  | "investment-asc"
+  | "investment-desc"
+  | "processing-asc"
+  | "visa-desc";
+
+const SORT_OPTIONS: { label: string; value: SortKey }[] = [
+  { label: "Country A–Z", value: "alpha-asc" },
+  { label: "Country Z–A", value: "alpha-desc" },
+  { label: "Lowest investment", value: "investment-asc" },
+  { label: "Highest investment", value: "investment-desc" },
+  { label: "Fastest processing", value: "processing-asc" },
+  { label: "Most visa-free countries", value: "visa-desc" },
+];
+
+function compareSort(a: Program, b: Program, key: SortKey): number {
+  switch (key) {
+    case "alpha-asc":
+      return a.country.localeCompare(b.country, "en", { sensitivity: "base" });
+    case "alpha-desc":
+      return b.country.localeCompare(a.country, "en", { sensitivity: "base" });
+    case "investment-asc":
+      return a.minInvestment - b.minInvestment;
+    case "investment-desc":
+      return b.minInvestment - a.minInvestment;
+    case "processing-asc": {
+      const av = a.processingTimeMonths ?? Number.POSITIVE_INFINITY;
+      const bv = b.processingTimeMonths ?? Number.POSITIVE_INFINITY;
+      return av - bv;
+    }
+    case "visa-desc": {
+      const av = a.visaFreeCount ?? -1;
+      const bv = b.visaFreeCount ?? -1;
+      return bv - av;
+    }
+  }
+}
+
 function matchesRange(min: number, range: InvestmentRange): boolean {
   if (range === "all") return true;
   if (range === "0-500k") return min < 500_000;
@@ -145,7 +185,23 @@ function ProgramCard({
 
         {/* Badges */}
         <div className="absolute top-4 left-4 flex gap-2">
-          {program.featured && (
+          {program.comingSoon && (
+            <span
+              className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-semibold tracking-widest uppercase"
+              style={{
+                background: "rgba(255, 200, 100, 0.14)",
+                border: "1px solid rgba(255, 200, 100, 0.3)",
+                color: "#ffc864",
+                fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 12 }}>
+                schedule
+              </span>
+              Coming soon
+            </span>
+          )}
+          {program.featured && !program.comingSoon && (
             <span
               className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-semibold tracking-widest uppercase"
               style={{
@@ -750,6 +806,7 @@ export function ProgramsGrid() {
   const [activeType, setActiveType] = useState<string>("all");
   const [activeRegion, setActiveRegion] = useState<string>("all");
   const [activeRange, setActiveRange] = useState<InvestmentRange>("all");
+  const [activeSort, setActiveSort] = useState<SortKey>("alpha-asc");
   const { user } = useUser();
   const router = useRouter();
   const [qualPrograms, setQualPrograms] = useState<
@@ -830,20 +887,24 @@ export function ProgramsGrid() {
     );
   };
 
-  const labelForProgramme = (slug: string): string => {
-    if (addingSlug === slug) return "Adding…";
+  const labelForProgramme = (program: Program): string => {
+    if (program.comingSoon) return "Coming soon";
+    if (addingSlug === program.slug) return "Adding…";
     if (!hasApplication) return "Enquire";
     return "Add";
   };
 
-  const iconForProgramme = (slug: string): string => {
+  const iconForProgramme = (program: Program): string => {
+    if (program.comingSoon) return "schedule";
     if (!hasApplication) return "arrow_forward";
-    if (applicationSlugs.includes(slug)) return "check";
+    if (applicationSlugs.includes(program.slug)) return "check";
     return "add";
   };
 
-  const disabledForProgramme = (slug: string): boolean =>
-    addingSlug === slug || (hasApplication && applicationSlugs.includes(slug));
+  const disabledForProgramme = (program: Program): boolean =>
+    !!program.comingSoon ||
+    addingSlug === program.slug ||
+    (hasApplication && applicationSlugs.includes(program.slug));
 
   const filtered = useMemo(() => {
     return PROGRAMS.filter((p) => {
@@ -860,6 +921,10 @@ export function ProgramsGrid() {
       return true;
     });
   }, [search, activeType, activeRegion, activeRange]);
+
+  const sortedFiltered = useMemo(() => {
+    return [...filtered].sort((a, b) => compareSort(a, b, activeSort));
+  }, [filtered, activeSort]);
 
   const displayedRegions = REGIONS.filter((r) => r.value !== "global");
 
@@ -1013,6 +1078,41 @@ export function ProgramsGrid() {
               </span>
             </div>
 
+            {/* Sort by dropdown */}
+            <div className="relative">
+              <span
+                className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                style={{ fontSize: 16, color: "#8f9095" }}
+              >
+                swap_vert
+              </span>
+              <select
+                value={activeSort}
+                onChange={(e) => setActiveSort(e.target.value as SortKey)}
+                className="rounded-xl py-2.5 pl-9 pr-8 text-sm cursor-pointer appearance-none outline-none transition-all"
+                style={{
+                  background: "#0a0e14",
+                  border: "1px solid rgba(69,71,75,0.8)",
+                  color: "#dfe2eb",
+                  fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
+                  minWidth: 200,
+                }}
+                aria-label="Sort programmes"
+              >
+                {SORT_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    Sort: {o.label}
+                  </option>
+                ))}
+              </select>
+              <span
+                className="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"
+                style={{ fontSize: 16, color: "#8f9095" }}
+              >
+                expand_more
+              </span>
+            </div>
+
             {/* Filter indicator button */}
             <button
               onClick={() => {
@@ -1020,6 +1120,7 @@ export function ProgramsGrid() {
                 setActiveType("all");
                 setActiveRegion("all");
                 setActiveRange("all");
+                setActiveSort("alpha-asc");
               }}
               className="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-all whitespace-nowrap"
               style={{
@@ -1097,24 +1198,24 @@ export function ProgramsGrid() {
       {/* ── Programs grid ────────────────────────────────────────────────── */}
       <div className="mx-auto max-w-7xl px-6 py-24">
         <AnimatePresence mode="wait">
-          {filtered.length > 0 ? (
+          {sortedFiltered.length > 0 ? (
             <motion.div
-              key={`grid-${activeType}-${activeRegion}-${activeRange}-${search}`}
+              key={`grid-${activeType}-${activeRegion}-${activeRange}-${search}-${activeSort}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10"
             >
-              {filtered.map((program, i) => (
+              {sortedFiltered.map((program, i) => (
                 <ProgramCard
                   key={program.slug}
                   program={program}
                   index={i}
                   onApply={() => handleApply(program.slug)}
-                  applyLabel={labelForProgramme(program.slug)}
-                  applyIcon={iconForProgramme(program.slug)}
-                  applyDisabled={disabledForProgramme(program.slug)}
+                  applyLabel={labelForProgramme(program)}
+                  applyIcon={iconForProgramme(program)}
+                  applyDisabled={disabledForProgramme(program)}
                 />
               ))}
             </motion.div>

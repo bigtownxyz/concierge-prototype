@@ -87,6 +87,8 @@ export interface Program {
   featured: boolean;
   exclusive: boolean;
   flagEmoji: string;
+  /** Listed on /programs but enquiries closed until the route opens. */
+  comingSoon?: boolean;
 }
 
 export const PROGRAMS: Program[] = [
@@ -133,6 +135,7 @@ export const PROGRAMS: Program[] = [
     featured: false,
     exclusive: false,
     flagEmoji: "🇦🇷",
+    comingSoon: true,
   },
   {
     name: "Chile Residency",

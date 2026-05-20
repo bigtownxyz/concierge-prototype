@@ -239,8 +239,17 @@ export async function persistAuthedApplication({
  */
 export async function addProgrammeToApplication(
   slug: string
-): Promise<{ ok: true } | { ok: false; reason: "unauth" | "no-application" | "error"; message?: string }> {
+): Promise<
+  | { ok: true }
+  | { ok: false; reason: "unauth" | "no-application" | "coming-soon" | "error"; message?: string }
+> {
   try {
+    const { PROGRAMS } = await import("@/lib/constants");
+    const programme = PROGRAMS.find((p) => p.slug === slug);
+    if (programme?.comingSoon) {
+      return { ok: false, reason: "coming-soon" };
+    }
+
     const supabase = createClient();
     const {
       data: { user },
