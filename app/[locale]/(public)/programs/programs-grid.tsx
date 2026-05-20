@@ -80,12 +80,14 @@ function ProgramCard({
   index,
   onApply,
   applyLabel = "Enquire",
+  applyIcon = "arrow_forward",
   applyDisabled = false,
 }: {
   program: Program;
   index: number;
   onApply: () => void;
   applyLabel?: string;
+  applyIcon?: string;
   applyDisabled?: boolean;
 }) {
   const gradient = REGION_GRADIENTS[program.region] ?? REGION_GRADIENTS.global;
@@ -365,10 +367,10 @@ function ProgramCard({
             type="button"
             onClick={onApply}
             disabled={applyDisabled}
-            className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 disabled:cursor-not-allowed"
             style={{
-              background: "#bbc4f7",
-              color: "#242d58",
+              background: applyDisabled ? "rgba(143,144,149,0.18)" : "#bbc4f7",
+              color: applyDisabled ? "rgba(198,198,203,0.55)" : "#242d58",
               fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
             }}
             onMouseEnter={(e) => {
@@ -381,7 +383,7 @@ function ProgramCard({
             }}
           >
             <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-              arrow_forward
+              {applyIcon}
             </span>
             {applyLabel}
           </button>
@@ -826,9 +828,17 @@ export function ProgramsGrid() {
   const labelForProgramme = (slug: string): string => {
     if (addingSlug === slug) return "Adding…";
     if (!hasApplication) return "Enquire";
-    if (applicationSlugs.includes(slug)) return "On your application";
-    return "Add to my application";
+    return "Add";
   };
+
+  const iconForProgramme = (slug: string): string => {
+    if (!hasApplication) return "arrow_forward";
+    if (applicationSlugs.includes(slug)) return "check";
+    return "add";
+  };
+
+  const disabledForProgramme = (slug: string): boolean =>
+    addingSlug === slug || (hasApplication && applicationSlugs.includes(slug));
 
   const filtered = useMemo(() => {
     return PROGRAMS.filter((p) => {
@@ -1098,7 +1108,8 @@ export function ProgramsGrid() {
                   index={i}
                   onApply={() => handleApply(program.slug)}
                   applyLabel={labelForProgramme(program.slug)}
-                  applyDisabled={addingSlug === program.slug}
+                  applyIcon={iconForProgramme(program.slug)}
+                  applyDisabled={disabledForProgramme(program.slug)}
                 />
               ))}
             </motion.div>

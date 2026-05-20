@@ -8,7 +8,7 @@ import { Link } from "@/i18n/navigation";
 import { type Program, STAGES } from "@/lib/constants";
 import { formatCurrency } from "@/lib/utils";
 import { RadarChart } from "@/components/shared/RadarChart";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { QualifyModal } from "@/components/shared/QualifyModal";
 import {
   ApplyForProgrammeModal,
@@ -265,6 +265,7 @@ export function ProgramDetail({ program }: { program: Program }) {
   // their saved profile + qualification, with this programme added.
   const [applyProgrammes, setApplyProgrammes] = useState<string[]>([program.slug]);
   const [applyPrefill, setApplyPrefill] = useState<Partial<ApplyFormData> | undefined>();
+  const [alreadyOnApplication, setAlreadyOnApplication] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -299,6 +300,7 @@ export function ProgramDetail({ program }: { program: Program }) {
       setApplyProgrammes(
         Array.from(new Set([program.slug, ...existingSlugs]))
       );
+      setAlreadyOnApplication(existingSlugs.includes(program.slug));
 
       setApplyPrefill({
         investmentAmount: qual.investment_amount ?? 500_000,
@@ -346,8 +348,16 @@ export function ProgramDetail({ program }: { program: Program }) {
   const enquireLabel = adding
     ? "Adding…"
     : hasExistingApplication
-    ? "Add to my application"
+    ? "Add"
     : "Enquire";
+
+  const enquireIcon = !hasExistingApplication
+    ? "arrow_forward"
+    : alreadyOnApplication
+    ? "check"
+    : "add";
+
+  const enquireDisabled = adding || (hasExistingApplication && alreadyOnApplication);
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -635,16 +645,22 @@ export function ProgramDetail({ program }: { program: Program }) {
                 <button
                   type="button"
                   onClick={openApply}
-                  disabled={adding}
-                  className="flex items-center justify-center gap-2 w-full rounded-xl py-3.5 text-sm font-semibold transition-all disabled:opacity-60"
+                  disabled={enquireDisabled}
+                  className="flex items-center justify-center gap-2 w-full rounded-xl py-3.5 text-sm font-semibold transition-all disabled:cursor-not-allowed"
                   style={{
-                    background: "var(--color-obsidian-primary)",
-                    color: "var(--color-obsidian-on-primary)",
+                    background: enquireDisabled
+                      ? "rgba(143,144,149,0.18)"
+                      : "var(--color-obsidian-primary)",
+                    color: enquireDisabled
+                      ? "rgba(198,198,203,0.55)"
+                      : "var(--color-obsidian-on-primary)",
                     border: "none",
                   }}
                 >
                   {enquireLabel}
-                  <ArrowRight className="h-4 w-4" />
+                  <span className="material-symbols-outlined text-[16px]">
+                    {enquireIcon}
+                  </span>
                 </button>
                 {/* Secondary — discovery path for the unsure */}
                 <button
@@ -1224,15 +1240,19 @@ export function ProgramDetail({ program }: { program: Program }) {
                   <button
                     type="button"
                     onClick={openApply}
-                    disabled={adding}
-                    className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl text-sm font-semibold transition-all disabled:opacity-60"
+                    disabled={enquireDisabled}
+                    className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl text-sm font-semibold transition-all disabled:cursor-not-allowed"
                     style={{
-                      background: "var(--color-obsidian-primary)",
-                      color: "var(--color-obsidian-on-primary)",
+                      background: enquireDisabled
+                        ? "rgba(143,144,149,0.18)"
+                        : "var(--color-obsidian-primary)",
+                      color: enquireDisabled
+                        ? "rgba(198,198,203,0.55)"
+                        : "var(--color-obsidian-on-primary)",
                     }}
                   >
                     <span className="material-symbols-outlined text-[16px]">
-                      send
+                      {enquireIcon}
                     </span>
                     {enquireLabel}
                   </button>
