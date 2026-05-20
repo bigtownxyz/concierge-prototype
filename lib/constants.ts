@@ -34,10 +34,13 @@ export const PROGRAM_IMAGE_SLUGS = new Set<string>([
   "grenada",
   "panama",
   "portugal",
+  "sao-tome",
   "serbia",
+  "sierra-leone",
   "slovakia",
   "st-kitts-and-nevis",
   "st-lucia",
+  "vanuatu",
 ]);
 
 export function programHasImage(slug: string): boolean {
