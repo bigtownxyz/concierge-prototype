@@ -252,9 +252,9 @@ export async function submitApplicationSignup({
     const supabase = createClient();
     // Reuse the quiz's proven callback target. Supabase only honours
     // emailRedirectTo URLs in its allowlist; the /results variant is
-    // allowlisted and working, /application-received is not (Supabase falls
+    // allowlisted and working, /application is not (Supabase falls
     // back to the Site URL → homepage). /results self-redirects enquiry users
-    // to /application-received, so this lands them in the right place.
+    // to /application, so this lands them in the right place.
     const callbackPath = `/${locale}/callback?next=${encodeURIComponent(`/${locale}/results`)}`;
 
     const { data: signUpData, error } = await supabase.auth.signUp({

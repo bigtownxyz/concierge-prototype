@@ -293,7 +293,7 @@ export function ApplyForProgrammeModal({
           });
       switch (result.status) {
         case "session":
-          router.push("/application-received");
+          router.push("/application");
           router.refresh();
           return;
         case "confirm-email":

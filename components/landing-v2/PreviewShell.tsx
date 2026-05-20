@@ -64,7 +64,7 @@ export function PreviewShell({ children }: { children: React.ReactNode }) {
                 >
                   Sign Out
                 </button>
-                <Link href="/results" className={primaryButtonClass}>
+                <Link href="/application" className={primaryButtonClass}>
                   My Account
                   <ArrowRight className="h-4 w-4" />
                 </Link>

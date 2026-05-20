@@ -49,9 +49,17 @@ export default function ApplicationReceivedPage() {
 
       const { data: qual } = await supabase
         .from("qualifications")
-        .select("id")
+        .select("id, strategic_focus")
         .eq("user_id", user.id)
         .maybeSingle();
+
+      // Quiz users (took the discovery quiz) have strategic_focus set. Their
+      // canonical "My Application" view is /results — radar scores + match
+      // analysis. Mirrors the inverse redirect in /results for enquiry users.
+      if (qual && Array.isArray(qual.strategic_focus) && qual.strategic_focus.length > 0) {
+        router.replace("/results");
+        return;
+      }
 
       if (qual) {
         const { data: progs } = await supabase
@@ -121,26 +129,26 @@ export default function ApplicationReceivedPage() {
                   style={{ fontSize: 18, color: "#bbc4f7" }}
                   aria-hidden="true"
                 >
-                  task_alt
+                  folder_open
                 </span>
                 <p
                   className="text-[10px] font-semibold uppercase tracking-[0.2em]"
                   style={{ color: "#bbc4f7" }}
                 >
-                  Enquiry Received
+                  Your Application
                 </p>
               </div>
               <h1
                 className="text-2xl sm:text-3xl font-semibold mb-2"
                 style={{ color: "#dfe2eb" }}
               >
-                Thank you{name ? `, ${name.split(" ")[0]}` : ""}.{" "}
-                <em style={{ color: "#bbc4f7" }}>We&apos;ve got it.</em>
+                {name ? `${name.split(" ")[0]}, ` : ""}
+                <em style={{ color: "#bbc4f7" }}>here&apos;s your overview.</em>
               </h1>
               <p className="text-sm mb-8 max-w-xl" style={{ color: "#8f9095" }}>
-                Your enquiry is with our advisory team. A senior advisor will
-                review your profile and reach out shortly to discuss next steps.
-                Book your consultation now to move faster.
+                The programmes you&apos;re exploring with our advisory team are
+                listed below. Book or reschedule your consultation any time,
+                and your advisor will review everything before the call.
               </p>
             </motion.div>
 

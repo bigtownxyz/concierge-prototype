@@ -140,17 +140,17 @@ export function Navbar() {
               <div className="flex items-center gap-2">
                 {/* My Application link */}
                 <Link
-                  href="/results"
+                  href="/application"
                   className="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition-all duration-200"
                   style={{
-                    color: pathname === "/results" ? "#bbc4f7" : "#c6c6cb",
-                    background: pathname === "/results" ? "rgba(187,196,247,0.1)" : "transparent",
+                    color: pathname === "/application" ? "#bbc4f7" : "#c6c6cb",
+                    background: pathname === "/application" ? "rgba(187,196,247,0.1)" : "transparent",
                     fontFamily: "var(--font-manrope, 'Manrope', sans-serif)",
                   }}
                 >
                   <span
                     className="material-symbols-outlined"
-                    style={{ fontSize: 15, color: pathname === "/results" ? "#bbc4f7" : "#8f9095" }}
+                    style={{ fontSize: 15, color: pathname === "/application" ? "#bbc4f7" : "#8f9095" }}
                     aria-hidden="true"
                   >
                     assignment_ind
@@ -309,16 +309,16 @@ export function Navbar() {
               {/* My Application link — only when logged in */}
               {!loading && user && (
                 <Link
-                  href="/results"
+                  href="/application"
                   onClick={() => setMobileOpen(false)}
                   className={cn(
                     "flex items-center gap-3 rounded-xl px-4 py-3.5 text-base font-medium transition-colors",
-                    pathname === "/results"
+                    pathname === "/application"
                       ? "bg-primary-muted text-primary"
                       : "text-text-muted hover:bg-glass-bg hover:text-text-primary"
                   )}
                 >
-                  {pathname === "/results" && (
+                  {pathname === "/application" && (
                     <span className="h-1.5 w-1.5 rounded-full bg-primary" />
                   )}
                   My Application
