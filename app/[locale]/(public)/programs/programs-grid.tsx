@@ -40,6 +40,8 @@ const REGION_GRADIENTS: Record<string, string> = {
     "linear-gradient(135deg, #180c02 0%, #261506 40%, #1c1008 70%, #0c0602 100%)",
   asia_pacific:
     "linear-gradient(135deg, #0a0d26 0%, #0f1238 40%, #0c0e2c 70%, #060814 100%)",
+  africa:
+    "linear-gradient(135deg, #2a1606 0%, #3b1f08 40%, #2a1808 70%, #140a04 100%)",
   global:
     "linear-gradient(135deg, #111318 0%, #1a1d24 40%, #141720 70%, #0a0d12 100%)",
 };
@@ -51,6 +53,7 @@ const REGION_ACCENT: Record<string, string> = {
   south_america: "rgba(180, 100, 30, 0.12)",
   central_america: "rgba(160, 90, 20, 0.12)",
   asia_pacific: "rgba(70, 80, 200, 0.12)",
+  africa: "rgba(210, 140, 50, 0.12)",
   global: "rgba(120, 120, 140, 0.12)",
 };
 
