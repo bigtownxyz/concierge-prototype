@@ -208,30 +208,92 @@ export function ApplyForProgrammeModal({
   useEffect(() => {
     if (!isOpen) return;
     let active = true;
-    createClient()
-      .auth.getUser()
-      .then(({ data }) => {
-        if (active) setAuthedEmail(data.user?.email ?? null);
-      });
-    return () => {
-      active = false;
-    };
-  }, [isOpen]);
+    const supabase = createClient();
 
-  useEffect(() => {
-    if (isOpen) {
+    async function loadAuthAndPrefill() {
+      const { data: userData } = await supabase.auth.getUser();
+      const user = userData.user ?? null;
+      if (!active) return;
+      setAuthedEmail(user?.email ?? null);
+
+      // Reset transient UI before applying any prefill.
       setStep(1);
       setError(null);
       setConfirmEmail(false);
+
+      // Caller-provided initialData wins — entry points like program-detail
+      // already pre-load and pass it. For all the no-context entry points
+      // (programs grid, navbar Apply, landing hero, /application "Explore
+      // more programmes"), fetch the authed user's saved profile + previous
+      // enquiry here so they don't refill the same fields they already gave us.
+      if (initialData || !user) {
+        setData((prev) => ({
+          ...prev,
+          ...initialData,
+          selectedProgrammes:
+            initialProgrammes.length > 0
+              ? initialProgrammes
+              : initialData?.selectedProgrammes ?? prev.selectedProgrammes,
+        }));
+        return;
+      }
+
+      const [{ data: profile }, { data: qual }] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("full_name, email, phone, country, nationality")
+          .eq("id", user.id)
+          .maybeSingle(),
+        supabase
+          .from("qualifications")
+          .select(
+            "id, investment_amount, timeline, family_members, is_us_citizen, considering_renouncing, constraints, constraint_detail, situation"
+          )
+          .eq("user_id", user.id)
+          .maybeSingle(),
+      ]);
+
+      let existingSlugs: string[] = [];
+      if (qual) {
+        const { data: progs } = await supabase
+          .from("qualification_programs")
+          .select("program_slug")
+          .eq("qualification_id", qual.id);
+        existingSlugs = (progs ?? []).map(
+          (r: { program_slug: string }) => r.program_slug
+        );
+      }
+
+      if (!active) return;
+
       setData((prev) => ({
         ...prev,
-        ...initialData,
-        selectedProgrammes:
-          initialProgrammes.length > 0
-            ? initialProgrammes
-            : initialData?.selectedProgrammes ?? prev.selectedProgrammes,
+        investmentAmount: qual?.investment_amount ?? prev.investmentAmount,
+        timeline: (qual?.timeline as ApplyFormData["timeline"]) ?? prev.timeline,
+        familyMembers: Array.isArray(qual?.family_members)
+          ? qual!.family_members
+          : prev.familyMembers,
+        isUsCitizen: qual?.is_us_citizen ?? prev.isUsCitizen,
+        consideringRenouncing:
+          qual?.considering_renouncing ?? prev.consideringRenouncing,
+        constraints: qual?.constraints ?? prev.constraints,
+        constraintDetail: qual?.constraint_detail ?? prev.constraintDetail,
+        situation: qual?.situation ?? prev.situation,
+        name: profile?.full_name ?? prev.name,
+        email: profile?.email ?? user.email ?? prev.email,
+        phone: profile?.phone ?? prev.phone,
+        country: profile?.country ?? prev.country,
+        nationality: profile?.nationality ?? prev.nationality,
+        selectedProgrammes: Array.from(
+          new Set([...initialProgrammes, ...existingSlugs])
+        ),
       }));
     }
+
+    loadAuthAndPrefill();
+    return () => {
+      active = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, initialProgrammes, initialData]);
 
