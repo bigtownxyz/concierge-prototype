@@ -125,7 +125,7 @@ const featuredPrograms = featuredProgramOrder
   .map((slug) => PROGRAMS.find((program) => program.slug === slug))
   .filter((program): program is Program => Boolean(program));
 
-const heroProgram = featuredPrograms.find((program) => program.slug === "dubai");
+const heroProgram = PROGRAMS.find((program) => program.slug === "panama");
 const heroSelectedPrograms = featuredPrograms.slice(0, 3);
 // Scatter layout: each card's width/height ratio matches its CARD_SHAPES
 // ratio (w/h × container_aspect 1159/880 = shape ratio) so the clip-path
