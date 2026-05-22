@@ -305,7 +305,7 @@ export function HeroV4() {
           </span>
           <span
             className="absolute whitespace-nowrap text-[#c4caf1]"
-            style={{ ...SERIF, left: "30%", top: "37%", fontSize: "8.7cqw", lineHeight: 1, letterSpacing: "-0.01em" }}
+            style={{ ...SERIF, left: "30%", top: "36.2%", fontSize: "8.7cqw", lineHeight: 1, letterSpacing: "-0.01em" }}
           >
             strategy
           </span>
@@ -332,7 +332,7 @@ export function HeroV4() {
         <div
           aria-hidden
           className="absolute h-px bg-gradient-to-r from-[#bbc4f7]/55 to-transparent"
-          style={{ left: "54.3%", top: "45.5%", width: "3%" }}
+          style={{ left: "54.3%", top: "44.7%", width: "3%" }}
         />
 
         {/* right-hand advisory copy */}
