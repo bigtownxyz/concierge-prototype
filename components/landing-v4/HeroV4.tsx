@@ -213,9 +213,12 @@ export function HeroV4() {
       {/* ════ DESKTOP STAGE ════ */}
       <section
         aria-label="Concierge: jurisdiction strategy"
-        className="relative hidden w-full overflow-hidden bg-[#0d1017] lg:block"
-        style={{ aspectRatio: "1700 / 952", containerType: "inline-size" }}
+        className="hidden w-full bg-[#0d1017] lg:block"
       >
+        <div
+          className="relative mx-auto w-full max-w-[1200px] overflow-hidden"
+          style={{ aspectRatio: "1700 / 952", containerType: "inline-size" }}
+        >
         {/* ambient depth */}
         <div
           aria-hidden
@@ -446,6 +449,7 @@ export function HeroV4() {
             Scroll to discover
           </span>
         </button>
+        </div>
       </section>
 
       {/* ════ MOBILE / TABLET ════ */}
