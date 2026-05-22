@@ -21,7 +21,8 @@ const SERIF = {
   fontStyle: "italic" as const,
 };
 
-const GASH_CLIP = "polygon(40% 0%, 66% 0%, 57% 100%, 35% 100%)";
+// True parallelogram: both edges lean left by the same 8% over the height.
+const GASH_CLIP = "polygon(40% 0%, 66% 0%, 58% 100%, 32% 100%)";
 
 const stats = [
   { label: "Clients guided", value: "500+" },
