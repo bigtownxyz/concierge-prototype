@@ -227,8 +227,10 @@ export function HeroV4() {
           }}
         />
 
+        {/* Stage width matches the "A wider read on six real pathways"
+            snapshots section (max-w-[113rem]) so the hero aligns with it. */}
         <div
-          className="relative z-10 mx-auto w-full max-w-[1200px] overflow-hidden"
+          className="relative z-10 mx-auto w-full max-w-[113rem] overflow-hidden"
           style={{ aspectRatio: "1700 / 952", containerType: "inline-size" }}
         >
         {/* diagonal photographic gash */}
