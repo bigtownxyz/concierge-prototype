@@ -188,7 +188,7 @@ export const PROGRAMS: Program[] = [
     type: "Residency",
     region: "central_america",
     minInvestment: 1021999,
-    maxInvestment: 100000,
+    maxInvestment: 1021999,
     currency: "USD",
     processingTimeMonths: 2,
     visaFreeCount: 130,
