@@ -307,12 +307,13 @@ export async function submitApplicationSignup({
 
   try {
     const supabase = createClient();
-    // Reuse the quiz's proven callback target. Supabase only honours
-    // emailRedirectTo URLs in its allowlist; the /results variant is
-    // allowlisted and working, /application is not (Supabase falls
-    // back to the Site URL → homepage). /results self-redirects enquiry users
-    // to /application, so this lands them in the right place.
-    const callbackPath = `/${locale}/callback?next=${encodeURIComponent(`/${locale}/results`)}`;
+    // Enquiry users belong on /application (their programme overview), not
+    // /results (the quiz page). REQUIRED: the callback URL below must be on
+    // the Supabase redirect-URL allowlist (Authentication > URL Configuration).
+    // If it is not, Supabase ignores emailRedirectTo, falls back to the Site
+    // URL, and the confirmation link dead-ends on the homepage with the auth
+    // code never exchanged. A wildcard entry on the deploy origin covers it.
+    const callbackPath = `/${locale}/callback?next=${encodeURIComponent(`/${locale}/application`)}`;
 
     const { data: signUpData, error } = await supabase.auth.signUp({
       email: data.email,

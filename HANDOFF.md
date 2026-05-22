@@ -1,6 +1,6 @@
 # Concierge Prototype: Handoff
 
-Last updated: 2026-05-21
+Last updated: 2026-05-22
 
 This document orients a future Claude session working on this repo. Read it
 before making changes.
@@ -62,9 +62,10 @@ separate and route to different pages.
 ### Routing rule (how the two pages stay correct)
 - `qualifications.strategic_focus` non-empty → **quiz user** → `/results`.
 - `qualifications.strategic_focus` empty → **enquiry user** → `/application`.
-- Each page mirror-redirects if a user lands on the wrong one:
-  `results/page.tsx` sends empty-focus users to `/application`;
-  `application/page.tsx` sends populated-focus users to `/results`.
+- A **server-side guard** in each `page.tsx` redirects a user who lands on
+  the wrong one: `results/page.tsx` 307s empty-focus users to `/application`;
+  `application/page.tsx` 307s populated-focus users to `/results`. The
+  redirect runs before any client HTML renders, so there is no flicker.
 - "My Account" / "My Application" nav links point at `/application`
   (`Navbar.tsx`, `PreviewShell.tsx`). The mirror-redirect handles quiz users.
 
@@ -109,7 +110,23 @@ The `/programs` grid (`programs-grid.tsx`) has a **Sort by** dropdown
 (`SORT_OPTIONS`): Country A–Z (default), Z–A, lowest/highest investment,
 fastest processing, most visa-free.
 
-## What changed this session (2026-05-20 / 05-21)
+## What changed this session (2026-05-22)
+
+- El Salvador `maxInvestment` corrected (was 100,000, below the 1,021,999
+  minimum). Set equal to min so the programme-detail "premium routes" line is
+  suppressed.
+- `/results` and `/application` converted from client-only pages to a
+  **Server Component guard + client child** pattern. Each `page.tsx` now does
+  the auth check and the enquiry-vs-quiz `strategic_focus` check server-side
+  and 307s wrong-page visitors before any client HTML renders. The UI moved
+  to `results-client.tsx` / `application-client.tsx`, which take `userId` as a
+  prop and no longer run the auth check or the mirror-redirect.
+- Email-confirm callback for enquiry signups now points `next=` at
+  `/application` instead of `/results` (`concierge-apply-signup.ts`). This
+  REQUIRES the `/application` callback URL on the Supabase redirect-URL
+  allowlist (see open item 1).
+
+## What changed last session (2026-05-20 / 05-21)
 
 In commit order (all on `master`, pushed to `prototype`):
 
@@ -133,19 +150,21 @@ In commit order (all on `master`, pushed to `prototype`):
 
 ## Open items / known limitations
 
-1. **Email-confirm flickers through `/results`.** Supabase only honours
-   `emailRedirectTo` URLs on its allowlist; `/results` is allowlisted,
-   `/application` is not. New enquiry users who confirm via email land on
-   `/results`, which auto-redirects to `/application` — functional but with a
-   visible flicker. Real fix: add `/application` to the Supabase dashboard
-   URL allowlist, then change the `next=` param in
-   `lib/concierge-apply-signup.ts` (`submitApplicationSignup`). Code-only
-   change is not enough.
+1. **Supabase allowlist step pending (email-confirm).** The email-confirm
+   callback now points `next=` at `/application` (was `/results`). For this to
+   work, the `/application` callback URL must be on the Supabase redirect-URL
+   allowlist: project `bhujlerwneesihhliuov` (NOT `mphojeqgjvtobvospspg`),
+   Authentication > URL Configuration > Redirect URLs. A wildcard entry on the
+   deploy origin (`https://concierge-proto1231.vercel.app/**`) covers it.
+   Until it is added, confirmation links dead-end on the homepage. The code is
+   done; this is a dashboard action.
 
-2. **Mirror-redirects are client-side.** The `/results` ↔ `/application`
-   guards run in a `useEffect` after the Supabase call, so there is a brief
-   loading state before redirect. Converting the page guards to Server
-   Components would remove the flicker. Offered, not yet done.
+2. **Optional: hoist page data fetching server-side.** The `/results` and
+   `/application` guards are now Server Components, but the client children
+   still fetch their own display data (qualification, programmes, profile)
+   with a `loadingData` skeleton. Hoisting those fetches into the server guard
+   would remove the skeleton. Not done: the skeleton is a genuine loading
+   state, not a bug.
 
 3. **New programme data is partly fabricated.** Sao Tome, Vanuatu, Sierra
    Leone — visa-free counts, processing times, radar scores, benefits, and
@@ -185,6 +204,6 @@ In commit order (all on `master`, pushed to `prototype`):
 | `components/landing-v2/LandingV2Page.tsx` | Landing page (primary entry) |
 | `app/[locale]/(public)/programs/programs-grid.tsx` | `/programs` grid, filters, sort |
 | `app/[locale]/(public)/programs/[slug]/program-detail.tsx` | Programme detail page |
-| `app/[locale]/(public)/application/page.tsx` | Application overview (enquiry users) |
-| `app/[locale]/(public)/results/page.tsx` | Quiz results page (quiz users) |
+| `app/[locale]/(public)/application/page.tsx` | Server guard → `application-client.tsx` (enquiry users) |
+| `app/[locale]/(public)/results/page.tsx` | Server guard → `results-client.tsx` (quiz users) |
 | `app/initial-due-diligence/` | DD applicant portal — see `docs/INITIAL_DUE_DILIGENCE.md` |
