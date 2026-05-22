@@ -150,33 +150,21 @@ In commit order (all on `master`, pushed to `prototype`):
 
 ## Open items / known limitations
 
-1. **Supabase allowlist step pending (email-confirm).** The email-confirm
-   callback now points `next=` at `/application` (was `/results`). For this to
-   work, the `/application` callback URL must be on the Supabase redirect-URL
-   allowlist: project `bhujlerwneesihhliuov` (NOT `mphojeqgjvtobvospspg`),
-   Authentication > URL Configuration > Redirect URLs. A wildcard entry on the
-   deploy origin (`https://concierge-proto1231.vercel.app/**`) covers it.
-   Until it is added, confirmation links dead-end on the homepage. The code is
-   done; this is a dashboard action.
-
-2. **Optional: hoist page data fetching server-side.** The `/results` and
+1. **Optional: hoist page data fetching server-side.** The `/results` and
    `/application` guards are now Server Components, but the client children
    still fetch their own display data (qualification, programmes, profile)
    with a `loadingData` skeleton. Hoisting those fetches into the server guard
    would remove the skeleton. Not done: the skeleton is a genuine loading
    state, not a bug.
 
-3. **New programme data is partly fabricated.** Sao Tome, Vanuatu, Sierra
-   Leone — visa-free counts, processing times, radar scores, benefits, and
+2. **New programme data is partly fabricated.** Sao Tome, Vanuatu, Sierra
+   Leone: visa-free counts, processing times, radar scores, benefits, and
    marketing copy are reasonable defaults, not verified figures. Confirm with
    the client before launch.
 
-4. **Missing programmes.** On 2026-05-21 the user listed programmes that
+3. **Missing programmes.** On 2026-05-21 the user listed programmes that
    should exist but don't: **Italy, Albania, Austria, Nauru, Malta,
    Turkey**. Not yet added.
-
-5. **El Salvador min/max inconsistency.** `minInvestment` is 1,021,999 but
-   `maxInvestment` is still 100,000 (max < min). Bump max when touching it.
 
 ## Conventions (do not violate)
 
