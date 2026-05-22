@@ -305,25 +305,25 @@ export function HeroV4() {
           </span>
           <span
             className="absolute whitespace-nowrap text-[#c4caf1]"
-            style={{ ...SERIF, left: "20%", top: "37%", fontSize: "8.7cqw", lineHeight: 1, letterSpacing: "-0.01em" }}
+            style={{ ...SERIF, left: "30%", top: "37%", fontSize: "8.7cqw", lineHeight: 1, letterSpacing: "-0.01em" }}
           >
             strategy
           </span>
           <span
             className="absolute z-20 whitespace-nowrap text-[#eef0f6]"
-            style={{ ...SANS, fontWeight: 500, left: "48%", top: "46.5%", fontSize: "6.6cqw", lineHeight: 1, letterSpacing: "-0.04em" }}
+            style={{ ...SANS, fontWeight: 500, left: "48%", top: "52%", fontSize: "6.6cqw", lineHeight: 1, letterSpacing: "-0.04em" }}
           >
             for a
           </span>
           <span
             className="absolute z-20 whitespace-nowrap text-[#c4caf1]"
-            style={{ ...SERIF, left: "47.5%", top: "57.5%", fontSize: "7.4cqw", lineHeight: 1, letterSpacing: "-0.01em" }}
+            style={{ ...SERIF, left: "47.5%", top: "63%", fontSize: "7.4cqw", lineHeight: 1, letterSpacing: "-0.01em" }}
           >
             borderless
           </span>
           <span
             className="absolute z-20 whitespace-nowrap text-[#eef0f6]"
-            style={{ ...SANS, fontWeight: 500, left: "60.5%", top: "70%", fontSize: "7.4cqw", lineHeight: 1, letterSpacing: "-0.045em" }}
+            style={{ ...SANS, fontWeight: 500, left: "60.5%", top: "75.5%", fontSize: "7.4cqw", lineHeight: 1, letterSpacing: "-0.045em" }}
           >
             life.
           </span>
@@ -332,7 +332,7 @@ export function HeroV4() {
         <div
           aria-hidden
           className="absolute h-px bg-gradient-to-r from-[#bbc4f7]/55 to-transparent"
-          style={{ left: "44.3%", top: "45.5%", width: "3%" }}
+          style={{ left: "54.3%", top: "45.5%", width: "3%" }}
         />
 
         {/* right-hand advisory copy */}
