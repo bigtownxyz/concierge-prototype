@@ -213,22 +213,24 @@ export function HeroV4() {
       {/* ════ DESKTOP STAGE ════ */}
       <section
         aria-label="Concierge: jurisdiction strategy"
-        className="hidden w-full bg-[#0d1017] lg:block"
+        className="relative hidden w-full overflow-hidden bg-[#0d1017] lg:block"
       >
-        <div
-          className="relative mx-auto w-full max-w-[1200px] overflow-hidden"
-          style={{ aspectRatio: "1700 / 952", containerType: "inline-size" }}
-        >
-        {/* ambient depth */}
+        {/* full-bleed ambient background — spans the whole section so the
+            capped composition sits in a soft pool of light with no hard
+            edge where the centred stage ends */}
         <div
           aria-hidden
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(60% 50% at 22% 8%, rgba(187,196,247,0.07), transparent 70%), radial-gradient(50% 45% at 85% 88%, rgba(64,150,196,0.06), transparent 72%)",
+              "radial-gradient(ellipse 62% 80% at 50% 32%, rgba(27,32,50,0.5), transparent 78%), radial-gradient(38% 50% at 16% 10%, rgba(187,196,247,0.06), transparent 72%), radial-gradient(44% 52% at 85% 90%, rgba(64,150,196,0.05), transparent 74%)",
           }}
         />
 
+        <div
+          className="relative z-10 mx-auto w-full max-w-[1200px] overflow-hidden"
+          style={{ aspectRatio: "1700 / 952", containerType: "inline-size" }}
+        >
         {/* diagonal photographic gash */}
         <div
           className="absolute inset-0"
