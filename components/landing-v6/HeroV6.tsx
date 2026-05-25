@@ -242,9 +242,9 @@ export function HeroV6() {
             draggable={false}
             borderRadius="1.15rem"
             blurIntensity="xl"
-            glowIntensity="sm"
-            shadowIntensity="md"
-            className="w-full"
+            glowIntensity="none"
+            shadowIntensity="none"
+            className="w-full border border-white/10"
           >
             <button
               type="button"
