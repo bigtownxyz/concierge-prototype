@@ -484,17 +484,18 @@ function bestSlug(
 
 function ComparisonRow({
   label,
-  programs,
+  slots,
   render,
   bestFor,
   prefer = null,
 }: {
   label: string;
-  programs: Program[];
+  slots: (Program | null)[];
   render: (p: Program) => React.ReactNode;
   bestFor?: (p: Program) => number | null;
   prefer?: Best;
 }) {
+  const programs = slots.filter((p): p is Program => p !== null);
   const winner = bestFor ? bestSlug(programs, bestFor, prefer) : null;
   return (
     <div className="grid grid-cols-[7rem_repeat(var(--cols),minmax(13rem,1fr))] gap-px border-b border-white/[0.06] sm:grid-cols-[9rem_repeat(var(--cols),minmax(14rem,1fr))]">
@@ -504,7 +505,19 @@ function ComparisonRow({
       >
         {label}
       </div>
-      {programs.map((p) => {
+      {slots.map((p, i) => {
+        if (!p) {
+          return (
+            <div
+              key={`empty-${i}`}
+              className="bg-[#0e1118]/20 px-4 py-4 text-[#4d5161] sm:px-5"
+              style={SANS}
+              aria-hidden
+            >
+              <span className="text-[0.95rem]">&mdash;</span>
+            </div>
+          );
+        }
         const isWinner = winner === p.slug;
         return (
           <div
@@ -615,7 +628,10 @@ export function CompareTool() {
     return arr;
   }, [programs]);
 
-  const colCount = Math.max(programs.length, 1);
+  // Always render the full MAX_SLOTS columns so the comparison rows
+  // stay column-aligned with the picker slot cards above (which always
+  // show 3 cards: filled + empty placeholders).
+  const colCount = MAX_SLOTS;
 
   return (
     <section className="relative w-full bg-[#0d1017] text-[#eef0f6]">
@@ -724,7 +740,7 @@ export function CompareTool() {
             <div className="overflow-x-auto">
             <ComparisonRow
               label="Investment"
-              programs={programs}
+              slots={slots}
               render={(p) => (
                 <span className="font-semibold">{formatInvestment(p)}</span>
               )}
@@ -733,7 +749,7 @@ export function CompareTool() {
             />
             <ComparisonRow
               label="Timeline"
-              programs={programs}
+              slots={slots}
               render={(p) => (
                 <span className="font-semibold">{formatTimeline(p)}</span>
               )}
@@ -742,7 +758,7 @@ export function CompareTool() {
             />
             <ComparisonRow
               label="Visa-free"
-              programs={programs}
+              slots={slots}
               render={(p) => (
                 <span>
                   <span className="font-semibold">{formatVisaFree(p)}</span>
@@ -758,7 +774,7 @@ export function CompareTool() {
             />
             <ComparisonRow
               label="Region"
-              programs={programs}
+              slots={slots}
               render={(p) => (
                 <span className="text-[#dfe2eb]">
                   {REGION_LABEL[p.region]}
@@ -767,7 +783,7 @@ export function CompareTool() {
             />
             <ComparisonRow
               label="Cost score"
-              programs={programs}
+              slots={slots}
               render={(p) => (
                 <RadarBar
                   value={p.radarScores.cost_score}
@@ -785,7 +801,7 @@ export function CompareTool() {
             />
             <ComparisonRow
               label="Speed score"
-              programs={programs}
+              slots={slots}
               render={(p) => (
                 <RadarBar
                   value={p.radarScores.speed_score}
@@ -803,7 +819,7 @@ export function CompareTool() {
             />
             <ComparisonRow
               label="Lifestyle"
-              programs={programs}
+              slots={slots}
               render={(p) => (
                 <RadarBar
                   value={p.radarScores.lifestyle_score}
@@ -821,7 +837,7 @@ export function CompareTool() {
             />
             <ComparisonRow
               label="Tax"
-              programs={programs}
+              slots={slots}
               render={(p) => (
                 <RadarBar
                   value={p.radarScores.tax_score}
@@ -839,7 +855,7 @@ export function CompareTool() {
             />
             <ComparisonRow
               label="Travel"
-              programs={programs}
+              slots={slots}
               render={(p) => (
                 <RadarBar
                   value={p.radarScores.travel_score}
@@ -857,7 +873,7 @@ export function CompareTool() {
             />
             <ComparisonRow
               label="Benefits"
-              programs={programs}
+              slots={slots}
               render={(p) => (
                 <ul className="space-y-1.5">
                   {p.benefits.map((b) => (
@@ -871,7 +887,7 @@ export function CompareTool() {
             />
             <ComparisonRow
               label="Requirements"
-              programs={programs}
+              slots={slots}
               render={(p) => (
                 <ul className="space-y-1.5">
                   {p.requirements.map((r) => (
@@ -887,7 +903,7 @@ export function CompareTool() {
             />
             <ComparisonRow
               label="Overview"
-              programs={programs}
+              slots={slots}
               render={(p) => (
                 <p
                   className="text-[0.92rem] leading-relaxed text-[#c6c6cb]"
@@ -901,21 +917,29 @@ export function CompareTool() {
             {/* CTA footer */}
             <div className="grid grid-cols-[7rem_repeat(var(--cols),minmax(13rem,1fr))] gap-px sm:grid-cols-[9rem_repeat(var(--cols),minmax(14rem,1fr))]">
               <div className="sticky left-0 z-10 bg-[#0d1017] px-4 py-5 sm:bg-white/[0.02] sm:px-5" />
-              {programs.map((p) => (
-                <div
-                  key={p.slug}
-                  className="bg-[#0e1118]/40 px-4 py-5 sm:px-5"
-                >
-                  <Link
-                    href={`/programs/${p.slug}`}
-                    className="group inline-flex items-center gap-2 rounded-full bg-[#bbc4f7] px-4 py-2.5 text-[0.85rem] font-semibold text-[#242d58] transition-colors hover:bg-[#cbd1fa]"
-                    style={SANS}
+              {slots.map((p, i) =>
+                p ? (
+                  <div
+                    key={p.slug}
+                    className="bg-[#0e1118]/40 px-4 py-5 sm:px-5"
                   >
-                    Open {p.country}
-                    <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
-                  </Link>
-                </div>
-              ))}
+                    <Link
+                      href={`/programs/${p.slug}`}
+                      className="group inline-flex items-center gap-2 rounded-full bg-[#bbc4f7] px-4 py-2.5 text-[0.85rem] font-semibold text-[#242d58] transition-colors hover:bg-[#cbd1fa]"
+                      style={SANS}
+                    >
+                      Open {p.country}
+                      <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
+                    </Link>
+                  </div>
+                ) : (
+                  <div
+                    key={`empty-cta-${i}`}
+                    className="bg-[#0e1118]/20 px-4 py-5 sm:px-5"
+                    aria-hidden
+                  />
+                )
+              )}
             </div>
             </div>
           </div>
