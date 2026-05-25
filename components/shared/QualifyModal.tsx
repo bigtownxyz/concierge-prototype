@@ -2167,65 +2167,6 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
                     Our qualification process maps your sovereign wealth management goals to programmes with the highest alignment across legal, fiscal, and lifestyle parameters.
                   </p>
                 </div>
-
-                {/* Encrypted session card */}
-                <div
-                  className="rounded-xl p-4"
-                  style={{
-                    background: "rgba(10,14,20,0.8)",
-                    border: "1px solid rgba(69,71,75,0.25)",
-                    borderLeft: "3px solid #bbc4f7",
-                  }}
-                >
-                  <div className="flex items-start gap-3">
-                    <span
-                      className="material-symbols-outlined mt-0.5 shrink-0"
-                      style={{ fontSize: 18, color: "#bbc4f7" }}
-                    >
-                      shield
-                    </span>
-                    <div>
-                      <p
-                        className="text-xs font-semibold uppercase tracking-wide"
-                        style={{ color: "#bbc4f7" }}
-                      >
-                        Encrypted Session
-                      </p>
-                      <p className="mt-1 text-xs leading-relaxed" style={{ color: "#8f9095" }}>
-                        All data transmitted under AES-256 encryption. No retention beyond qualification review. Zero third-party sharing.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Curator card */}
-                <div
-                  className="rounded-xl p-4"
-                  style={{
-                    background: "rgba(10,14,20,0.8)",
-                    border: "1px solid rgba(69,71,75,0.25)",
-                  }}
-                >
-                  <div className="flex items-start gap-3">
-                    <span
-                      className="material-symbols-outlined mt-0.5 shrink-0"
-                      style={{ fontSize: 18, color: "#c6c6cb" }}
-                    >
-                      concierge
-                    </span>
-                    <div>
-                      <p
-                        className="text-xs font-semibold uppercase tracking-wide"
-                        style={{ color: "#c6c6cb" }}
-                      >
-                        The Curator
-                      </p>
-                      <p className="mt-1 text-xs leading-relaxed" style={{ color: "#8f9095" }}>
-                        Your dedicated advisor who maps programmes to your profile. Responds within 24 hours, operates under NDA.
-                      </p>
-                    </div>
-                  </div>
-                </div>
               </div>
 
             </div>
@@ -2511,37 +2452,20 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
 
               {/* Bottom status bar */}
               <div
-                className="flex shrink-0 items-center justify-between px-6 py-2.5"
+                className="hidden shrink-0 items-center justify-end gap-3 px-6 py-2.5 text-xs sm:flex"
                 style={{
                   background: "rgba(10,14,20,0.8)",
                   borderTop: "1px solid rgba(69,71,75,0.15)",
+                  color: "rgba(143,144,149,0.4)",
                 }}
               >
-                <div className="flex items-center gap-2">
-                  {/* Green pulse */}
-                  <span className="relative flex h-2 w-2">
-                    <span
-                      className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60"
-                      style={{ background: "#3E8F78" }}
-                    />
-                    <span
-                      className="relative inline-flex h-2 w-2 rounded-full"
-                      style={{ background: "#3E8F78" }}
-                    />
-                  </span>
-                  <span className="text-xs" style={{ color: "rgba(143,144,149,0.6)" }}>
-                    Secure Vault Connection Active
-                  </span>
-                </div>
-                <div className="hidden items-center gap-3 text-xs sm:flex" style={{ color: "rgba(143,144,149,0.4)" }}>
-                  <span>&copy; {new Date().getFullYear()} Concierge</span>
-                  <Link
-                    href="/privacy"
-                    style={{ color: "rgba(143,144,149,0.5)", textDecoration: "underline" }}
-                  >
-                    Privacy Policy
-                  </Link>
-                </div>
+                <span>&copy; {new Date().getFullYear()} Concierge</span>
+                <Link
+                  href="/privacy"
+                  style={{ color: "rgba(143,144,149,0.5)", textDecoration: "underline" }}
+                >
+                  Privacy Policy
+                </Link>
               </div>
             </div>
           </div>

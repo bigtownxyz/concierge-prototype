@@ -238,8 +238,11 @@ export function HeroV6() {
             onClick={() =>
               window.dispatchEvent(new CustomEvent("open-qualify-modal"))
             }
-            className="group relative isolate flex w-full items-center gap-5 overflow-hidden rounded-[1.15rem] border border-white/10 bg-[#0f1320] px-6 py-5 text-left transition-colors hover:border-white/20"
-            style={{ boxShadow: "0 24px 50px -32px rgba(0,0,0,0.7)" }}
+            className="group relative isolate flex w-full items-center gap-5 overflow-hidden rounded-[1.15rem] border border-white/10 px-6 py-5 text-left backdrop-blur-md transition-colors hover:border-white/20 hover:bg-white/[0.03]"
+            style={{
+              background: "rgba(15,19,32,0.45)",
+              boxShadow: "0 24px 50px -32px rgba(0,0,0,0.7)",
+            }}
           >
             <span
               aria-hidden
