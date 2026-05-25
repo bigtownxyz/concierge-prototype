@@ -101,8 +101,8 @@ export async function POST(request: Request) {
 
   const notifyTo =
     process.env.CONTACT_NOTIFY_TO ||
-    process.env.GMAIL_FROM ||
-    process.env.GMAIL_USER;
+    process.env.SMTP_FROM ||
+    process.env.SMTP_USER;
   if (!notifyTo) {
     console.error("[contact] no notification address configured");
     return NextResponse.json({ ok: true });

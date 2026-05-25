@@ -17,7 +17,7 @@ export default function PrivacyPage() {
           <h2 className="text-lg font-semibold text-text-primary mt-8">Data Security</h2>
           <p>All data is encrypted in transit and at rest. We use industry-standard security measures to protect your information. Access is restricted to authorised advisors only.</p>
           <h2 className="text-lg font-semibold text-text-primary mt-8">Contact</h2>
-          <p>For privacy-related enquiries, contact us at privacy@concierge.app.</p>
+          <p>For privacy-related enquiries, contact us at <a href="mailto:hello@thecitizenshipconcierge.com" className="underline">hello@thecitizenshipconcierge.com</a>.</p>
         </div>
       </div>
     </div>

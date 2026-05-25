@@ -5,17 +5,17 @@ let cachedTransporter: Transporter | null = null;
 function getTransporter(): Transporter {
   if (cachedTransporter) return cachedTransporter;
 
-  const user = process.env.GMAIL_USER;
-  const pass = process.env.GMAIL_APP_PASSWORD;
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASSWORD;
   if (!user || !pass) {
     throw new Error(
-      "Missing GMAIL_USER or GMAIL_APP_PASSWORD environment variables."
+      "Missing SMTP_USER or SMTP_PASSWORD environment variables."
     );
   }
 
   cachedTransporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
+    host: process.env.SMTP_HOST || "smtp.zoho.eu",
+    port: Number(process.env.SMTP_PORT) || 465,
     secure: true,
     auth: { user, pass },
   });
@@ -23,16 +23,9 @@ function getTransporter(): Transporter {
   return cachedTransporter;
 }
 
-/**
- * The address that appears in the From header. Falls back to GMAIL_USER if
- * GMAIL_FROM is not set. Use GMAIL_FROM when GMAIL_USER is the underlying
- * Workspace account and you want to send as an alias (e.g. authenticate as
- * admin@ but send as concierge@). The alias must be configured in Workspace
- * Admin or Gmail "Send mail as" first.
- */
 function getFromAddress(): string {
-  const from = process.env.GMAIL_FROM || process.env.GMAIL_USER;
-  if (!from) throw new Error("Missing GMAIL_USER environment variable.");
+  const from = process.env.SMTP_FROM || process.env.SMTP_USER;
+  if (!from) throw new Error("Missing SMTP_USER environment variable.");
   return from;
 }
 

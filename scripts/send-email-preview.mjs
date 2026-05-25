@@ -1,5 +1,5 @@
 // One-off: send a rendered Supabase email template to a test address.
-// Reads .env.local for Gmail SMTP creds, substitutes {{ .ConfirmationURL }}
+// Reads .env.local for SMTP creds, substitutes {{ .ConfirmationURL }}
 // with a preview link, sends. Run with: node scripts/send-email-preview.mjs
 
 import { readFile } from "node:fs/promises";
@@ -47,17 +47,17 @@ const raw = await readFile(templatePath, "utf8");
 const html = raw.replaceAll("{{ .ConfirmationURL }}", previewUrl);
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
+  host: process.env.SMTP_HOST ?? "smtp.zoho.eu",
+  port: Number(process.env.SMTP_PORT) || 465,
   secure: true,
   auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD,
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASSWORD,
   },
 });
 
 const info = await transporter.sendMail({
-  from: `"Concierge" <${process.env.GMAIL_FROM ?? process.env.GMAIL_USER}>`,
+  from: `"Concierge" <${process.env.SMTP_FROM ?? process.env.SMTP_USER}>`,
   to: TO,
   subject: subjects[TEMPLATE] ?? `[PREVIEW] ${TEMPLATE}`,
   html,

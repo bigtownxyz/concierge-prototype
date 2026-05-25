@@ -10,8 +10,8 @@ import { sendEmail } from "@/lib/email";
  * POST /api/initial-dd/submit
  *
  * Requires a Supabase session. Sets submitted_at + IP/user-agent on the
- * applicant's row, then emails admin@learningcrypto.com (or whatever
- * CONTACT_NOTIFY_TO is set to) so the advisor is alerted.
+ * applicant's row, then emails CONTACT_NOTIFY_TO (falling back to SMTP_FROM
+ * / SMTP_USER) so the advisor is alerted.
  *
  * After submitted_at is set, RLS on due_diligence_submissions makes the
  * row read-only — applicant cannot edit further from the browser. This
@@ -101,8 +101,8 @@ export async function POST(request: Request) {
   // ── Notification email ──────────────────────────────────────────────────
   const notifyTo =
     process.env.CONTACT_NOTIFY_TO ||
-    process.env.GMAIL_FROM ||
-    process.env.GMAIL_USER;
+    process.env.SMTP_FROM ||
+    process.env.SMTP_USER;
 
   if (!notifyTo) {
     console.error("[initial-dd/submit] no notification address configured");
