@@ -7,7 +7,7 @@ import type { CSSProperties } from "react";
    strip carries three stats across the full width. */
 
 import { Link } from "@/i18n/navigation";
-import { ConciergeGlassFilter } from "@/components/shared/ConciergeGlassFilter";
+import { LiquidGlassCard } from "@/components/ui/liquid-weather-glass";
 
 const SANS = { fontFamily: "var(--font-manrope), 'Manrope', sans-serif" };
 const SERIF = {
@@ -233,20 +233,26 @@ export function HeroV6() {
           </dl>
 
           {/* Qualification quiz CTA — surfaces the discovery flow for visitors
-              who don't yet know which programme suits them. Liquid-glass
-              treatment: lens layer captures the cinematic video behind via
-              backdrop-filter + SVG displacement (see ConciergeGlassFilter
-              + globals.css .concierge-glass-lens). */}
-          <ConciergeGlassFilter />
-          <button
-            type="button"
-            onClick={() =>
-              window.dispatchEvent(new CustomEvent("open-qualify-modal"))
-            }
-            className="group relative isolate w-full overflow-hidden rounded-[1.15rem] text-left transition-transform duration-300 ease-out hover:scale-[1.01] active:scale-[0.99]"
+              who don't yet know which programme suits them. Wrapped in
+              LiquidGlassCard for the layered glass treatment (turbulence-
+              displaced backdrop blur + rim highlights). draggable=false so
+              the card doesn't move on click, the button inside owns the
+              onClick. */}
+          <LiquidGlassCard
+            draggable={false}
+            borderRadius="1.15rem"
+            blurIntensity="xl"
+            glowIntensity="sm"
+            shadowIntensity="md"
+            className="w-full"
           >
-            <span className="concierge-glass-lens pointer-events-none absolute inset-0 -z-10 rounded-[inherit]" />
-            <span className="concierge-glass-text relative z-10 flex w-full items-center gap-5 px-6 py-5">
+            <button
+              type="button"
+              onClick={() =>
+                window.dispatchEvent(new CustomEvent("open-qualify-modal"))
+              }
+              className="group flex w-full items-center gap-5 px-6 py-5 text-left"
+            >
               <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/15 text-[#bbc4f7]">
                 <CompassGlyph className="h-5 w-5" />
               </span>
@@ -292,8 +298,8 @@ export function HeroV6() {
                   <ArrowRight className="h-3.5 w-3.5" />
                 </span>
               </span>
-            </span>
-          </button>
+            </button>
+          </LiquidGlassCard>
           </div>
         </div>
       </div>
