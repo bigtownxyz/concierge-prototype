@@ -350,7 +350,7 @@ function ProgrammePicker({
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return PROGRAMS.filter((p) => p.isActive)
+    return PROGRAMS.filter((p) => p.isActive && !p.comingSoon)
       .filter((p) => !exclude.has(p.slug))
       .filter((p) => {
         if (!q) return true;
@@ -576,7 +576,11 @@ export function CompareTool() {
     return raw
       .split(",")
       .map((s) => s.trim())
-      .filter((s) => PROGRAMS.some((p) => p.slug === s))
+      .filter((s) =>
+        PROGRAMS.some(
+          (p) => p.slug === s && p.isActive && !p.comingSoon
+        )
+      )
       .slice(0, MAX_SLOTS);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
