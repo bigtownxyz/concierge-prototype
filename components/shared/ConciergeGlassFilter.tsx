@@ -66,14 +66,16 @@ export function ConciergeGlassFilter() {
             href={SMOOTH_LENS_MAP}
             preserveAspectRatio="none"
           />
-          {/* Light blur on the (already smooth) generated map to soften the
-              transition at the very centre. */}
           <feGaussianBlur in="rawMap" stdDeviation="0.02" result="map" />
           <feGaussianBlur in="SourceGraphic" stdDeviation="0.015" result="blur" />
+          {/* Scale is intentionally small: with the smooth full-bbox gradient
+              map, even modest scales translate to large pixel shifts on a
+              wide card. ~0.05 gives a gentle rim refraction without pulling
+              the whole backdrop into a knot at centre. */}
           <feDisplacementMap
             in="blur"
             in2="map"
-            scale="0.4"
+            scale="0.05"
             xChannelSelector="R"
             yChannelSelector="G"
           />
