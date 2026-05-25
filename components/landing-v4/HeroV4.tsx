@@ -11,7 +11,6 @@
    serves narrow screens. Swapped into LandingV2Page through its `hero`
    slot, so the rest of the landing page is untouched. */
 
-import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 
 const SANS = { fontFamily: "var(--font-manrope), 'Manrope', sans-serif" };
@@ -239,13 +238,17 @@ export function HeroV4() {
           className="absolute inset-0"
           style={{ clipPath: GASH_CLIP }}
         >
-          <Image
-            src="/images/programs/portugal.jpg"
-            alt="Coastal advisory destination at dusk"
-            fill
-            priority
-            sizes="60vw"
-            className="object-cover object-[34%_42%]"
+          <video
+            src="/videos/hero-v4.mp4"
+            poster="/images/programs/portugal.jpg"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            aria-label="Coastal advisory destination at dusk"
+            className="absolute inset-0 h-full w-full object-cover"
+            style={{ objectPosition: "34% 42%" }}
           />
           <div
             aria-hidden
@@ -270,11 +273,11 @@ export function HeroV4() {
         <div
           aria-hidden
           className="absolute w-px bg-gradient-to-b from-[#bbc4f7]/45 to-transparent"
-          style={{ left: "8.7%", top: "20%", height: "20%" }}
+          style={{ left: "8.7%", top: "14%", height: "20%" }}
         />
         <div
           className="absolute flex items-start gap-[0.7em]"
-          style={{ left: "8%", top: "14.5%" }}
+          style={{ left: "8%", top: "8.5%" }}
         >
           <span
             className="mt-[0.35em] rounded-full bg-[#bbc4f7]"
@@ -299,31 +302,31 @@ export function HeroV4() {
         <h1 className="contents">
           <span
             className="absolute whitespace-nowrap text-[#eef0f6]"
-            style={{ ...SANS, fontWeight: 500, left: "5.5%", top: "22%", fontSize: "8.5cqw", lineHeight: 1, letterSpacing: "-0.045em" }}
+            style={{ ...SANS, fontWeight: 500, left: "5.5%", top: "16%", fontSize: "8.5cqw", lineHeight: 1, letterSpacing: "-0.045em" }}
           >
             Jurisdiction
           </span>
           <span
             className="absolute whitespace-nowrap text-[#c4caf1]"
-            style={{ ...SERIF, left: "30%", top: "34.5%", fontSize: "8.7cqw", lineHeight: 1, letterSpacing: "-0.01em" }}
+            style={{ ...SERIF, left: "30%", top: "28.5%", fontSize: "8.7cqw", lineHeight: 1, letterSpacing: "-0.01em" }}
           >
             strategy
           </span>
           <span
             className="absolute z-20 whitespace-nowrap text-[#eef0f6]"
-            style={{ ...SANS, fontWeight: 500, left: "48%", top: "52%", fontSize: "6.6cqw", lineHeight: 1, letterSpacing: "-0.04em" }}
+            style={{ ...SANS, fontWeight: 500, left: "48%", top: "46%", fontSize: "6.6cqw", lineHeight: 1, letterSpacing: "-0.04em" }}
           >
             for a
           </span>
           <span
             className="absolute z-20 whitespace-nowrap text-[#c4caf1]"
-            style={{ ...SERIF, left: "47.5%", top: "63%", fontSize: "7.4cqw", lineHeight: 1, letterSpacing: "-0.01em" }}
+            style={{ ...SERIF, left: "47.5%", top: "57%", fontSize: "7.4cqw", lineHeight: 1, letterSpacing: "-0.01em" }}
           >
             borderless
           </span>
           <span
             className="absolute z-20 whitespace-nowrap text-[#eef0f6]"
-            style={{ ...SANS, fontWeight: 500, left: "60.5%", top: "75.5%", fontSize: "7.4cqw", lineHeight: 1, letterSpacing: "-0.045em" }}
+            style={{ ...SANS, fontWeight: 500, left: "60.5%", top: "69.5%", fontSize: "7.4cqw", lineHeight: 1, letterSpacing: "-0.045em" }}
           >
             life.
           </span>
@@ -332,7 +335,7 @@ export function HeroV4() {
         <div
           aria-hidden
           className="absolute h-px bg-gradient-to-r from-[#bbc4f7]/55 to-transparent"
-          style={{ left: "54.3%", top: "43%", width: "3%" }}
+          style={{ left: "54.3%", top: "37%", width: "3%" }}
         />
 
         {/* right-hand advisory copy */}
@@ -504,12 +507,16 @@ export function HeroV4() {
           </h1>
 
           <div className="relative mt-8 overflow-hidden rounded-2xl" style={{ aspectRatio: "16 / 10" }}>
-            <Image
-              src="/images/programs/portugal.jpg"
-              alt="Coastal advisory destination at dusk"
-              fill
-              sizes="100vw"
-              className="object-cover object-[58%_50%]"
+            <video
+              src="/videos/hero-v4.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+              aria-label="Coastal advisory destination at dusk"
+              className="absolute inset-0 h-full w-full object-cover"
+              style={{ objectPosition: "58% 50%" }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0d1017]/70 to-transparent" />
           </div>

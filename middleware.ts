@@ -129,6 +129,6 @@ export const config = {
   matcher: [
     // Exclude /coming-soon so the holding page renders cleanly without
     // re-entering locale routing (which would redirect to /en/coming-soon).
-    "/((?!api|_next/static|_next/image|favicon.ico|coming-soon|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|coming-soon|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|mp4|webm|mov|m4v)$).*)",
   ],
 };
