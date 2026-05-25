@@ -30,7 +30,7 @@ export function ConciergeGlassFilter() {
       >
         <filter id="concierge-liquid-glass" primitiveUnits="objectBoundingBox">
           <feImage
-            result="map"
+            result="rawMap"
             width="100%"
             height="100%"
             x="0"
@@ -38,6 +38,11 @@ export function ConciergeGlassFilter() {
             href={GLASS_DISPLACEMENT_MAP}
             preserveAspectRatio="none"
           />
+          {/* Blur the displacement map itself so the WebP's quantized gradients
+              (visible as horizontal banding/segments across the lens) become
+              continuous. Separate from the SourceGraphic blur below — these
+              two blurs do different jobs. */}
+          <feGaussianBlur in="rawMap" stdDeviation="0.025" result="map" />
           <feGaussianBlur in="SourceGraphic" stdDeviation="0.03" result="blur" />
           <feDisplacementMap
             in="blur"
