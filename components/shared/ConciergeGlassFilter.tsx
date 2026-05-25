@@ -29,6 +29,11 @@ export function ConciergeGlassFilter() {
         className="pointer-events-none absolute h-0 w-0 overflow-hidden"
       >
         <filter id="concierge-liquid-glass" primitiveUnits="objectBoundingBox">
+          {/* Crop a centred strip of the square normal-map (xMidYMid slice)
+              instead of stretching it to fit. The map is designed for
+              roughly-square buttons; on a wide card "none" stretches the
+              diagonal facets 6:1 and they read as huge chevron bands.
+              Slicing keeps the natural per-axis frequency of the map. */}
           <feImage
             result="rawMap"
             width="100%"
@@ -36,13 +41,12 @@ export function ConciergeGlassFilter() {
             x="0"
             y="0"
             href={GLASS_DISPLACEMENT_MAP}
-            preserveAspectRatio="none"
+            preserveAspectRatio="xMidYMid slice"
           />
-          {/* Blur the displacement map itself so the WebP's quantized gradients
-              (visible as horizontal banding/segments across the lens) become
-              continuous. Separate from the SourceGraphic blur below — these
-              two blurs do different jobs. */}
-          <feGaussianBlur in="rawMap" stdDeviation="0.025" result="map" />
+          {/* Heavy map blur to dissolve any remaining facet structure into
+              continuous gradients. Combined with the slice above, the lens
+              surface should now read as one continuous piece of glass. */}
+          <feGaussianBlur in="rawMap" stdDeviation="0.08" result="map" />
           <feGaussianBlur in="SourceGraphic" stdDeviation="0.03" result="blur" />
           <feDisplacementMap
             in="blur"
