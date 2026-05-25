@@ -497,9 +497,9 @@ function ComparisonRow({
 }) {
   const winner = bestFor ? bestSlug(programs, bestFor, prefer) : null;
   return (
-    <div className="grid grid-cols-[10rem_repeat(var(--cols),minmax(0,1fr))] gap-px border-b border-white/[0.06]">
+    <div className="grid grid-cols-[7rem_repeat(var(--cols),minmax(13rem,1fr))] gap-px border-b border-white/[0.06] sm:grid-cols-[9rem_repeat(var(--cols),minmax(14rem,1fr))]">
       <div
-        className="bg-white/[0.02] px-5 py-4 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[#8f93a3]"
+        className="sticky left-0 z-10 bg-[#0d1017] px-4 py-4 text-[0.66rem] font-semibold uppercase tracking-[0.18em] text-[#8f93a3] sm:bg-white/[0.02] sm:px-5 sm:text-[0.72rem]"
         style={SANS}
       >
         {label}
@@ -509,12 +509,12 @@ function ComparisonRow({
         return (
           <div
             key={p.slug}
-            className="relative bg-[#0e1118]/40 px-5 py-4 text-[#eef0f6]"
+            className="relative bg-[#0e1118]/40 px-4 py-4 text-[#eef0f6] sm:px-5"
             style={SANS}
           >
             {isWinner && (
               <span
-                className="absolute left-3 top-1/2 inline-flex h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[#bbc4f7]"
+                className="absolute left-2 top-1/2 inline-flex h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[#bbc4f7] sm:left-3"
                 aria-label="Best in row"
               />
             )}
@@ -715,6 +715,13 @@ export function CompareTool() {
             className="mt-14 overflow-hidden rounded-2xl border border-white/10 bg-[#0d1017]"
             style={{ ["--cols" as string]: String(colCount) }}
           >
+            <p
+              className="border-b border-white/[0.06] bg-white/[0.02] px-4 py-2.5 text-center text-[0.66rem] font-semibold uppercase tracking-[0.18em] text-[#8f93a3] sm:hidden"
+              style={SANS}
+            >
+              Swipe to compare ↔
+            </p>
+            <div className="overflow-x-auto">
             <ComparisonRow
               label="Investment"
               programs={programs}
@@ -892,12 +899,12 @@ export function CompareTool() {
             />
 
             {/* CTA footer */}
-            <div className="grid grid-cols-[10rem_repeat(var(--cols),minmax(0,1fr))] gap-px">
-              <div className="bg-white/[0.02] px-5 py-5" />
+            <div className="grid grid-cols-[7rem_repeat(var(--cols),minmax(13rem,1fr))] gap-px sm:grid-cols-[9rem_repeat(var(--cols),minmax(14rem,1fr))]">
+              <div className="sticky left-0 z-10 bg-[#0d1017] px-4 py-5 sm:bg-white/[0.02] sm:px-5" />
               {programs.map((p) => (
                 <div
                   key={p.slug}
-                  className="bg-[#0e1118]/40 px-5 py-5"
+                  className="bg-[#0e1118]/40 px-4 py-5 sm:px-5"
                 >
                   <Link
                     href={`/programs/${p.slug}`}
@@ -909,6 +916,7 @@ export function CompareTool() {
                   </Link>
                 </div>
               ))}
+            </div>
             </div>
           </div>
         )}
