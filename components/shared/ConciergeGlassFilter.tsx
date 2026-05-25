@@ -1,6 +1,34 @@
 "use client";
 
-import { GLASS_DISPLACEMENT_MAP } from "@/lib/glass-displacement-map";
+/*
+ * A smooth lens-shaped normal map generated as inline SVG:
+ *   - R channel: linear gradient left (full) → right (none), so pixels on
+ *     the left edge are pushed right toward the centre.
+ *   - G channel: linear gradient top (full) → bottom (none), so pixels on
+ *     the top edge are pushed down toward the centre.
+ *   - The two gradients are combined with "screen" blend so they sum
+ *     correctly into an RG-encoded normal map with no facets, no
+ *     compression artefacts, no directional banding.
+ * This replaces the Apple Tahoe WebP map (which was designed for square
+ * pill buttons and produced visible chevron banding when stretched across
+ * the wide quiz card).
+ */
+const SMOOTH_LENS_MAP =
+  "data:image/svg+xml;utf8," +
+  encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="r" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#ff0000"/>
+        <stop offset="100%" stop-color="#000000"/>
+      </linearGradient>
+      <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#00ff00"/>
+        <stop offset="100%" stop-color="#000000"/>
+      </linearGradient>
+    </defs>
+    <rect width="200" height="200" fill="url(#r)"/>
+    <rect width="200" height="200" fill="url(#g)" style="mix-blend-mode:screen"/>
+  </svg>`);
 
 /**
  * Hidden SVG that defines the displacement filter referenced by
@@ -29,29 +57,23 @@ export function ConciergeGlassFilter() {
         className="pointer-events-none absolute h-0 w-0 overflow-hidden"
       >
         <filter id="concierge-liquid-glass" primitiveUnits="objectBoundingBox">
-          {/* Crop a centred strip of the square normal-map (xMidYMid slice)
-              instead of stretching it to fit. The map is designed for
-              roughly-square buttons; on a wide card "none" stretches the
-              diagonal facets 6:1 and they read as huge chevron bands.
-              Slicing keeps the natural per-axis frequency of the map. */}
           <feImage
             result="rawMap"
             width="100%"
             height="100%"
             x="0"
             y="0"
-            href={GLASS_DISPLACEMENT_MAP}
-            preserveAspectRatio="xMidYMid slice"
+            href={SMOOTH_LENS_MAP}
+            preserveAspectRatio="none"
           />
-          {/* Heavy map blur to dissolve any remaining facet structure into
-              continuous gradients. Combined with the slice above, the lens
-              surface should now read as one continuous piece of glass. */}
-          <feGaussianBlur in="rawMap" stdDeviation="0.08" result="map" />
-          <feGaussianBlur in="SourceGraphic" stdDeviation="0.03" result="blur" />
+          {/* Light blur on the (already smooth) generated map to soften the
+              transition at the very centre. */}
+          <feGaussianBlur in="rawMap" stdDeviation="0.02" result="map" />
+          <feGaussianBlur in="SourceGraphic" stdDeviation="0.015" result="blur" />
           <feDisplacementMap
             in="blur"
             in2="map"
-            scale="0.35"
+            scale="0.4"
             xChannelSelector="R"
             yChannelSelector="G"
           />
