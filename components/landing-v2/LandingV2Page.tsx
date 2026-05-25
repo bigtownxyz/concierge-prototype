@@ -7,7 +7,6 @@ import {
   ArrowRight,
   ArrowUpRight,
   ChevronDown,
-  Clock3,
 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import {
@@ -41,8 +40,6 @@ const primaryButtonClass =
   "inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#bbc4f7] px-6 text-sm font-semibold tracking-[0.01em] text-[#242d58] transition-colors hover:bg-[#a9b3ea] sm:w-auto";
 const secondaryButtonClass =
   "inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-6 text-sm font-semibold tracking-[0.01em] text-[#dfe2eb] transition-colors hover:bg-white/[0.08] sm:w-auto";
-const darkSecondaryButtonClass =
-  "inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-[#bbc4f7]/35 bg-[#bbc4f7]/12 px-6 text-sm font-semibold tracking-[0.01em] text-[#dfe2eb] transition-colors hover:bg-[#bbc4f7]/18 sm:w-auto";
 const sectionPaddingClass = "py-[clamp(4.75rem,8vw,6.75rem)]";
 const eyebrowClass =
   "text-[0.72rem] font-semibold uppercase tracking-[0.24em] text-[#bbc4f7]";
@@ -1645,50 +1642,260 @@ export function LandingV2Page({
         </div>
       </section>
 
-      <section className="px-6 py-[clamp(4.75rem,8vw,6.75rem)] lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <Reveal>
-            <div className="overflow-hidden rounded-[40px] bg-[#1B1A2B] px-7 py-10 text-[#dfe2eb] sm:px-10 sm:py-12 lg:px-14 lg:py-16">
-              <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
-                <div className="space-y-6">
-                  <p className={eyebrowClass} style={BODY_FONT}>
-                    Final CTA
-                  </p>
-                  <h2
-                    className="max-w-[12ch] text-balance text-[clamp(2.6rem,4.8vw,4.4rem)] leading-[0.96] tracking-[-0.04em] text-[#dfe2eb]"
-                    style={DISPLAY_FONT}
-                  >
-                    Begin with a private qualification review.
-                  </h2>
-                  <p className="max-w-[56ch] text-base leading-8 text-[#c6c6cb]" style={BODY_FONT}>
-                    No obligation, no generic intake. We start by narrowing the
-                    field to the routes that actually suit your nationality,
-                    capital, family structure, and time horizon.
-                  </p>
-                </div>
+      <section className="relative overflow-hidden bg-[#0d1017] text-[#eef0f6]">
+        {/* Dubai skyline — desktop right-half placeholder */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 right-0 hidden w-[58%] lg:block"
+        >
+          <Image
+            src="/images/programs/dubai.jpg"
+            alt=""
+            fill
+            sizes="58vw"
+            className="object-cover object-[60%_50%]"
+          />
+          {/* fade the left edge of the image into the dark background */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(90deg, #0d1017 0%, rgba(13,16,23,0.85) 18%, rgba(13,16,23,0.35) 45%, rgba(13,16,23,0.0) 75%)",
+            }}
+          />
+          {/* gentle top/bottom darken */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(13,16,23,0.5) 0%, transparent 25%, transparent 70%, rgba(13,16,23,0.6) 100%)",
+            }}
+          />
+        </div>
 
-                <div className="space-y-5">
-                  <div className="flex flex-col items-start gap-4 sm:flex-row sm:flex-wrap">
-                    <OpenApplyButton className={primaryButtonClass}>
-                      Enquire
-                      <ArrowRight className="h-4 w-4" />
-                    </OpenApplyButton>
-                    <Link href="/programs" className={darkSecondaryButtonClass}>
-                      Browse Programmes
-                      <ArrowUpRight className="h-4 w-4" />
-                    </Link>
-                  </div>
+        {/* Mobile: faded full-bleed image */}
+        <div aria-hidden className="absolute inset-0 lg:hidden">
+          <Image
+            src="/images/programs/dubai.jpg"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover object-[60%_50%] opacity-30"
+          />
+          <div className="absolute inset-0 bg-[#0d1017]/70" />
+        </div>
 
-                  <div className="rounded-[26px] border border-white/10 bg-[#23233A] px-5 py-4">
-                    <div className="flex items-center gap-3 text-sm text-[#c6c6cb]" style={BODY_FONT}>
-                      <Clock3 className="h-4 w-4 text-[#bbc4f7]" />
-                      <span>Free initial review · qualification-first · routed privately</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        {/* Decorative globe + pinpoints (desktop only) */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute left-0 top-1/2 hidden h-[36rem] w-[36rem] -translate-x-[30%] -translate-y-1/2 lg:block"
+        >
+          <svg
+            viewBox="0 0 200 200"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="0.4"
+            className="h-full w-full text-[#bbc4f7]/35"
+          >
+            <circle cx="100" cy="100" r="90" />
+            <circle cx="100" cy="100" r="65" />
+            <ellipse cx="100" cy="100" rx="90" ry="36" />
+            <ellipse cx="100" cy="100" rx="90" ry="62" />
+            <ellipse cx="100" cy="100" rx="58" ry="90" />
+            <ellipse cx="100" cy="100" rx="30" ry="90" />
+            <path d="M10 100 H190" />
+          </svg>
+
+          {/* Home pin (upper) */}
+          <div className="absolute left-[58%] top-[22%] flex items-center gap-3">
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#bbc4f7]">
+              <span className="absolute inset-0 -m-2 rounded-full bg-[#bbc4f7]/20" />
+            </span>
+            <div className="flex flex-col">
+              <span
+                className="text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-[#9aa0b8]"
+                style={BODY_FONT}
+              >
+                Your location
+              </span>
+              <span
+                className="mt-1 text-[1rem] text-[#dfe2eb]"
+                style={{ ...BODY_FONT, fontWeight: 500 }}
+              >
+                Home
+              </span>
             </div>
-          </Reveal>
+          </div>
+
+          {/* Destination pin (lower) */}
+          <div className="absolute left-[42%] top-[78%] flex items-center gap-3">
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#bbc4f7]">
+              <span className="absolute inset-0 -m-2 rounded-full bg-[#bbc4f7]/20" />
+            </span>
+            <div className="flex flex-col">
+              <span
+                className="text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-[#9aa0b8]"
+                style={BODY_FONT}
+              >
+                Your destination
+              </span>
+              <span
+                className="mt-1 text-[1rem] text-[#dfe2eb]"
+                style={{ ...BODY_FONT, fontWeight: 500 }}
+              >
+                Freedom
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Centered content */}
+        <div className="relative mx-auto max-w-3xl px-6 py-24 text-center sm:py-28 lg:py-32">
+          {/* eyebrow pill */}
+          <span
+            className="inline-flex items-center gap-2 rounded-full border border-[#bbc4f7]/30 bg-[#bbc4f7]/[0.04] px-5 py-2.5 text-[0.66rem] font-semibold uppercase tracking-[0.22em] text-[#bbc4f7]"
+            style={BODY_FONT}
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-[#bbc4f7]" />
+            Private advisory for global mobility
+          </span>
+
+          {/* Headline */}
+          <h2
+            className="mt-7 text-[#eef0f6]"
+            style={{
+              ...BODY_FONT,
+              fontWeight: 500,
+              fontSize: "clamp(2.5rem,5.6vw,5.2rem)",
+              lineHeight: 1.04,
+              letterSpacing: "-0.035em",
+            }}
+          >
+            Build your next chapter with{" "}
+            <span
+              className="block text-[#c4caf1] sm:inline"
+              style={{
+                ...SERIF_FONT,
+                fontSize: "1.05em",
+                letterSpacing: "-0.01em",
+              }}
+            >
+              confidence.
+            </span>
+          </h2>
+
+          {/* Body */}
+          <p
+            className="mx-auto mt-7 max-w-[44ch] text-[#c0c3d2]"
+            style={{ ...BODY_FONT, fontSize: "1.0625rem", lineHeight: 1.65 }}
+          >
+            Confidential guidance for residency, citizenship, and
+            international positioning. Designed around your life, your
+            priorities, and your long-term freedom.
+          </p>
+
+          {/* CTAs */}
+          <div className="mt-10 flex flex-wrap items-stretch justify-center gap-3">
+            <OpenApplyButton className="group inline-flex items-center gap-3 rounded-full bg-[#bbc4f7] px-6 py-3.5 text-[0.95rem] font-semibold text-[#242d58] transition-colors hover:bg-[#cbd1fa]">
+              Book a Private Consultation
+              <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#242d58] text-[#bbc4f7]">
+                <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
+              </span>
+            </OpenApplyButton>
+            <Link
+              href="/programs"
+              className="group inline-flex items-center gap-3 rounded-full border border-white/15 bg-black/20 px-6 py-3.5 text-[0.95rem] font-semibold text-[#e9eaf0] backdrop-blur-sm transition-colors hover:border-white/30 hover:bg-black/35"
+            >
+              Explore Programmes
+              <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/20 text-[#bbc4f7]">
+                <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
+              </span>
+            </Link>
+          </div>
+
+          {/* Trust strip */}
+          <ul className="mx-auto mt-14 flex max-w-2xl flex-wrap items-center justify-center gap-y-6 sm:flex-nowrap">
+            {[
+              {
+                icon: (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    className="h-5 w-5"
+                    aria-hidden
+                  >
+                    <rect x="5" y="11" width="14" height="9" rx="2" />
+                    <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+                  </svg>
+                ),
+                top: "Confidential",
+                bottom: "By design",
+              },
+              {
+                icon: (
+                  <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden>
+                    <circle cx="12" cy="12" r="4" fill="currentColor" />
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="8"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                  </svg>
+                ),
+                top: "15+",
+                bottom: "Active programmes",
+              },
+              {
+                icon: (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-5 w-5"
+                    aria-hidden
+                  >
+                    <path d="M4 12l5 5L20 6" />
+                  </svg>
+                ),
+                top: "98%",
+                bottom: "Approval rate",
+              },
+            ].map((item, i, arr) => (
+              <li
+                key={item.bottom}
+                className={cn(
+                  "flex w-full items-center justify-center gap-3 px-6 sm:w-auto",
+                  i < arr.length - 1 && "sm:border-r sm:border-white/10"
+                )}
+              >
+                <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/15 text-[#bbc4f7]">
+                  {item.icon}
+                </span>
+                <div className="flex flex-col text-left">
+                  <span
+                    className="text-[1rem] text-[#eef0f6]"
+                    style={{ ...BODY_FONT, fontWeight: 600 }}
+                  >
+                    {item.top}
+                  </span>
+                  <span
+                    className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[#8f93a3]"
+                    style={BODY_FONT}
+                  >
+                    {item.bottom}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
     </div>
