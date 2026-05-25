@@ -19,7 +19,6 @@ import { cn, formatCurrency } from "@/lib/utils";
 import { ShaderBackground } from "@/components/ui/shaders-hero-section";
 import { OpenQualifyButton } from "./OpenQualifyButton";
 import { OpenApplyButton } from "./OpenApplyButton";
-import { CtaGlobe } from "./CtaGlobe";
 import { useTracedShape } from "@/hooks/useTracedShape";
 import { CARD_SHAPES } from "@/lib/cardShapes";
 
@@ -1686,18 +1685,32 @@ export function LandingV2Page({
           <div className="absolute inset-0 bg-[#0d1017]/70" />
         </div>
 
-        {/* Animated city-lights globe (desktop only) */}
+        {/* Twilight skyline — desktop left-half mirror of the right image */}
         <div
-          className="pointer-events-none absolute left-0 top-1/2 hidden h-[44rem] w-[44rem] -translate-x-[28%] -translate-y-1/2 lg:block"
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 left-0 hidden w-[58%] lg:block"
         >
-          <CtaGlobe />
-          {/* gentle right-edge fade so the globe blends toward the centered text */}
+          <Image
+            src="/images/cta-skyline-left.jpg"
+            alt=""
+            fill
+            sizes="58vw"
+            className="object-cover object-[40%_50%]"
+          />
+          {/* fade the right edge of the left image into the dark background */}
           <div
-            aria-hidden
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(90deg, transparent 0%, transparent 60%, rgba(13,16,23,0.4) 82%, rgba(13,16,23,0.85) 100%)",
+                "linear-gradient(90deg, rgba(13,16,23,0.0) 0%, rgba(13,16,23,0.0) 25%, rgba(13,16,23,0.35) 55%, rgba(13,16,23,0.85) 82%, #0d1017 100%)",
+            }}
+          />
+          {/* gentle top/bottom darken to match the right side */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(13,16,23,0.5) 0%, transparent 25%, transparent 70%, rgba(13,16,23,0.6) 100%)",
             }}
           />
         </div>
