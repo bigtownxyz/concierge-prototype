@@ -6,7 +6,6 @@ import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } f
 import {
   ArrowRight,
   ArrowUpRight,
-  CheckCircle2,
   ChevronDown,
   Clock3,
 } from "lucide-react";
@@ -129,7 +128,6 @@ const featuredPrograms = featuredProgramOrder
   .filter((program): program is Program => Boolean(program));
 
 const heroProgram = PROGRAMS.find((program) => program.slug === "panama");
-const heroSelectedPrograms = featuredPrograms.slice(0, 3);
 // Scatter layout: each card's width/height ratio matches its CARD_SHAPES
 // ratio (w/h × container_aspect 1159/880 = shape ratio) so the clip-path
 // renders the blob undistorted. Cards are scaled up to nearly touch with
@@ -212,12 +210,6 @@ const snapshotCardLayouts = [
     parallax: 65,
   },
 ] as const;
-const optimiseItems = [
-  "Jurisdictions aligned to family inclusion and long-term flexibility.",
-  "Qualification-first screening before time or capital gets committed.",
-  "Execution that stays sober about diligence, timelines, and edge cases.",
-] as const;
-
 type SnapshotLayout = (typeof snapshotCardLayouts)[number];
 
 function getSnapshotLayoutStyle(layout: SnapshotLayout) {
@@ -863,71 +855,6 @@ export function LandingV2Page({
         </ShaderBackground>
       </section>
       )}
-
-      <section className="border-b border-white/8 bg-[#151423] py-8 sm:py-10">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <Reveal>
-            <div className="space-y-5">
-              <div className="grid gap-5 xl:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] xl:items-start">
-                <div className="max-w-[28rem] space-y-3">
-                  <p className={eyebrowClass} style={BODY_FONT}>
-                    Selected pathways
-                  </p>
-                  <p className="max-w-[44ch] text-sm leading-7 text-[#c6c6cb]" style={BODY_FONT}>
-                    A quick comparison of the routes that most often enter the conversation first.
-                  </p>
-                </div>
-
-                <div className="grid gap-3 md:grid-cols-3">
-                  {heroSelectedPrograms.map((program) => (
-                    <Link
-                      key={program.slug}
-                      href={`/programs/${program.slug}`}
-                      className="rounded-[24px] border border-white/8 bg-[#1B1A2B] px-5 py-4 text-[#dfe2eb] transition-colors hover:bg-[#222136]"
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="space-y-1">
-                          <p className="text-base font-semibold" style={BODY_FONT}>
-                            {program.country}
-                          </p>
-                          <p className="text-sm text-[#c6c6cb]" style={BODY_FONT}>
-                            {program.type}
-                          </p>
-                        </div>
-                        <ArrowUpRight className="mt-0.5 h-4 w-4 shrink-0 text-[#bbc4f7]" />
-                      </div>
-                      <div className="mt-4 flex items-center justify-between gap-3 border-t border-white/8 pt-3">
-                        <span className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#bbc4f7]">
-                          Entry point
-                        </span>
-                        <span className="text-sm font-semibold text-[#dfe2eb]" style={SERIF_FONT}>
-                          {formatInvestment(program)}
-                        </span>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-
-              <div className="grid gap-3 lg:grid-cols-3">
-                {optimiseItems.map((item) => (
-                  <article
-                    key={item}
-                    className="rounded-[24px] border border-white/8 bg-[#1B1A2B] px-5 py-4"
-                  >
-                    <div className="flex items-start gap-3">
-                      <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-[#bbc4f7]" />
-                      <p className="text-sm leading-7 text-[#c6c6cb]" style={BODY_FONT}>
-                        {item}
-                      </p>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </div>
-          </Reveal>
-        </div>
-      </section>
 
       <section
         ref={snapshotsSectionRef}
