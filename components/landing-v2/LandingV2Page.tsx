@@ -1695,7 +1695,7 @@ export function LandingV2Page({
             alt=""
             fill
             sizes="58vw"
-            className="object-cover object-[40%_50%]"
+            className="object-cover object-left"
           />
           {/* fade the right edge of the left image into the dark background */}
           <div
