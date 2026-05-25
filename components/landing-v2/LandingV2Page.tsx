@@ -19,6 +19,7 @@ import { cn, formatCurrency } from "@/lib/utils";
 import { ShaderBackground } from "@/components/ui/shaders-hero-section";
 import { OpenQualifyButton } from "./OpenQualifyButton";
 import { OpenApplyButton } from "./OpenApplyButton";
+import { CtaGlobe } from "./CtaGlobe";
 import { useTracedShape } from "@/hooks/useTracedShape";
 import { CARD_SHAPES } from "@/lib/cardShapes";
 
@@ -1685,24 +1686,18 @@ export function LandingV2Page({
           <div className="absolute inset-0 bg-[#0d1017]/70" />
         </div>
 
-        {/* City-lights globe (desktop only) */}
+        {/* Animated city-lights globe (desktop only) */}
         <div
-          aria-hidden
-          className="pointer-events-none absolute left-0 top-1/2 hidden h-[42rem] w-[32rem] -translate-x-[10%] -translate-y-1/2 lg:block"
+          className="pointer-events-none absolute left-0 top-1/2 hidden h-[44rem] w-[44rem] -translate-x-[28%] -translate-y-1/2 lg:block"
         >
-          <Image
-            src="/images/cta-globe.jpg"
-            alt=""
-            fill
-            sizes="32rem"
-            className="object-contain object-left"
-          />
-          {/* fade right edge so the graphic blends toward the centered text */}
+          <CtaGlobe />
+          {/* gentle right-edge fade so the globe blends toward the centered text */}
           <div
+            aria-hidden
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(90deg, transparent 0%, transparent 55%, rgba(13,16,23,0.55) 80%, rgba(13,16,23,0.95) 100%)",
+                "linear-gradient(90deg, transparent 0%, transparent 60%, rgba(13,16,23,0.4) 82%, rgba(13,16,23,0.85) 100%)",
             }}
           />
         </div>
