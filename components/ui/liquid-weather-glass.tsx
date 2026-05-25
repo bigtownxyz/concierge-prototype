@@ -94,35 +94,35 @@ export const LiquidGlassCard = ({
       }
     : {};
 
-  const MotionComponent = draggable || expandable ? motion.div : "div";
+  // Always use motion.div so whileHover/whileTap animations apply, even
+  // when the card is neither draggable nor expandable (the static case
+  // we use for the hero CTAs).
+  const MotionComponent = motion.div;
 
-  const motionProps =
-    draggable || expandable
+  const motionProps = {
+    whileHover: { scale: 1.01 },
+    whileTap: { scale: 0.98 },
+    ...(expandable
       ? {
-          variants: expandable ? containerVariants : undefined,
-          animate: expandable
-            ? isExpanded
-              ? "expanded"
-              : "collapsed"
-            : undefined,
-          onClick: expandable ? handleToggleExpansion : undefined,
-          drag: draggable,
-          dragConstraints: draggable
-            ? { left: 0, right: 0, top: 0, bottom: 0 }
-            : undefined,
-          dragElastic: draggable ? 0.3 : undefined,
-          dragTransition: draggable
-            ? {
-                bounceStiffness: 300,
-                bounceDamping: 10,
-                power: 0.3,
-              }
-            : undefined,
-          whileDrag: draggable ? { scale: 1.02 } : undefined,
-          whileHover: { scale: 1.01 },
-          whileTap: { scale: 0.98 },
+          variants: containerVariants,
+          animate: isExpanded ? "expanded" : "collapsed",
+          onClick: handleToggleExpansion,
         }
-      : {};
+      : {}),
+    ...(draggable
+      ? {
+          drag: true,
+          dragConstraints: { left: 0, right: 0, top: 0, bottom: 0 },
+          dragElastic: 0.3,
+          dragTransition: {
+            bounceStiffness: 300,
+            bounceDamping: 10,
+            power: 0.3,
+          },
+          whileDrag: { scale: 1.02 },
+        }
+      : {}),
+  };
 
   return (
     <>

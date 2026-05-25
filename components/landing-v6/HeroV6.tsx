@@ -260,7 +260,7 @@ export function HeroV6() {
               onClick={() =>
                 window.dispatchEvent(new CustomEvent("open-qualify-modal"))
               }
-              className="group flex w-full items-center gap-5 px-6 py-5 text-left"
+              className="group flex w-full cursor-pointer items-center gap-5 px-6 py-5 text-left"
             >
               <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/15 text-[#bbc4f7]">
                 <CompassGlyph className="h-5 w-5" />
