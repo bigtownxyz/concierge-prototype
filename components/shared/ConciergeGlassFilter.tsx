@@ -21,7 +21,7 @@ export function ConciergeGlassFilter() {
           processed stylesheet. */}
       <style>{`
         .concierge-glass-lens {
-          backdrop-filter: blur(8px) url(#concierge-liquid-glass) saturate(150%);
+          backdrop-filter: blur(12px) url(#concierge-liquid-glass) saturate(150%);
         }
       `}</style>
       <svg
@@ -38,11 +38,11 @@ export function ConciergeGlassFilter() {
             href={GLASS_DISPLACEMENT_MAP}
             preserveAspectRatio="none"
           />
-          <feGaussianBlur in="SourceGraphic" stdDeviation="0.01" result="blur" />
+          <feGaussianBlur in="SourceGraphic" stdDeviation="0.03" result="blur" />
           <feDisplacementMap
             in="blur"
             in2="map"
-            scale="0.5"
+            scale="0.35"
             xChannelSelector="R"
             yChannelSelector="G"
           />
