@@ -1715,16 +1715,15 @@ export function LandingV2Page({
           />
         </div>
 
-        {/* Deep purple sky wash behind the centered text. Single dark
-            radial (no bright upper layer) so the centre reads as moody
-            twilight not lilac — matches the look from before the second
-            skyline image was added. */}
+        {/* Dark-navy centre wash (#0b1128). Radial keeps the middle a solid
+            navy that the centred text reads cleanly against, fading at
+            the edges so it blends into the image masks. */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse 65% 85% at 50% 50%, rgba(52, 30, 82, 0.85), rgba(28, 18, 50, 0.45) 55%, transparent 80%)",
+              "radial-gradient(ellipse 65% 90% at 50% 50%, rgba(11, 17, 40, 1) 0%, rgba(11, 17, 40, 0.85) 35%, rgba(11, 17, 40, 0.35) 65%, transparent 82%)",
           }}
         />
 
