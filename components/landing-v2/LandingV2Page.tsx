@@ -1715,6 +1715,18 @@ export function LandingV2Page({
           />
         </div>
 
+        {/* Purple sky wash sitting between the images and the text so the
+            centered headline reads against the same twilight palette as
+            the skylines instead of a dark stripe. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 55% 75% at 50% 38%, rgba(160, 105, 180, 0.55), transparent 72%), radial-gradient(ellipse 65% 90% at 50% 75%, rgba(70, 40, 110, 0.55), transparent 75%)",
+          }}
+        />
+
         {/* Centered content */}
         <div className="relative mx-auto max-w-3xl px-6 py-24 text-center sm:py-28 lg:py-32">
           {/* eyebrow pill */}
