@@ -178,16 +178,25 @@ export function HeroV6() {
                 <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
               </span>
             </Link>
-            <Link
-              href="/about"
-              className="group inline-flex items-center gap-3 rounded-full border border-white/15 px-6 py-3.5 text-[0.95rem] font-semibold text-[#e9eaf0] transition-colors hover:border-white/30 hover:bg-white/[0.04]"
-              style={SANS}
+            <LiquidGlassCard
+              draggable={false}
+              borderRadius="9999px"
+              blurIntensity="xl"
+              glowIntensity="none"
+              shadowIntensity="none"
+              className="border border-white/10"
             >
-              How We Work
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/20 text-[#bbc4f7]">
-                <PlayGlyph className="h-3 w-3" />
-              </span>
-            </Link>
+              <Link
+                href="/about"
+                className="group inline-flex items-center gap-3 px-6 py-3.5 text-[0.95rem] font-semibold text-[#e9eaf0]"
+                style={SANS}
+              >
+                How We Work
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/20 text-[#bbc4f7]">
+                  <PlayGlyph className="h-3 w-3" />
+                </span>
+              </Link>
+            </LiquidGlassCard>
           </div>
         </div>
 
