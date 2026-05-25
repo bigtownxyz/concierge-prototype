@@ -6,7 +6,6 @@ import type { CSSProperties } from "react";
    spanning the full background and a left-aligned content stack. Bottom
    strip carries three stats across the full width. */
 
-import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 
 const SANS = { fontFamily: "var(--font-manrope), 'Manrope', sans-serif" };
@@ -51,7 +50,7 @@ function PlayGlyph({ className }: { className?: string }) {
   );
 }
 
-function GlobeGlyph({ className }: { className?: string }) {
+function CompassGlyph({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -64,7 +63,7 @@ function GlobeGlyph({ className }: { className?: string }) {
       aria-hidden
     >
       <circle cx="12" cy="12" r="9" />
-      <path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />
+      <path d="m15.5 8.5-3 6-6 3 3-6 6-3Z" />
     </svg>
   );
 }
@@ -232,51 +231,48 @@ export function HeroV6() {
             ))}
           </dl>
 
-          {/* Featured programme card */}
-          <Link
-            href="/programs/panama"
-            className="group relative isolate flex items-center gap-5 overflow-hidden rounded-[1.15rem] border border-white/10 bg-[#0f1320] px-6 py-5 transition-colors hover:border-white/20"
+          {/* Qualification quiz CTA — surfaces the discovery flow for visitors
+              who don't yet know which programme suits them */}
+          <button
+            type="button"
+            onClick={() =>
+              window.dispatchEvent(new CustomEvent("open-qualify-modal"))
+            }
+            className="group relative isolate flex w-full items-center gap-5 overflow-hidden rounded-[1.15rem] border border-white/10 bg-[#0f1320] px-6 py-5 text-left transition-colors hover:border-white/20"
             style={{ boxShadow: "0 24px 50px -32px rgba(0,0,0,0.7)" }}
           >
-            <Image
-              src="/images/programs/panama.jpg"
-              alt=""
-              fill
-              sizes="(min-width: 1024px) 50vw, 100vw"
-              className="-z-10 object-cover opacity-50"
-            />
             <span
               aria-hidden
               className="pointer-events-none absolute inset-0 -z-10"
               style={{
                 background:
-                  "linear-gradient(180deg, rgba(11,13,20,0.45) 0%, rgba(11,13,20,0.85) 100%)",
+                  "radial-gradient(120% 100% at 0% 0%, rgba(187,196,247,0.10) 0%, rgba(11,13,20,0) 60%), linear-gradient(180deg, rgba(11,13,20,0.45) 0%, rgba(11,13,20,0.85) 100%)",
               }}
             />
             <span className="relative inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/15 text-[#bbc4f7]">
-              <GlobeGlyph className="h-5 w-5" />
+              <CompassGlyph className="h-5 w-5" />
             </span>
             <div className="relative flex min-w-0 flex-1 flex-col">
               <span className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#5fcdbd]" />
+                <span className="h-1.5 w-1.5 rounded-full bg-[#FFC864]" />
                 <span
                   className="text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-[#bbc4f7]"
                   style={SANS}
                 >
-                  Featured programme
+                  Qualification review
                 </span>
               </span>
               <span
                 className="mt-1.5 text-[1.35rem] text-[#f1f2f7]"
                 style={{ ...SANS, fontWeight: 600, letterSpacing: "-0.01em" }}
               >
-                Panama Residency
+                Not Sure Where to Start?
               </span>
               <span
                 className="mt-0.5 text-[0.88rem] text-[#9aa0b8]"
                 style={SANS}
               >
-                Territorial tax system
+                Take our 4-step review and we&apos;ll map your route
               </span>
             </div>
             <div className="relative flex shrink-0 items-center gap-3">
@@ -285,20 +281,20 @@ export function HeroV6() {
                   className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[#8f93a3]"
                   style={SANS}
                 >
-                  From
+                  Time
                 </span>
                 <span
                   className="text-[1.05rem] text-[#e9eaf0]"
                   style={{ ...SANS, fontWeight: 600 }}
                 >
-                  $300,000
+                  2 min
                 </span>
               </span>
               <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-[#bbc4f7] transition-transform duration-300 group-hover:translate-x-0.5">
                 <ArrowRight className="h-3.5 w-3.5" />
               </span>
             </div>
-          </Link>
+          </button>
           </div>
         </div>
       </div>
