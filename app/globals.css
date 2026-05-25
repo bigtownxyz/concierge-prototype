@@ -188,12 +188,11 @@ h1, h2, h3, h4, h5, h6 {
 
 .concierge-glass-lens {
   background-color: oklch(from var(--foreground) l c h / 6%);
-  /* url() must come first so the displacement runs against the raw backdrop;
-     chaining additional blur after would smear the warp away. The hero video
-     is already blurred at the section level (filter: blur(6px)) so no
-     additional blur is needed here. */
-  backdrop-filter: url(#concierge-liquid-glass) saturate(160%);
-  -webkit-backdrop-filter: blur(6px) saturate(160%);
+  /* NOTE: backdrop-filter is set via an inline <style> tag in
+     ConciergeGlassFilter because Tailwind v4 / Lightning CSS strips the
+     url(#concierge-liquid-glass) reference when it lives in a stylesheet
+     processed by the CSS pipeline. Inline <style> bypasses that pipeline. */
+  -webkit-backdrop-filter: blur(8px) saturate(150%);
   box-shadow:
     inset 0 0 0 1px color-mix(in srgb, white 10%, transparent),
     inset 1.8px 3px 0px -2px color-mix(in srgb, white 90%, transparent),
