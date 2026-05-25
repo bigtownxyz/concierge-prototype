@@ -1643,10 +1643,18 @@ export function LandingV2Page({
       </section>
 
       <section className="relative overflow-hidden bg-[#0d1017] text-[#eef0f6]">
-        {/* Dubai skyline — desktop right-half placeholder */}
+        {/* Right-half twilight skyline. The wrapper is alpha-masked so the
+            image itself fades to transparent toward the centre, letting
+            the purple wash beneath show through without a dark band. */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-y-0 right-0 hidden w-[58%] lg:block"
+          style={{
+            WebkitMaskImage:
+              "linear-gradient(90deg, transparent 0%, transparent 18%, black 55%, black 100%)",
+            maskImage:
+              "linear-gradient(90deg, transparent 0%, transparent 18%, black 55%, black 100%)",
+          }}
         >
           <Image
             src="/images/cta-skyline.jpg"
@@ -1654,14 +1662,6 @@ export function LandingV2Page({
             fill
             sizes="58vw"
             className="object-cover object-[60%_50%]"
-          />
-          {/* fade the left edge of the image into the dark background */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(90deg, #0d1017 0%, rgba(13,16,23,0.85) 18%, rgba(13,16,23,0.35) 45%, rgba(13,16,23,0.0) 75%)",
-            }}
           />
           {/* gentle top/bottom darken */}
           <div
@@ -1685,10 +1685,18 @@ export function LandingV2Page({
           <div className="absolute inset-0 bg-[#0d1017]/70" />
         </div>
 
-        {/* Twilight skyline — desktop left-half mirror of the right image */}
+        {/* Left-half twilight skyline. Mirror of the right wrapper, with
+            the alpha mask reversed so the right edge fades to transparent
+            into the purple wash. */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-y-0 left-0 hidden w-[58%] lg:block"
+          style={{
+            WebkitMaskImage:
+              "linear-gradient(90deg, black 0%, black 45%, transparent 82%, transparent 100%)",
+            maskImage:
+              "linear-gradient(90deg, black 0%, black 45%, transparent 82%, transparent 100%)",
+          }}
         >
           <Image
             src="/images/cta-skyline-left.jpg"
@@ -1696,14 +1704,6 @@ export function LandingV2Page({
             fill
             sizes="58vw"
             className="object-cover object-left"
-          />
-          {/* fade the right edge of the left image into the dark background */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(90deg, rgba(13,16,23,0.0) 0%, rgba(13,16,23,0.0) 25%, rgba(13,16,23,0.35) 55%, rgba(13,16,23,0.85) 82%, #0d1017 100%)",
-            }}
           />
           {/* gentle top/bottom darken to match the right side */}
           <div
