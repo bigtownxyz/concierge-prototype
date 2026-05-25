@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { Logo } from "@/components/shared/Logo";
 import { useUser } from "@/hooks/useUser";
@@ -27,12 +28,27 @@ const ghostLinkClass =
 export function PreviewShell({ children }: { children: React.ReactNode }) {
   const { user, loading, signOut } = useUser();
   const router = useRouter();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
     router.push("/");
     router.refresh();
   };
+
+  // Close on Escape + lock body scroll while the menu is open
+  useEffect(() => {
+    if (!mobileNavOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileNavOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [mobileNavOpen]);
 
   return (
     <div className="min-h-screen bg-[#11101C] text-[#F5F5F6]">
@@ -80,8 +96,78 @@ export function PreviewShell({ children }: { children: React.ReactNode }) {
                 </OpenApplyButton>
               </>
             )}
+
+            {/* Mobile menu toggle */}
+            <button
+              type="button"
+              onClick={() => setMobileNavOpen((v) => !v)}
+              aria-label={mobileNavOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileNavOpen}
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-[#dfe2eb] transition-colors hover:border-white/30 hover:bg-white/[0.04] md:hidden"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                className="h-5 w-5"
+                aria-hidden
+              >
+                {mobileNavOpen ? (
+                  <path d="M6 6l12 12M18 6L6 18" />
+                ) : (
+                  <path d="M4 7h16M4 12h16M4 17h16" />
+                )}
+              </svg>
+            </button>
           </div>
         </div>
+
+        {/* Mobile menu panel */}
+        {mobileNavOpen && (
+          <div
+            className="absolute inset-x-0 top-full z-50 border-b border-white/8 bg-[rgba(17,16,28,0.96)] backdrop-blur-xl md:hidden"
+            onClick={() => setMobileNavOpen(false)}
+          >
+            <nav className="mx-auto flex max-w-7xl flex-col px-6 py-4">
+              {previewLinks.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileNavOpen(false)}
+                  className="flex items-center justify-between border-b border-white/8 py-4 text-base font-medium text-[#dfe2eb] transition-colors last:border-b-0 hover:text-[#bbc4f7]"
+                >
+                  {item.label}
+                  <ArrowRight className="h-4 w-4 text-[#8f93a3]" />
+                </Link>
+              ))}
+              {!loading && !user && (
+                <Link
+                  href="/login"
+                  onClick={() => setMobileNavOpen(false)}
+                  className="flex items-center justify-between border-t border-white/8 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-[#9aa0b8] transition-colors hover:text-[#bbc4f7]"
+                >
+                  Sign In
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              )}
+              {!loading && user && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileNavOpen(false);
+                    handleSignOut();
+                  }}
+                  className="flex items-center justify-between border-t border-white/8 py-4 text-left text-sm font-semibold uppercase tracking-[0.18em] text-[#9aa0b8] transition-colors hover:text-[#bbc4f7]"
+                >
+                  Sign Out
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              )}
+            </nav>
+          </div>
+        )}
       </header>
 
       <main>{children}</main>
