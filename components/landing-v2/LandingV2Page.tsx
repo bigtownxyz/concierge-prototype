@@ -223,71 +223,6 @@ function formatInvestment(program: Program) {
   return `From ${formatCurrency(program.minInvestment, program.currency)}`;
 }
 
-/* Static dot-grid globe. Dots are distributed evenly across a sphere via
-   equal-area parallels (lng step proportional to cos(lat)), tilted ~15°
-   for aesthetics, projected orthographically to 2D, and culled to the
-   front hemisphere. Per-dot opacity and radius scale with the z-depth so
-   the globe reads as 3D without any runtime maths. */
-const GLOBE_DOTS: { x: number; y: number; r: number; o: number }[] = (() => {
-  const out: { x: number; y: number; r: number; o: number }[] = [];
-  const radius = 100;
-  const cx = 100;
-  const cy = 100;
-  const tilt = (18 * Math.PI) / 180;
-  const cosT = Math.cos(tilt);
-  const sinT = Math.sin(tilt);
-  for (let lat = -90; lat <= 90; lat += 4) {
-    const latRad = (lat * Math.PI) / 180;
-    const cosLat = Math.cos(latRad);
-    const ringCount =
-      cosLat < 0.05 ? 1 : Math.max(6, Math.round((360 * cosLat) / 4));
-    for (let i = 0; i < ringCount; i++) {
-      const lngRad = (i / ringCount) * Math.PI * 2;
-      const x3 = cosLat * Math.sin(lngRad);
-      const y3 = Math.sin(latRad);
-      const z3 = cosLat * Math.cos(lngRad);
-      const yT = y3 * cosT - z3 * sinT;
-      const zT = y3 * sinT + z3 * cosT;
-      if (zT < -0.02) continue;
-      const projX = cx + x3 * radius;
-      const projY = cy - yT * radius;
-      const front = Math.max(0, zT);
-      out.push({
-        x: +projX.toFixed(2),
-        y: +projY.toFixed(2),
-        r: +(0.45 + 0.6 * front).toFixed(2),
-        o: +(0.18 + 0.65 * front).toFixed(3),
-      });
-    }
-  }
-  return out;
-})();
-
-function DotGlobe({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 200 200"
-      fill="currentColor"
-      className={className}
-      aria-hidden
-    >
-      {/* faint outer ring for definition */}
-      <circle
-        cx="100"
-        cy="100"
-        r="99"
-        fill="none"
-        stroke="currentColor"
-        strokeOpacity="0.08"
-        strokeWidth="0.4"
-      />
-      {GLOBE_DOTS.map((d, i) => (
-        <circle key={i} cx={d.x} cy={d.y} r={d.r} opacity={d.o} />
-      ))}
-    </svg>
-  );
-}
-
 function formatTimeline(program: Program) {
   if (!program.processingTimeMonths) {
     return "Timeline varies";
@@ -1750,26 +1685,24 @@ export function LandingV2Page({
           <div className="absolute inset-0 bg-[#0d1017]/70" />
         </div>
 
-        {/* Dotted globe (desktop only) */}
+        {/* City-lights globe (desktop only) */}
         <div
           aria-hidden
-          className="pointer-events-none absolute left-0 top-1/2 hidden h-[40rem] w-[40rem] -translate-x-[35%] -translate-y-1/2 lg:block"
+          className="pointer-events-none absolute left-0 top-1/2 hidden h-[42rem] w-[32rem] -translate-x-[10%] -translate-y-1/2 lg:block"
         >
-          {/* soft glow */}
-          <div
-            className="absolute inset-0 rounded-full"
-            style={{
-              background:
-                "radial-gradient(circle at 60% 50%, rgba(187,196,247,0.18), transparent 65%)",
-            }}
+          <Image
+            src="/images/cta-globe.jpg"
+            alt=""
+            fill
+            sizes="32rem"
+            className="object-contain object-left"
           />
-          <DotGlobe className="relative h-full w-full text-[#bbc4f7]" />
-          {/* fade right edge so the globe blends toward the centered text */}
+          {/* fade right edge so the graphic blends toward the centered text */}
           <div
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(90deg, transparent 0%, transparent 55%, rgba(13,16,23,0.6) 80%, rgba(13,16,23,0.95) 100%)",
+                "linear-gradient(90deg, transparent 0%, transparent 55%, rgba(13,16,23,0.55) 80%, rgba(13,16,23,0.95) 100%)",
             }}
           />
         </div>
