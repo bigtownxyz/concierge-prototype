@@ -1,12 +1,16 @@
 import type { MetadataRoute } from "next";
 
-// TEMPORARY: Block all crawlers until we have a dedicated domain.
-// Remove this block and restore allow rules when ready.
+const BASE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://thecitizenshipconcierge.com";
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",
-      disallow: "/",
+      allow: "/",
+      disallow: ["/api/", "/portal/", "/initial-due-diligence/", "/application/", "/results/"],
     },
+    sitemap: `${BASE_URL}/sitemap.xml`,
+    host: BASE_URL,
   };
 }

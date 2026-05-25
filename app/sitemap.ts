@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
 import { PROGRAMS } from "@/lib/constants";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://concierge.app";
+const BASE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://thecitizenshipconcierge.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages = [
