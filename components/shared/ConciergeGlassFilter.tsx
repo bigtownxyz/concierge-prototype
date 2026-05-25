@@ -11,28 +11,47 @@ import { GLASS_DISPLACEMENT_MAP } from "@/lib/glass-displacement-map";
 export function ConciergeGlassFilter() {
   return (
     <svg
-      className="pointer-events-none absolute h-0 w-0 overflow-hidden"
       aria-hidden
+      style={{
+        position: "absolute",
+        width: 0,
+        height: 0,
+        overflow: "hidden",
+        pointerEvents: "none",
+      }}
     >
-      <filter id="concierge-liquid-glass" primitiveUnits="objectBoundingBox">
-        <feImage
-          result="map"
-          width="100%"
-          height="100%"
+      <defs>
+        <filter
+          id="concierge-liquid-glass"
+          primitiveUnits="objectBoundingBox"
           x="0"
           y="0"
-          href={GLASS_DISPLACEMENT_MAP}
-          preserveAspectRatio="none"
-        />
-        <feGaussianBlur in="SourceGraphic" stdDeviation="0.01" result="blur" />
-        <feDisplacementMap
-          in="blur"
-          in2="map"
-          scale="0.5"
-          xChannelSelector="R"
-          yChannelSelector="G"
-        />
-      </filter>
+          width="1"
+          height="1"
+        >
+          <feImage
+            result="map"
+            width="1"
+            height="1"
+            x="0"
+            y="0"
+            href={GLASS_DISPLACEMENT_MAP}
+            preserveAspectRatio="none"
+          />
+          <feGaussianBlur
+            in="SourceGraphic"
+            stdDeviation="0.01"
+            result="blur"
+          />
+          <feDisplacementMap
+            in="blur"
+            in2="map"
+            scale="0.5"
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />
+        </filter>
+      </defs>
     </svg>
   );
 }
