@@ -7,6 +7,7 @@ import type { CSSProperties } from "react";
    strip carries three stats across the full width. */
 
 import { Link } from "@/i18n/navigation";
+import { ConciergeGlassFilter } from "@/components/shared/ConciergeGlassFilter";
 
 const SANS = { fontFamily: "var(--font-manrope), 'Manrope', sans-serif" };
 const SERIF = {
@@ -232,71 +233,66 @@ export function HeroV6() {
           </dl>
 
           {/* Qualification quiz CTA — surfaces the discovery flow for visitors
-              who don't yet know which programme suits them */}
+              who don't yet know which programme suits them. Liquid-glass
+              treatment: lens layer captures the cinematic video behind via
+              backdrop-filter + SVG displacement (see ConciergeGlassFilter
+              + globals.css .concierge-glass-lens). */}
+          <ConciergeGlassFilter />
           <button
             type="button"
             onClick={() =>
               window.dispatchEvent(new CustomEvent("open-qualify-modal"))
             }
-            className="group relative isolate flex w-full items-center gap-5 overflow-hidden rounded-[1.15rem] border border-white/10 px-6 py-5 text-left backdrop-blur-md transition-colors hover:border-white/20 hover:bg-white/[0.03]"
-            style={{
-              background: "rgba(15,19,32,0.45)",
-              boxShadow: "0 24px 50px -32px rgba(0,0,0,0.7)",
-            }}
+            className="group relative isolate w-full overflow-hidden rounded-[1.15rem] text-left transition-transform duration-300 ease-out hover:scale-[1.01] active:scale-[0.99]"
           >
-            <span
-              aria-hidden
-              className="pointer-events-none absolute inset-0 -z-10"
-              style={{
-                background:
-                  "radial-gradient(120% 100% at 0% 0%, rgba(187,196,247,0.10) 0%, rgba(11,13,20,0) 60%), linear-gradient(180deg, rgba(11,13,20,0.45) 0%, rgba(11,13,20,0.85) 100%)",
-              }}
-            />
-            <span className="relative inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/15 text-[#bbc4f7]">
-              <CompassGlyph className="h-5 w-5" />
+            <span className="concierge-glass-lens pointer-events-none absolute inset-0 -z-10 rounded-[inherit]" />
+            <span className="concierge-glass-text relative z-10 flex w-full items-center gap-5 px-6 py-5">
+              <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/15 text-[#bbc4f7]">
+                <CompassGlyph className="h-5 w-5" />
+              </span>
+              <span className="flex min-w-0 flex-1 flex-col">
+                <span className="flex items-center gap-2">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#FFC864]" />
+                  <span
+                    className="text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-[#bbc4f7]"
+                    style={SANS}
+                  >
+                    Qualification review
+                  </span>
+                </span>
+                <span
+                  className="mt-1.5 text-[1.35rem] text-[#f1f2f7]"
+                  style={{ ...SANS, fontWeight: 600, letterSpacing: "-0.01em" }}
+                >
+                  Not Sure Where to Start?
+                </span>
+                <span
+                  className="mt-0.5 text-[0.88rem] text-[#c0c3d2]"
+                  style={SANS}
+                >
+                  Take our 4-step review and we&apos;ll map your route
+                </span>
+              </span>
+              <span className="flex shrink-0 items-center gap-3">
+                <span className="flex flex-col items-end">
+                  <span
+                    className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[#a8accb]"
+                    style={SANS}
+                  >
+                    Time
+                  </span>
+                  <span
+                    className="text-[1.05rem] text-[#e9eaf0]"
+                    style={{ ...SANS, fontWeight: 600 }}
+                  >
+                    2 min
+                  </span>
+                </span>
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-[#bbc4f7] transition-transform duration-300 group-hover:translate-x-0.5">
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </span>
+              </span>
             </span>
-            <div className="relative flex min-w-0 flex-1 flex-col">
-              <span className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#FFC864]" />
-                <span
-                  className="text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-[#bbc4f7]"
-                  style={SANS}
-                >
-                  Qualification review
-                </span>
-              </span>
-              <span
-                className="mt-1.5 text-[1.35rem] text-[#f1f2f7]"
-                style={{ ...SANS, fontWeight: 600, letterSpacing: "-0.01em" }}
-              >
-                Not Sure Where to Start?
-              </span>
-              <span
-                className="mt-0.5 text-[0.88rem] text-[#9aa0b8]"
-                style={SANS}
-              >
-                Take our 4-step review and we&apos;ll map your route
-              </span>
-            </div>
-            <div className="relative flex shrink-0 items-center gap-3">
-              <span className="flex flex-col items-end">
-                <span
-                  className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[#8f93a3]"
-                  style={SANS}
-                >
-                  Time
-                </span>
-                <span
-                  className="text-[1.05rem] text-[#e9eaf0]"
-                  style={{ ...SANS, fontWeight: 600 }}
-                >
-                  2 min
-                </span>
-              </span>
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-[#bbc4f7] transition-transform duration-300 group-hover:translate-x-0.5">
-                <ArrowRight className="h-3.5 w-3.5" />
-              </span>
-            </div>
           </button>
           </div>
         </div>
