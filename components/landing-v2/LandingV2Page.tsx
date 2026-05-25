@@ -1649,7 +1649,7 @@ export function LandingV2Page({
           className="pointer-events-none absolute inset-y-0 right-0 hidden w-[58%] lg:block"
         >
           <Image
-            src="/images/cta-skyline.png"
+            src="/images/cta-skyline.jpg"
             alt=""
             fill
             sizes="58vw"
@@ -1676,7 +1676,7 @@ export function LandingV2Page({
         {/* Mobile: faded full-bleed image */}
         <div aria-hidden className="absolute inset-0 lg:hidden">
           <Image
-            src="/images/cta-skyline.png"
+            src="/images/cta-skyline.jpg"
             alt=""
             fill
             sizes="100vw"
