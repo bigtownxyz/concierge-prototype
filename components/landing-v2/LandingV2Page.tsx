@@ -859,7 +859,7 @@ export function LandingV2Page({
       <section
         ref={snapshotsSectionRef}
         id="program-snapshots"
-        className="relative overflow-hidden border-b border-white/8 pb-[clamp(5rem,8vw,7.5rem)] pt-[clamp(2rem,4vw,3.25rem)] xl:min-h-[1000px] xl:pb-12 xl:pt-16"
+        className="relative overflow-hidden border-y border-white/8 pb-[clamp(5rem,8vw,7.5rem)] pt-[clamp(2rem,4vw,3.25rem)] xl:min-h-[1000px] xl:pb-12 xl:pt-16"
       >
         <Image
           src="/images/snapshots-bg.jpg"
