@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { Logo } from "@/components/shared/Logo";
 import { useUser } from "@/hooks/useUser";
+import { NewsletterForm } from "@/components/shared/NewsletterForm";
 import { OpenApplyButton } from "./OpenApplyButton";
 
 const previewLinks = [
@@ -188,6 +189,17 @@ export function PreviewShell({ children }: { children: React.ReactNode }) {
               nationality, source of funds, family structure, and due diligence
               outcomes.
             </p>
+
+            <div className="max-w-md space-y-3 pt-2">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#bbc4f7]">
+                Stay in the loop
+              </p>
+              <p className="text-sm leading-6 text-[#8f9095]">
+                Programme changes, jurisdictional updates, and our take on what
+                actually matters. No spam.
+              </p>
+              <NewsletterForm source="footer" variant="footer" />
+            </div>
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2">
