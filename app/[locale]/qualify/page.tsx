@@ -501,7 +501,7 @@ function WelcomeScreen({ onBegin }: { onBegin: () => void }) {
             alt="Concierge"
             width={958}
             height={160}
-            className="mb-9 h-9 w-auto sm:h-11 md:h-12"
+            className="mb-9 h-6 w-auto sm:h-7 md:h-8"
             priority
           />
 
