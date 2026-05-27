@@ -494,25 +494,16 @@ export default function QualifyPage() {
 function WelcomeScreen({ onBegin }: { onBegin: () => void }) {
   return (
     <ShaderBackground>
-      <main className="relative z-20 flex min-h-screen flex-col items-center justify-between px-6 py-10 sm:py-12">
-        <div className="flex w-full max-w-6xl items-center justify-start">
+      <main className="relative z-20 flex min-h-screen flex-col items-center justify-center px-6 py-12">
+        <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
           <Image
             src="/logo.svg"
             alt="Concierge"
             width={958}
             height={160}
-            className="h-8 w-auto sm:h-9"
+            className="mb-9 h-9 w-auto sm:h-11 md:h-12"
             priority
           />
-        </div>
-
-        <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-          <div
-            className="mb-7 inline-flex items-center gap-2 rounded-full border border-[#bbc4f7]/20 bg-[#23233A]/70 px-4 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[#bbc4f7]"
-          >
-            <span className="h-2 w-2 rounded-full bg-[#bbc4f7]" />
-            Discovery
-          </div>
 
           <h1
             className="text-[clamp(2.5rem,6vw,4.25rem)] leading-[1.05] tracking-[-0.025em] text-[#f1f2f6]"
@@ -565,7 +556,7 @@ function WelcomeScreen({ onBegin }: { onBegin: () => void }) {
         </div>
 
         <p
-          className="max-w-md text-center text-[0.7rem] uppercase tracking-[0.2em] text-[#6c6e74]"
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 max-w-md text-center text-[0.7rem] uppercase tracking-[0.2em] text-[#6c6e74]"
           style={DISPLAY_FONT}
         >
           All information held in strict confidence. No third parties. No spam.
