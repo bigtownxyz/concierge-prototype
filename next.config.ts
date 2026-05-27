@@ -18,6 +18,20 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/learningcrypto",
+        destination: "https://learningcrypto.com",
+        permanent: false,
+      },
+      {
+        source: "/:locale(en|ar|zh|ru)/learningcrypto",
+        destination: "https://learningcrypto.com",
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);
