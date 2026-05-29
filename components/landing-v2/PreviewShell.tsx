@@ -234,6 +234,21 @@ export function PreviewShell({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </div>
+
+        <div className="border-t border-white/8">
+          <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-3 px-6 py-6 sm:flex-row sm:items-center lg:px-8">
+            <p className="text-xs text-[#8f9095]">
+              © {new Date().getFullYear()} Concierge. Private advisory for global
+              mobility.
+            </p>
+            <Link
+              href="/brand-kit"
+              className="text-xs tracking-[0.04em] text-[#8f9095] transition-colors hover:text-[#bbc4f7]"
+            >
+              Brand Kit
+            </Link>
+          </div>
+        </div>
       </footer>
     </div>
   );
