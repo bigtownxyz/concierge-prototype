@@ -142,20 +142,14 @@ export default function BrandKitPage() {
           {/* Stacked */}
           <Panel className="flex flex-col">
             <PanelLabel>Stacked lockup</PanelLabel>
-            <div className="flex flex-1 flex-col items-center justify-center gap-4 py-8">
+            <div className="flex flex-1 items-center justify-center py-8">
               <Image
-                src="/logo-mark.svg"
-                alt=""
-                width={56}
-                height={56}
-                className="h-12 w-12"
+                src="/logo-stacked.svg"
+                alt="Concierge stacked lockup"
+                width={300}
+                height={189}
+                className="h-28 w-auto"
               />
-              <span
-                className="text-[1.15rem] uppercase tracking-[0.42em]"
-                style={{ color: MIST, fontFamily: GLACIAL, fontWeight: 400 }}
-              >
-                Concierge
-              </span>
             </div>
           </Panel>
 
