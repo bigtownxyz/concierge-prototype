@@ -32,9 +32,6 @@ const sections = [
   { id: "logo", n: "01", label: "Logo" },
   { id: "typography", n: "02", label: "Typography" },
   { id: "color", n: "03", label: "Colour" },
-  { id: "art-direction", n: "04", label: "Art Direction" },
-  { id: "web", n: "05", label: "Website" },
-  { id: "social", n: "06", label: "Social" },
 ];
 
 /* Small reusable section eyebrow, e.g. "01 / Logo" */
@@ -57,45 +54,6 @@ function Eyebrow({ n, children }: { n: string; children: React.ReactNode }) {
     </div>
   );
 }
-
-const principles = [
-  {
-    title: "Confidential",
-    body: "Discretion is the product. Nothing shouts; everything is considered.",
-  },
-  {
-    title: "International",
-    body: "A worldview without borders. Cities at night, jurisdictions as opportunity.",
-  },
-  {
-    title: "Precise",
-    body: "Strategy, not sentiment. Clean lines, exact figures, no clutter.",
-  },
-  {
-    title: "Calm",
-    body: "The composure of people who have planned ahead. Space to breathe.",
-  },
-  {
-    title: "Aspirational",
-    body: "A wider life, earned. Refined, never flashy.",
-  },
-];
-
-/* Atmospheric mood panels — palette-built, not stock photography */
-const moods = [
-  {
-    label: "Coastline, dusk",
-    css: `linear-gradient(160deg, ${INDIGO} 0%, ${TWILIGHT} 55%, ${GOLD}33 100%)`,
-  },
-  {
-    label: "Network, global",
-    css: `radial-gradient(120% 120% at 70% 20%, ${TWILIGHT} 0%, ${INDIGO} 45%, ${NAVY} 100%)`,
-  },
-  {
-    label: "Skyline, after dark",
-    css: `linear-gradient(200deg, ${NAVY} 0%, ${INDIGO} 50%, ${LAVENDER}22 100%)`,
-  },
-];
 
 export default function BrandKitPage() {
   return (
@@ -448,7 +406,7 @@ export default function BrandKitPage() {
       </Section>
 
       {/* ── 03 Colour ───────────────────────────────────────────── */}
-      <Section id="color">
+      <Section id="color" last>
         <Eyebrow n="03">Colour</Eyebrow>
         <SectionTitle>
           A palette inspired by the{" "}
@@ -471,192 +429,6 @@ export default function BrandKitPage() {
           <CopyHex name="Mist White" hex={MIST} role="Text on dark" text="dark" bordered />
           <CopyHex name="Slate Gray" hex={SLATE} role="Muted / caption" text="light" />
           <CopyHex name="Gold Accent" hex={GOLD} role="Rare highlight" text="dark" />
-        </div>
-      </Section>
-
-      {/* ── 04 Art Direction ────────────────────────────────────── */}
-      <Section id="art-direction">
-        <Eyebrow n="04">Art Direction</Eyebrow>
-        <SectionTitle>
-          Cinematic, elegant, and{" "}
-          <span style={{ ...SERIF_ITALIC, color: GOLD }}>composed</span>.
-        </SectionTitle>
-        <SectionLede>
-          Cinematic environments, elegant interface, and a global perspective,
-          crafted for clarity and discretion. Imagery favours cities at night,
-          coastlines, and the quiet luxury of arrival.
-        </SectionLede>
-
-        <div className="mt-14 grid gap-6 lg:grid-cols-[1fr_1.1fr]">
-          <ul className="flex flex-col justify-center gap-2">
-            {principles.map((p) => (
-              <li
-                key={p.title}
-                className="flex gap-5 rounded-xl px-5 py-4 transition-colors hover:bg-white/[0.03]"
-              >
-                <span
-                  className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
-                  style={{ backgroundColor: GOLD }}
-                />
-                <div>
-                  <p className="text-[1.05rem] font-medium" style={{ color: MIST }}>
-                    {p.title}
-                  </p>
-                  <p className="mt-0.5 text-[0.85rem] leading-relaxed text-[#8c92b0]">
-                    {p.body}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-
-          <div className="grid grid-cols-2 gap-4">
-            {moods.map((m, i) => (
-              <div
-                key={m.label}
-                className={`relative overflow-hidden rounded-xl ${
-                  i === 0 ? "col-span-2 aspect-[16/9]" : "aspect-square"
-                }`}
-                style={{ background: m.css }}
-              >
-                <div
-                  aria-hidden
-                  className="absolute inset-0"
-                  style={{
-                    background:
-                      "linear-gradient(180deg, transparent 55%, rgba(7,11,34,0.6) 100%)",
-                  }}
-                />
-                <span className="absolute bottom-3 left-4 text-[0.68rem] uppercase tracking-[0.2em] text-white/75">
-                  {m.label}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </Section>
-
-      {/* ── 05 Website ──────────────────────────────────────────── */}
-      <Section id="web">
-        <Eyebrow n="05">Website</Eyebrow>
-        <SectionTitle>
-          Direction in{" "}
-          <span style={{ ...SERIF_ITALIC, color: LAVENDER }}>practice</span>.
-        </SectionTitle>
-        <SectionLede>
-          Generous dark space, a single serif accent per headline, and
-          programme detail rendered as calm, factual snapshots, never a hard
-          sell.
-        </SectionLede>
-
-        {/* Mini hero frame */}
-        <div
-          className="mt-14 overflow-hidden rounded-2xl"
-          style={{ boxShadow: `inset 0 0 0 1px ${LAVENDER}1f` }}
-        >
-          <div
-            className="flex items-center gap-2 px-5 py-3"
-            style={{ backgroundColor: INDIGO }}
-          >
-            <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: SLATE }} />
-            <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: SLATE }} />
-            <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: SLATE }} />
-            <span className="ml-3 text-[0.68rem] tracking-[0.04em] text-[#8c92b0]">
-              thecitizenshipconcierge.com
-            </span>
-          </div>
-          <div
-            className="relative px-7 py-16 md:px-14 md:py-24"
-            style={{
-              background: `radial-gradient(80% 90% at 80% 0%, ${TWILIGHT}55 0%, transparent 55%), ${NAVY}`,
-            }}
-          >
-            <div className="flex items-center gap-3">
-              <Image src="/logo-mark.svg" alt="" width={22} height={22} className="h-5 w-5" />
-              <span className="text-[0.7rem] font-semibold uppercase tracking-[0.3em]">
-                Concierge
-              </span>
-            </div>
-            <h3
-              className="mt-10 max-w-2xl text-[clamp(1.9rem,4.5vw,3.25rem)] font-medium leading-[1.02] tracking-[-0.025em]"
-              style={{ color: MIST }}
-            >
-              Jurisdiction strategy for a{" "}
-              <span style={{ ...SERIF_ITALIC, color: LAVENDER }}>borderless</span>{" "}
-              life.
-            </h3>
-            <p className="mt-5 max-w-md text-[0.95rem] leading-relaxed text-[#aab0cc]">
-              We design discreet, compliant strategies that fit your life, not
-              the other way around.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <span
-                className="rounded-full px-5 py-2.5 text-[0.8rem] font-semibold"
-                style={{ backgroundColor: LAVENDER, color: NAVY }}
-              >
-                Explore programmes
-              </span>
-              <span
-                className="rounded-full px-5 py-2.5 text-[0.8rem] font-medium"
-                style={{ color: MIST, boxShadow: `inset 0 0 0 1px ${LAVENDER}33` }}
-              >
-                How we work
-              </span>
-            </div>
-          </div>
-        </div>
-      </Section>
-
-      {/* ── 06 Social ───────────────────────────────────────────── */}
-      <Section id="social" last>
-        <Eyebrow n="06">Social</Eyebrow>
-        <SectionTitle>
-          Templates that travel{" "}
-          <span style={{ ...SERIF_ITALIC, color: GOLD }}>well</span>.
-        </SectionTitle>
-        <SectionLede>
-          Three formats carry the brand across channels. The mark sits top-left,
-          a serif accent lands once, and the call to action stays in lavender.
-        </SectionLede>
-
-        <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {/* IG Post 1:1 */}
-          <SocialFrame ratio="aspect-square" tag="Instagram Post : 1080×1080">
-            <h4 className="text-[1.5rem] font-medium leading-[1.05]" style={{ color: MIST }}>
-              A wider read on six{" "}
-              <span style={{ ...SERIF_ITALIC, color: LAVENDER }}>real pathways</span>.
-            </h4>
-            <p className="mt-3 text-[0.78rem] leading-relaxed text-[#9aa0c0]">
-              Global mobility strategies designed for your life.
-            </p>
-            <Pill>Explore programmes</Pill>
-          </SocialFrame>
-
-          {/* IG Story 9:16 */}
-          <SocialFrame ratio="aspect-[9/16]" tag="Instagram Story : 1080×1920">
-            <h4 className="text-[1.5rem] font-medium leading-[1.05]" style={{ color: MIST }}>
-              Build your next chapter with{" "}
-              <span style={{ ...SERIF_ITALIC, color: LAVENDER }}>confidence</span>.
-            </h4>
-            <p className="mt-3 text-[0.78rem] leading-relaxed text-[#9aa0c0]">
-              Discreet advice. Global perspective.
-            </p>
-            <Pill>Book consultation</Pill>
-          </SocialFrame>
-
-          {/* LinkedIn square */}
-          <SocialFrame ratio="aspect-square" tag="LinkedIn / Carousel : 1080×1080">
-            <p className="text-[0.62rem] uppercase tracking-[0.28em]" style={{ color: SLATE }}>
-              Strategic overview
-            </p>
-            <h4 className="mt-3 text-[1.5rem] font-medium leading-[1.05]" style={{ color: MIST }}>
-              The plan,{" "}
-              <span style={{ ...SERIF_ITALIC, color: LAVENDER }}>in one view</span>.
-            </h4>
-            <p className="mt-3 text-[0.78rem] leading-relaxed text-[#9aa0c0]">
-              A clear pathway to global mobility, designed for you.
-            </p>
-          </SocialFrame>
         </div>
       </Section>
 
@@ -774,49 +546,5 @@ function MinSize({
         {label}
       </span>
     </div>
-  );
-}
-
-function SocialFrame({
-  ratio,
-  tag,
-  children,
-}: {
-  ratio: string;
-  tag: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div>
-      <div
-        className={`relative flex w-full flex-col justify-end overflow-hidden rounded-2xl p-6 ${ratio}`}
-        style={{
-          background: `radial-gradient(90% 70% at 85% 8%, ${TWILIGHT}66 0%, transparent 55%), linear-gradient(180deg, ${INDIGO} 0%, ${NAVY} 100%)`,
-          boxShadow: `inset 0 0 0 1px ${LAVENDER}1f`,
-        }}
-      >
-        <div className="absolute left-6 top-6 flex items-center gap-2">
-          <Image src="/logo-mark.svg" alt="" width={18} height={18} className="h-4 w-4" />
-          <span className="text-[0.58rem] font-semibold uppercase tracking-[0.26em]">
-            Concierge
-          </span>
-        </div>
-        {children}
-      </div>
-      <p className="mt-3 text-[0.66rem] uppercase tracking-[0.2em]" style={{ color: "#6F748E" }}>
-        {tag}
-      </p>
-    </div>
-  );
-}
-
-function Pill({ children }: { children: React.ReactNode }) {
-  return (
-    <span
-      className="mt-5 inline-block rounded-full px-4 py-2 text-[0.72rem] font-semibold"
-      style={{ backgroundColor: LAVENDER, color: NAVY }}
-    >
-      {children}
-    </span>
   );
 }
