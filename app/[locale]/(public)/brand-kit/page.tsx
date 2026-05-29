@@ -20,6 +20,8 @@ const SLATE = "#6F748E";
 const SANS = "var(--font-manrope), 'Manrope', sans-serif";
 const SERIF =
   "var(--font-instrument-serif), 'Instrument Serif', Georgia, serif";
+const GLACIAL =
+  "var(--font-glacial), 'Glacial Indifference', var(--font-manrope), sans-serif";
 const SERIF_ITALIC = {
   fontFamily: SERIF,
   fontStyle: "italic" as const,
@@ -149,8 +151,8 @@ export default function BrandKitPage() {
                 className="h-12 w-12"
               />
               <span
-                className="text-[1.05rem] font-semibold uppercase tracking-[0.42em]"
-                style={{ color: MIST }}
+                className="text-[1.15rem] uppercase tracking-[0.42em]"
+                style={{ color: MIST, fontFamily: GLACIAL, fontWeight: 400 }}
               >
                 Concierge
               </span>
@@ -296,6 +298,22 @@ export default function BrandKitPage() {
             </p>
           </Panel>
         </div>
+
+        {/* Wordmark specimen */}
+        <Panel className="mt-6">
+          <PanelLabel>Glacial Indifference : Wordmark</PanelLabel>
+          <p
+            className="mt-6 text-[clamp(1.75rem,5vw,3rem)] uppercase tracking-[0.4em]"
+            style={{ color: MIST, fontFamily: GLACIAL, fontWeight: 400 }}
+          >
+            Concierge
+          </p>
+          <p className="mt-7 max-w-lg text-[0.8rem] leading-relaxed text-[#8c92b0]">
+            The logotype is set in Glacial Indifference, all caps with wide
+            tracking. Use it only for the wordmark itself, never for body copy or
+            headlines: those belong to Manrope and Instrument Serif.
+          </p>
+        </Panel>
 
         {/* Display specimen */}
         <Panel className="mt-6">

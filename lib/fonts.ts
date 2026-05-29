@@ -1,4 +1,14 @@
 import { Cormorant_Garamond, Inter, Instrument_Serif, JetBrains_Mono, Noto_Serif, Manrope } from "next/font/google";
+import localFont from "next/font/local";
+
+// Concierge wordmark / logotype typeface. SIL OFL 1.1, Alfredo Marco Pradil.
+// License + source: lib/local-fonts/GlacialIndifference-OFL.txt
+export const glacialIndifference = localFont({
+  src: "./local-fonts/GlacialIndifference-Regular.woff2",
+  weight: "400",
+  variable: "--font-glacial",
+  display: "swap",
+});
 
 export const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
