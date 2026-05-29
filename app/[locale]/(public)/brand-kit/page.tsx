@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Link } from "@/i18n/navigation";
 import { CopyHex } from "./CopyHex";
 
 export const metadata: Metadata = {
   title: "Brand Guidelines",
   description:
-    "The Concierge brand system: logo, typography, colour, art direction, and templates. Private advisory for global mobility.",
+    "The Concierge brand system: logo, typography, and colour. Private advisory for global mobility.",
   robots: { index: false, follow: false },
 };
 
@@ -17,7 +16,6 @@ const TWILIGHT = "#24376B";
 const LAVENDER = "#C9CCFF";
 const MIST = "#F5F6FB";
 const SLATE = "#6F748E";
-const GOLD = "#E2C27A";
 
 const SANS = "var(--font-manrope), 'Manrope', sans-serif";
 const SERIF =
@@ -28,19 +26,13 @@ const SERIF_ITALIC = {
   letterSpacing: "-0.01em",
 };
 
-const sections = [
-  { id: "logo", n: "01", label: "Logo" },
-  { id: "typography", n: "02", label: "Typography" },
-  { id: "color", n: "03", label: "Colour" },
-];
-
 /* Small reusable section eyebrow, e.g. "01 / Logo" */
 function Eyebrow({ n, children }: { n: string; children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-4">
       <span
         className="text-[0.7rem] font-medium tracking-[0.3em]"
-        style={{ color: GOLD }}
+        style={{ color: LAVENDER }}
       >
         {n}
       </span>
@@ -61,54 +53,6 @@ export default function BrandKitPage() {
       className="min-h-screen w-full antialiased"
       style={{ backgroundColor: NAVY, color: MIST, fontFamily: SANS }}
     >
-      {/* ── Top bar ─────────────────────────────────────────────── */}
-      <header
-        className="sticky top-0 z-40 border-b backdrop-blur-md"
-        style={{
-          borderColor: "rgba(201,204,255,0.10)",
-          backgroundColor: "rgba(7,11,34,0.72)",
-        }}
-      >
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 lg:px-10">
-          <Link
-            href="/"
-            aria-label="Concierge home"
-            className="flex items-center gap-3 transition-opacity hover:opacity-80"
-          >
-            <Image
-              src="/logo-mark.svg"
-              alt=""
-              width={28}
-              height={28}
-              className="h-6 w-6"
-            />
-            <span className="text-[0.78rem] font-semibold uppercase tracking-[0.26em]">
-              Brand Guidelines
-            </span>
-          </Link>
-
-          <nav className="hidden items-center gap-7 md:flex">
-            {sections.map((s) => (
-              <a
-                key={s.id}
-                href={`#${s.id}`}
-                className="text-[0.72rem] uppercase tracking-[0.18em] text-[#9aa0c0] transition-colors hover:text-[#F5F6FB]"
-              >
-                {s.label}
-              </a>
-            ))}
-          </nav>
-
-          <Link
-            href="/"
-            className="rounded-full border px-4 py-2 text-[0.72rem] font-medium tracking-[0.04em] transition-colors hover:bg-white/5"
-            style={{ borderColor: "rgba(201,204,255,0.25)", color: LAVENDER }}
-          >
-            Back to site
-          </Link>
-        </div>
-      </header>
-
       {/* ── Cover ───────────────────────────────────────────────── */}
       <section className="relative overflow-hidden">
         <div
@@ -165,7 +109,7 @@ export default function BrandKitPage() {
       <Section id="logo">
         <Eyebrow n="01">Logo</Eyebrow>
         <SectionTitle>
-          The mark holds the <span style={{ ...SERIF_ITALIC, color: GOLD }}>brand</span>.
+          The mark holds the <span style={{ ...SERIF_ITALIC, color: LAVENDER }}>brand</span>.
         </SectionTitle>
         <SectionLede>
           A spherical, horizon-banded mark: the globe seen at a glance. Use the
@@ -240,7 +184,7 @@ export default function BrandKitPage() {
                 <div
                   className="rounded p-5"
                   style={{
-                    boxShadow: `inset 0 0 0 1px ${GOLD}40`,
+                    boxShadow: `inset 0 0 0 1px ${LAVENDER}66`,
                   }}
                 >
                   <Image
@@ -414,7 +358,7 @@ export default function BrandKitPage() {
         </SectionTitle>
         <SectionLede>
           Luxurious, nocturnal, and discreet. Deep navies carry the surface,
-          lavender lifts the eye, and gold appears rarely, only where it counts.
+          and lavender lifts the eye where it counts.
         </SectionLede>
 
         <p className="mt-12 mb-5 text-[0.68rem] uppercase tracking-[0.26em]" style={{ color: SLATE }}>
@@ -428,31 +372,8 @@ export default function BrandKitPage() {
           <CopyHex name="Soft Lavender" hex={LAVENDER} role="Primary accent" text="dark" />
           <CopyHex name="Mist White" hex={MIST} role="Text on dark" text="dark" bordered />
           <CopyHex name="Slate Gray" hex={SLATE} role="Muted / caption" text="light" />
-          <CopyHex name="Gold Accent" hex={GOLD} role="Rare highlight" text="dark" />
         </div>
       </Section>
-
-      {/* ── Footer ──────────────────────────────────────────────── */}
-      <footer
-        className="border-t"
-        style={{ borderColor: "rgba(201,204,255,0.10)" }}
-      >
-        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-6 py-12 sm:flex-row sm:items-center lg:px-10">
-          <div className="flex items-center gap-3">
-            <Image src="/logo-mark.svg" alt="" width={28} height={28} className="h-6 w-6" />
-            <span className="text-[0.8rem] text-[#8c92b0]">
-              Concierge : Private advisory for global mobility.
-            </span>
-          </div>
-          <Link
-            href="/"
-            className="text-[0.78rem] tracking-[0.04em] transition-colors hover:text-[#F5F6FB]"
-            style={{ color: LAVENDER }}
-          >
-            Return to thecitizenshipconcierge.com →
-          </Link>
-        </div>
-      </footer>
     </div>
   );
 }
