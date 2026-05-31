@@ -579,7 +579,6 @@ export const FAQ_ITEMS = [
 export interface ProgrammeGuide {
   whoItSuits: string[];
   investmentRoutes: { name: string; detail: string }[];
-  costs: { item: string; amount: string }[];
   taxNote: string;
   faqs: { q: string; a: string }[];
   author: { name: string; title: string };
@@ -610,12 +609,6 @@ export const PROGRAMME_GUIDES: Record<string, ProgrammeGuide> = {
         detail:
           "CLOSED. Portugal removed the residential real-estate route in 2023. Listed only to pre-empt the common, now-outdated question.",
       },
-    ],
-    costs: [
-      { item: "Qualifying investment (fund route)", amount: "from EUR 500,000" },
-      { item: "Government / application fees", amount: "[PLACEHOLDER: confirm current AIMA fees]" },
-      { item: "Due diligence", amount: "[PLACEHOLDER]" },
-      { item: "Concierge advisory fee", amount: "[PLACEHOLDER]" },
     ],
     taxNote:
       "A Portuguese residency permit does not by itself change your tax residency, and obtaining it does not automatically create a Portuguese tax liability. Your position depends on where you are tax-resident and how much time you spend in Portugal. We coordinate with qualified tax advisers rather than giving tax advice.",

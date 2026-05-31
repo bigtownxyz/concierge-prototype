@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { PROGRAMS, PROGRAMME_GUIDES, SITE_URL } from "@/lib/constants";
 import { JsonLd } from "@/components/shared/JsonLd";
 import { ProgrammeGuide } from "@/components/programs/ProgrammeGuide";
+import { FeeBreakdown } from "@/components/programs/FeeBreakdown";
 import { ProgramDetail } from "./program-detail";
 
 // Force dynamic rendering to avoid static generation issues
@@ -81,7 +82,13 @@ export default async function ProgramDetailPage({ params }: Props) {
     <>
       <JsonLd data={schema} />
       <ProgramDetail program={program} />
-      {guide && <ProgrammeGuide program={program} guide={guide} />}
+      {guide ? (
+        // Full guide (includes the fee breakdown in its costs slot)
+        <ProgrammeGuide program={program} guide={guide} />
+      ) : (
+        // Every other programme still gets the transparent fee breakdown
+        <FeeBreakdown program={program} />
+      )}
     </>
   );
 }
