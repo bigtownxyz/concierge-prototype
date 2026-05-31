@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { PROGRAMS, SITE_URL } from "@/lib/constants";
+import { PROGRAMS, PROGRAMME_GUIDES, SITE_URL } from "@/lib/constants";
 import { JsonLd } from "@/components/shared/JsonLd";
+import { ProgrammeGuide } from "@/components/programs/ProgrammeGuide";
 import { ProgramDetail } from "./program-detail";
 
 // Force dynamic rendering to avoid static generation issues
@@ -60,10 +61,27 @@ export default async function ProgramDetailPage({ params }: Props) {
     ],
   };
 
+  // Additive long-form guide, rendered only for programmes that have one.
+  const guide = PROGRAMME_GUIDES[program.slug];
+
+  const schema: Record<string, unknown>[] = [serviceSchema, breadcrumbSchema];
+  if (guide) {
+    schema.push({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: guide.faqs.map((item) => ({
+        "@type": "Question",
+        name: item.q,
+        acceptedAnswer: { "@type": "Answer", text: item.a },
+      })),
+    });
+  }
+
   return (
     <>
-      <JsonLd data={[serviceSchema, breadcrumbSchema]} />
+      <JsonLd data={schema} />
       <ProgramDetail program={program} />
+      {guide && <ProgrammeGuide program={program} guide={guide} />}
     </>
   );
 }

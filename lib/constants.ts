@@ -564,3 +564,81 @@ export const FAQ_ITEMS = [
     answer: "Processing times range from 1-2 months (Vanuatu, Georgia) to 6-12 months (Portugal, Malta). Caribbean CBI programmes typically process in 3-6 months. We'll give you a realistic timeline during your consultation.",
   },
 ];
+
+/**
+ * Long-form guide content layered on top of a programme page. ADDITIVE: the
+ * existing ProgramDetail layout is untouched. Only programmes with an entry in
+ * PROGRAMME_GUIDES render the extra guide block, so this affects Portugal only
+ * until more entries are added.
+ *
+ * Fields marked [PLACEHOLDER] / [VERIFY] need real input before publishing:
+ *  - author: a real, credentialed advisor (YMYL E-E-A-T requirement)
+ *  - costs + investment routes: verified current figures and rules
+ *  - sources: official government links
+ */
+export interface ProgrammeGuide {
+  whoItSuits: string[];
+  investmentRoutes: { name: string; detail: string }[];
+  costs: { item: string; amount: string }[];
+  taxNote: string;
+  faqs: { q: string; a: string }[];
+  author: { name: string; title: string };
+  sources: { label: string; url: string }[];
+  lastReviewed: string;
+}
+
+export const PROGRAMME_GUIDES: Record<string, ProgrammeGuide> = {
+  portugal: {
+    whoItSuits: [
+      "Investors who want EU access without relocating: the stay requirement is roughly 7 days a year.",
+      "Families seeking a route to EU citizenship over time, with a spouse and dependent children included.",
+      "Frequent travellers who value one of the world's strongest passports (191 visa-free destinations).",
+    ],
+    investmentRoutes: [
+      {
+        name: "Qualifying investment fund",
+        detail:
+          "From EUR 500,000 into an approved fund. [VERIFY current AIMA-approved fund rules before publishing.]",
+      },
+      {
+        name: "Business / job creation",
+        detail:
+          "Capital transfer or company investment that creates jobs. [VERIFY current thresholds.]",
+      },
+      {
+        name: "Residential real estate",
+        detail:
+          "CLOSED. Portugal removed the residential real-estate route in 2023. Listed only to pre-empt the common, now-outdated question.",
+      },
+    ],
+    costs: [
+      { item: "Qualifying investment (fund route)", amount: "from EUR 500,000" },
+      { item: "Government / application fees", amount: "[PLACEHOLDER: confirm current AIMA fees]" },
+      { item: "Due diligence", amount: "[PLACEHOLDER]" },
+      { item: "Concierge advisory fee", amount: "[PLACEHOLDER]" },
+    ],
+    taxNote:
+      "A Portuguese residency permit does not by itself change your tax residency, and obtaining it does not automatically create a Portuguese tax liability. Your position depends on where you are tax-resident and how much time you spend in Portugal. We coordinate with qualified tax advisers rather than giving tax advice.",
+    faqs: [
+      {
+        q: "Do I have to live in Portugal?",
+        a: "No. The Golden Visa has a minimal stay requirement of around 7 days per year, which is one of its main attractions.",
+      },
+      {
+        q: "Can I include my family?",
+        a: "Yes. A spouse and dependent children can be included, and in many cases dependent parents.",
+      },
+      {
+        q: "How long until citizenship?",
+        a: "Residency is the first step. Citizenship by naturalisation becomes possible after meeting the residency and language conditions over several years. [VERIFY current naturalisation timeline.]",
+      },
+      {
+        q: "Which investment routes are open now?",
+        a: "The fund and business routes are the active options. The residential real-estate route was removed in 2023. We confirm the current rules for you at qualification.",
+      },
+    ],
+    author: { name: "[PLACEHOLDER: named advisor]", title: "[PLACEHOLDER: title + credentials]" },
+    sources: [{ label: "[PLACEHOLDER: official AIMA / Portugal immigration source]", url: "#" }],
+    lastReviewed: "[PLACEHOLDER: date]",
+  },
+};
