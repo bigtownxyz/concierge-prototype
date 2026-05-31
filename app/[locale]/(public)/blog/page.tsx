@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Blog",
   description: "Insights on second citizenship, golden visas, and global mobility.",
+  // Empty placeholder for now: keep it out of the index until it has real posts.
+  robots: { index: false, follow: true },
 };
 
 export default function BlogPage() {
