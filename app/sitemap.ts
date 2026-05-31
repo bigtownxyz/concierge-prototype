@@ -1,8 +1,5 @@
 import type { MetadataRoute } from "next";
-import { PROGRAMS } from "@/lib/constants";
-
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://thecitizenshipconcierge.com";
+import { PROGRAMS, SITE_URL as BASE_URL } from "@/lib/constants";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages = [

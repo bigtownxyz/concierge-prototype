@@ -109,6 +109,9 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|mp4|webm|mov|m4v)$).*)",
+    // Exclude API, Next internals, and root metadata files (robots.txt,
+    // sitemap.xml, llms.txt). Without excluding the metadata files, next-intl
+    // rewrites them into the [locale] tree and they 404 instead of serving.
+    "/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|llms.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|mp4|webm|mov|m4v)$).*)",
   ],
 };

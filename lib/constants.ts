@@ -1,3 +1,7 @@
+/** Canonical production origin, used for metadata routes and structured data. */
+export const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://thecitizenshipconcierge.com";
+
 export const NAV_LINKS = [
   { href: "/programs", label: "Programs" },
   { href: "/compare", label: "Compare" },
