@@ -5,7 +5,7 @@ import { useRef, useState, useEffect } from "react";
 import { useUser } from "@/hooks/useUser";
 import { createClient } from "@/lib/supabase/client";
 import { Link } from "@/i18n/navigation";
-import { type Program, STAGES } from "@/lib/constants";
+import { type Program, STAGES, PROGRAMME_GUIDES } from "@/lib/constants";
 import { formatCurrency } from "@/lib/utils";
 import { RadarChart } from "@/components/shared/RadarChart";
 import { ArrowLeft } from "lucide-react";
@@ -259,6 +259,12 @@ function GlassCard({
 // ---------------------------------------------------------------------------
 
 export function ProgramDetail({ program }: { program: Program }) {
+  // When a long-form PROGRAMME_GUIDES entry exists, its accurate "Investment
+  // routes" section supersedes the synthetic "Investment Protocols" block below
+  // (the guide lists the real named routes per programme; the synthetic block
+  // invents generic donation/real-estate/family cards). Avoids showing two
+  // contradictory route sections on the same page.
+  const hasGuide = program.slug in PROGRAMME_GUIDES;
   const [qualifyOpen, setQualifyOpen] = useState(false);
   const { user } = useUser();
   const [applyOpen, setApplyOpen] = useState(false);
@@ -380,7 +386,7 @@ export function ProgramDetail({ program }: { program: Program }) {
 
   return (
     <div
-      className="min-h-screen"
+      className="min-h-[85vh]"
       style={{
         background: "#10141a",
         fontFamily: "var(--font-manrope, var(--font-sans), sans-serif)",
@@ -690,7 +696,7 @@ export function ProgramDetail({ program }: { program: Program }) {
       {/* ------------------------------------------------------------------ */}
       {/* OVERVIEW + RADAR                                                     */}
       {/* ------------------------------------------------------------------ */}
-      <section className="py-24 px-6">
+      <section className="py-16 px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           {/* Description */}
           <motion.div
@@ -769,7 +775,7 @@ export function ProgramDetail({ program }: { program: Program }) {
       {/* ------------------------------------------------------------------ */}
       {/* BENEFITS BENTO GRID                                                  */}
       {/* ------------------------------------------------------------------ */}
-      <section className="py-24 px-6" style={{ background: "#0d1018" }}>
+      <section className="py-16 px-6" style={{ background: "#0d1018" }}>
         <div className="max-w-7xl mx-auto">
           <motion.div
             className="grid grid-cols-1 md:grid-cols-4 gap-6"
@@ -903,16 +909,17 @@ export function ProgramDetail({ program }: { program: Program }) {
       </section>
 
       {/* ------------------------------------------------------------------ */}
-      {/* INVESTMENT PROTOCOLS                                                  */}
+      {/* INVESTMENT PROTOCOLS (synthetic; hidden when a guide supersedes it)   */}
       {/* ------------------------------------------------------------------ */}
-      <section className="py-24 px-6" style={{ background: "#0a0e14" }}>
+      {!hasGuide && (
+      <section className="py-16 px-6" style={{ background: "#0a0e14" }}>
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, margin: "-80px" }}
             variants={fadeUp}
-            className="mb-20"
+            className="mb-12"
           >
             <h2
               className="font-semibold"
@@ -1022,11 +1029,12 @@ export function ProgramDetail({ program }: { program: Program }) {
           </motion.div>
         </div>
       </section>
+      )}
 
       {/* ------------------------------------------------------------------ */}
       {/* ISSUANCE PROTOCOL TIMELINE                                           */}
       {/* ------------------------------------------------------------------ */}
-      <section className="py-32 px-6" style={{ background: "#10141a" }}>
+      <section className="py-20 px-6" style={{ background: "#10141a" }}>
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial="hidden"
@@ -1184,7 +1192,7 @@ export function ProgramDetail({ program }: { program: Program }) {
       {/* ------------------------------------------------------------------ */}
       {/* CTA SECTION                                                          */}
       {/* ------------------------------------------------------------------ */}
-      <section className="py-24 px-6">
+      <section className="py-16 px-6">
         <div className="max-w-3xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 32 }}

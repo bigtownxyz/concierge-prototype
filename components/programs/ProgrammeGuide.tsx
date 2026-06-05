@@ -51,18 +51,18 @@ export function ProgrammeGuide({
   return (
     <div style={{ color: "rgba(198,198,203,0.78)" }}>
       {/* ---------------- WHO IT SUITS ---------------- */}
-      <section className="relative py-24 px-6" style={{ background: "#0a0e14" }}>
+      <section className="relative py-16 px-6" style={{ background: "#0a0e14" }}>
         <div
           aria-hidden
           className="pointer-events-none absolute inset-x-0 top-0 h-40"
           style={{ background: `radial-gradient(60% 100% at 50% 0%, rgba(187,196,247,0.08), transparent)` }}
         />
-        <motion.div {...inView} variants={stagger} className="mx-auto max-w-5xl">
+        <motion.div {...inView} variants={stagger} className="mx-auto max-w-6xl">
           <motion.div variants={fadeUp}>
             <SectionLabel>Is it right for you</SectionLabel>
             <Heading>Who {program.name} suits</Heading>
           </motion.div>
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-5">
             {guide.whoItSuits.map((item, i) => (
               <motion.div
                 key={i}
@@ -84,13 +84,13 @@ export function ProgrammeGuide({
       </section>
 
       {/* ---------------- INVESTMENT ROUTES ---------------- */}
-      <section className="py-24 px-6" style={{ background: "#0d1018" }}>
-        <motion.div {...inView} variants={stagger} className="mx-auto max-w-5xl">
+      <section className="py-16 px-6" style={{ background: "#0d1018" }}>
+        <motion.div {...inView} variants={stagger} className="mx-auto max-w-6xl">
           <motion.div variants={fadeUp}>
             <SectionLabel>Capital</SectionLabel>
             <Heading>Investment routes</Heading>
           </motion.div>
-          <div className="mt-10 space-y-4">
+          <div className="mt-8 grid gap-4 md:grid-cols-2 items-start">
             {guide.investmentRoutes.map((route, i) => {
               const closed = /closed/i.test(route.detail);
               return (
@@ -148,11 +148,11 @@ export function ProgrammeGuide({
       <FeeBreakdown program={program} />
 
       {/* ---------------- TAX ---------------- */}
-      <section className="py-24 px-6" style={{ background: "#0a0e14" }}>
-        <motion.div {...inView} variants={fadeUp} className="mx-auto max-w-5xl">
+      <section className="py-16 px-6" style={{ background: "#0a0e14" }}>
+        <motion.div {...inView} variants={fadeUp} className="mx-auto max-w-6xl">
           <SectionLabel>Tax</SectionLabel>
           <Heading>Tax considerations</Heading>
-          <div className="mt-8 relative rounded-2xl p-7 sm:p-8 flex gap-5" style={{ ...glass }}>
+          <div className="mt-6 relative rounded-2xl p-7 sm:p-8 flex gap-5" style={{ ...glass }}>
             <span aria-hidden className="absolute inset-y-0 left-0 w-[3px]" style={{ background: PRIMARY }} />
             <div
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
@@ -166,13 +166,13 @@ export function ProgrammeGuide({
       </section>
 
       {/* ---------------- FAQ ---------------- */}
-      <section className="py-24 px-6" style={{ background: "#0d1018" }}>
-        <motion.div {...inView} variants={stagger} className="mx-auto max-w-3xl">
+      <section className="py-16 px-6" style={{ background: "#0d1018" }}>
+        <motion.div {...inView} variants={stagger} className="mx-auto max-w-5xl">
           <motion.div variants={fadeUp}>
             <SectionLabel>Questions</SectionLabel>
             <Heading>{program.name}: frequently asked</Heading>
           </motion.div>
-          <div className="mt-10 space-y-3">
+          <div className="mt-8 grid gap-3 md:grid-cols-2 items-start">
             {guide.faqs.map((item, i) => (
               <motion.details
                 key={i}
@@ -197,11 +197,11 @@ export function ProgrammeGuide({
       </section>
 
       {/* ---------------- REVIEWED BY ---------------- */}
-      <section className="py-16 px-6" style={{ background: "#0a0e14" }}>
+      <section className="py-12 px-6" style={{ background: "#0a0e14" }}>
         <motion.div
           {...inView}
           variants={fadeUp}
-          className="mx-auto max-w-3xl rounded-2xl p-6 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm"
+          className="mx-auto max-w-6xl rounded-2xl p-6 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm"
           style={{ ...glass }}
         >
           <Icon name="verified" className="text-[20px]" style={{ color: PRIMARY }} />

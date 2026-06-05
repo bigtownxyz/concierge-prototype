@@ -29,8 +29,8 @@ export function FeeBreakdown({ program }: { program: Program }) {
   const fb = feeBreakdown(program);
 
   return (
-    <section className="py-24 px-6" style={{ background: "#0d1018" }}>
-      <motion.div {...inView} variants={stagger} className="mx-auto max-w-5xl">
+    <section className="py-16 px-6" style={{ background: "#0d1018" }}>
+      <motion.div {...inView} variants={stagger} className="mx-auto max-w-6xl">
         <motion.div variants={fadeUp}>
           <SectionLabel>Transparency</SectionLabel>
           <Heading>What you&rsquo;ll pay</Heading>
@@ -42,7 +42,7 @@ export function FeeBreakdown({ program }: { program: Program }) {
         {/* All-in hero figure */}
         <motion.div
           variants={fadeUp}
-          className="mt-10 rounded-2xl p-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4"
+          className="mt-8 rounded-2xl p-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4"
           style={{ ...glass, borderColor: "rgba(187,196,247,0.25)" }}
         >
           <div>

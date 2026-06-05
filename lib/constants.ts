@@ -634,4 +634,697 @@ export const PROGRAMME_GUIDES: Record<string, ProgrammeGuide> = {
     sources: [{ label: "[PLACEHOLDER: official AIMA / Portugal immigration source]", url: "#" }],
     lastReviewed: "[PLACEHOLDER: date]",
   },
+
+  "antigua-and-barbuda": {
+    whoItSuits: [
+      "Families who want a second passport quickly, with a presence requirement of only around 5 days across the first 5 years.",
+      "Travellers who value visa-free or visa-on-arrival access to roughly 151 destinations, including the UK and the Schengen area.",
+      "Applicants who want a tax-friendly base with no tax on worldwide income for those who are not tax-resident there.",
+    ],
+    investmentRoutes: [
+      {
+        name: "National Development Fund donation",
+        detail:
+          "A one-time, non-refundable contribution to the government fund. The lowest entry point for a single applicant. [VERIFY current minimum and family-size bands.]",
+      },
+      {
+        name: "University of the West Indies Fund",
+        detail:
+          "A contribution route geared to larger families, funding a UWI scholarship place. [VERIFY current family-size threshold and amount.]",
+      },
+      {
+        name: "Approved real estate",
+        detail:
+          "Purchase in a government-approved development, held for a minimum period before resale. [VERIFY current minimum value and holding period.]",
+      },
+      {
+        name: "Business investment",
+        detail:
+          "A qualifying investment into an approved business, made alone or jointly. [VERIFY current minimum and approval criteria.]",
+      },
+    ],
+    taxNote:
+      "Antigua & Barbuda does not tax worldwide income, capital gains or inheritance for individuals who are not tax-resident there, and holding the passport does not by itself make you tax-resident. Your position depends on where you actually live and are taxed. We coordinate with qualified tax advisers rather than giving tax advice.",
+    faqs: [
+      {
+        q: "Do I have to live in Antigua?",
+        a: "No. The only presence requirement is around 5 days within the first 5 years of holding citizenship.",
+      },
+      {
+        q: "Can I include my family?",
+        a: "Yes. A spouse and dependent children can be included, and in many cases dependent parents and siblings. [VERIFY current dependant rules.]",
+      },
+      {
+        q: "How strong is the passport?",
+        a: "It gives visa-free or visa-on-arrival access to roughly 151 countries, including the UK and the Schengen area. [VERIFY current count.]",
+      },
+      {
+        q: "Which investment routes are open now?",
+        a: "The development-fund donation, the university fund for larger families, approved real estate and business investment. We confirm current thresholds for you at qualification.",
+      },
+    ],
+    author: { name: "[PLACEHOLDER: named advisor]", title: "[PLACEHOLDER: title + credentials]" },
+    sources: [{ label: "[PLACEHOLDER: official Antigua CIU source]", url: "#" }],
+    lastReviewed: "[PLACEHOLDER: date]",
+  },
+
+  chile: {
+    whoItSuits: [
+      "Applicants who want a stable South American base with one of the region's strongest passports, around 174 destinations.",
+      "Professionals and entrepreneurs with a qualifying job offer, business activity or investment in Chile.",
+      "Families looking for a longer-term path to permanent residency and, eventually, citizenship.",
+    ],
+    investmentRoutes: [
+      {
+        name: "Investment residency",
+        detail:
+          "Temporary residency tied to a qualifying business activity or investment in Chile, progressing to permanent residency over time. [VERIFY current category names and any minimum investment under the latest migration law.]",
+      },
+      {
+        name: "Professional or work residency",
+        detail:
+          "Residency for applicants with a qualifying job offer or professional activity in Chile. [VERIFY current category and eligibility.]",
+      },
+    ],
+    taxNote:
+      "A Chilean residency permit does not by itself fix your tax residency, which generally follows from how much time you spend in the country. Chile taxes residents on worldwide income after an initial period. Your position depends on your circumstances, and we coordinate with qualified tax advisers rather than giving tax advice.",
+    faqs: [
+      {
+        q: "Do I have to live in Chile?",
+        a: "Residency routes generally expect genuine ties and presence, and the path to permanent residency and citizenship is based on time spent in the country. [VERIFY current physical-presence rules.]",
+      },
+      {
+        q: "Can I include my family?",
+        a: "Yes. Spouses and dependent children are typically included on family residency applications. [VERIFY current dependant rules.]",
+      },
+      {
+        q: "How long until citizenship?",
+        a: "Citizenship by naturalisation becomes possible after a qualifying period of permanent residency. [VERIFY current naturalisation timeline.]",
+      },
+      {
+        q: "Which routes are available?",
+        a: "Investment, business and professional or work-based residency are the main paths. We confirm the current categories and any thresholds for you at qualification.",
+      },
+    ],
+    author: { name: "[PLACEHOLDER: named advisor]", title: "[PLACEHOLDER: title + credentials]" },
+    sources: [{ label: "[PLACEHOLDER: official Chile migration source]", url: "#" }],
+    lastReviewed: "[PLACEHOLDER: date]",
+  },
+
+  dominica: {
+    whoItSuits: [
+      "Budget-led applicants who want a full second passport without relocating: there is no residency requirement.",
+      "Travellers who value visa-free or visa-on-arrival access to roughly 144 destinations, including the UK and the Schengen area.",
+      "Families wanting an affordable, tax-friendly second citizenship that can be passed to future generations.",
+    ],
+    investmentRoutes: [
+      {
+        name: "Economic Diversification Fund donation",
+        detail:
+          "A one-time contribution to the national fund. The most affordable single-applicant route in the programme. [VERIFY current minimum and family bands.]",
+      },
+      {
+        name: "Approved real estate",
+        detail:
+          "Purchase in a government-approved development, held for a minimum period before resale. [VERIFY current minimum value and holding period.]",
+      },
+    ],
+    taxNote:
+      "Dominica does not tax foreign income, capital gains or inheritance for individuals who are not tax-resident there, and holding the passport does not by itself create a Dominican tax liability. Your position depends on where you actually live and are taxed. We coordinate with qualified tax advisers rather than giving tax advice.",
+    faqs: [
+      {
+        q: "Do I have to live in Dominica?",
+        a: "No. There is no residency or physical-presence requirement to obtain or keep the citizenship.",
+      },
+      {
+        q: "Can I include my family?",
+        a: "Yes. A spouse, dependent children and, in many cases, dependent parents can be included. [VERIFY current dependant rules.]",
+      },
+      {
+        q: "How strong is the passport?",
+        a: "It gives visa-free or visa-on-arrival access to roughly 144 countries, including the UK and the Schengen area. [VERIFY current count.]",
+      },
+      {
+        q: "Which investment routes are open now?",
+        a: "The Economic Diversification Fund donation and approved real estate. We confirm current thresholds for you at qualification.",
+      },
+    ],
+    author: { name: "[PLACEHOLDER: named advisor]", title: "[PLACEHOLDER: title + credentials]" },
+    sources: [{ label: "[PLACEHOLDER: official Dominica CBIU source]", url: "#" }],
+    lastReviewed: "[PLACEHOLDER: date]",
+  },
+
+  "el-salvador": {
+    whoItSuits: [
+      "Applicants who want fast residency, typically in around 2 months, with a freedom-oriented and Bitcoin-friendly community.",
+      "Investors comfortable holding or contributing digital assets as part of a qualifying programme.",
+      "Those drawn to a broadly territorial tax system and a low cost of living.",
+    ],
+    investmentRoutes: [
+      {
+        name: "Investment residency (Freedom Visa)",
+        detail:
+          "Residency tied to a qualifying contribution to the country, accepted in Bitcoin or USDT under the Freedom Visa programme. [VERIFY current amount and accepted asset types.]",
+      },
+    ],
+    taxNote:
+      "El Salvador operates a broadly territorial tax system and treats Bitcoin as legal tender, with gains on Bitcoin not taxed locally. [VERIFY current rules.] Your wider position depends on where you are tax-resident, and we coordinate with qualified tax advisers rather than giving tax advice.",
+    faqs: [
+      {
+        q: "Do I have to live in El Salvador?",
+        a: "Physical-presence expectations are light compared with most residency programmes, though genuine ties matter for renewal and any later citizenship. [VERIFY current presence rules.]",
+      },
+      {
+        q: "Can I include my family?",
+        a: "Yes. Spouses and dependent children are typically included. [VERIFY current dependant rules.]",
+      },
+      {
+        q: "Can I pay in Bitcoin?",
+        a: "The Freedom Visa programme is designed around digital-asset contributions, accepted in Bitcoin or USDT. [VERIFY current accepted assets and amounts.]",
+      },
+      {
+        q: "How fast is processing?",
+        a: "Processing is fast by global standards, often around 2 months. We confirm the current timeline for you at qualification.",
+      },
+    ],
+    author: { name: "[PLACEHOLDER: named advisor]", title: "[PLACEHOLDER: title + credentials]" },
+    sources: [{ label: "[PLACEHOLDER: official El Salvador programme source]", url: "#" }],
+    lastReviewed: "[PLACEHOLDER: date]",
+  },
+
+  georgia: {
+    whoItSuits: [
+      "Entrepreneurs and digital nomads who want an easy, low-tax base, including a 1% turnover regime for qualifying small businesses.",
+      "Applicants who value fast setup, often around 1 month, and a growing tech and expat community.",
+      "Those wanting a low-cost European gateway without heavy presence requirements.",
+    ],
+    investmentRoutes: [
+      {
+        name: "Property ownership",
+        detail:
+          "Residency linked to owning Georgian real estate at or above the qualifying value. [VERIFY current property threshold.]",
+      },
+      {
+        name: "Investment residency",
+        detail:
+          "A larger qualifying investment route that can lead to permanent residency more quickly. [VERIFY current minimum.]",
+      },
+      {
+        name: "Work or business activity",
+        detail:
+          "Residency tied to employment or running a registered Georgian business. [VERIFY current criteria.]",
+      },
+    ],
+    taxNote:
+      "Georgia offers a low-tax environment, including a 1% turnover regime for qualifying small businesses, and taxes individuals broadly on a territorial basis. [VERIFY current rules.] Your overall position depends on your circumstances, and we coordinate with qualified tax advisers rather than giving tax advice.",
+    faqs: [
+      {
+        q: "Do I have to live in Georgia?",
+        a: "Many nationalities can stay visa-free for up to a year, and residency itself carries light presence expectations, though genuine ties help with renewal. [VERIFY current presence rules.]",
+      },
+      {
+        q: "Can I include my family?",
+        a: "Yes. Spouses and dependent children are typically included on family applications. [VERIFY current dependant rules.]",
+      },
+      {
+        q: "How does the 1% tax work?",
+        a: "Qualifying small-business owners registered under the small-business status pay tax at a low turnover rate. [VERIFY current eligibility and rate.]",
+      },
+      {
+        q: "Which routes are available?",
+        a: "Property ownership, investment and work or business residency. We confirm the current thresholds for you at qualification.",
+      },
+    ],
+    author: { name: "[PLACEHOLDER: named advisor]", title: "[PLACEHOLDER: title + credentials]" },
+    sources: [{ label: "[PLACEHOLDER: official Georgia immigration source]", url: "#" }],
+    lastReviewed: "[PLACEHOLDER: date]",
+  },
+
+  greece: {
+    whoItSuits: [
+      "Investors who want EU residency and Schengen access through Mediterranean real estate, with no minimum-stay requirement.",
+      "Families seeking a long-term European base with a path to citizenship over time.",
+      "Travellers who value strong mobility, around 188 destinations, alongside a lifestyle relocation option.",
+    ],
+    investmentRoutes: [
+      {
+        name: "Real estate",
+        detail:
+          "Purchase of qualifying property, with the minimum value depending on the location and property type. The primary route. [VERIFY current tiered thresholds by zone.]",
+      },
+      {
+        name: "Capital alternatives",
+        detail:
+          "Bank deposit, government bonds or other approved financial investments offered alongside real estate. [VERIFY which capital routes are currently open and their minimums.]",
+      },
+    ],
+    taxNote:
+      "A Greek Golden Visa is a residency permit and does not by itself change your tax residency or create a Greek tax liability. Your position depends on where you are tax-resident and how much time you spend in Greece. We coordinate with qualified tax advisers rather than giving tax advice.",
+    faqs: [
+      {
+        q: "Do I have to live in Greece?",
+        a: "No. There is no minimum stay required to maintain the residency permit, which is one of its main attractions.",
+      },
+      {
+        q: "Can I include my family?",
+        a: "Yes. A spouse, dependent children and, in many cases, dependent parents of both spouses can be included. [VERIFY current dependant rules.]",
+      },
+      {
+        q: "How long until citizenship?",
+        a: "Residency is the first step. Citizenship by naturalisation becomes possible after meeting residence and language conditions over several years. [VERIFY current timeline.]",
+      },
+      {
+        q: "Which investment routes are open now?",
+        a: "Qualifying real estate is the primary route, with capital alternatives offered alongside it. We confirm the current tiered thresholds for you at qualification.",
+      },
+    ],
+    author: { name: "[PLACEHOLDER: named advisor]", title: "[PLACEHOLDER: title + credentials]" },
+    sources: [{ label: "[PLACEHOLDER: official Greece Golden Visa source]", url: "#" }],
+    lastReviewed: "[PLACEHOLDER: date]",
+  },
+
+  grenada: {
+    whoItSuits: [
+      "Applicants who want US market access: Grenada is the only Caribbean citizenship eligible for the US E-2 Treaty Investor Visa.",
+      "Travellers who value visa-free or visa-on-arrival access to roughly 148 destinations, including China.",
+      "Families wanting a tax-friendly second passport with no residency requirement.",
+    ],
+    investmentRoutes: [
+      {
+        name: "National Transformation Fund donation",
+        detail:
+          "A one-time contribution to the government fund. The most direct single-applicant route. [VERIFY current minimum and family bands.]",
+      },
+      {
+        name: "Approved real estate",
+        detail:
+          "Purchase in an approved tourism development, held for a minimum period before resale. [VERIFY current minimum value and holding period.]",
+      },
+    ],
+    taxNote:
+      "Grenada does not tax worldwide income, capital gains or inheritance for individuals who are not tax-resident there, and holding the passport does not by itself make you tax-resident. Your position depends on where you actually live and are taxed. We coordinate with qualified tax advisers rather than giving tax advice.",
+    faqs: [
+      {
+        q: "Do I have to live in Grenada?",
+        a: "No. There is no residency or physical-presence requirement to obtain or keep the citizenship.",
+      },
+      {
+        q: "What is the US E-2 advantage?",
+        a: "Grenada citizens can apply for the US E-2 Treaty Investor Visa, which allows living and running a business in the United States. Grenada is the only Caribbean CBI with this treaty. [VERIFY current treaty status and E-2 conditions.]",
+      },
+      {
+        q: "Can I include my family?",
+        a: "Yes. A spouse, dependent children, dependent parents and, in many cases, siblings can be included. [VERIFY current dependant rules.]",
+      },
+      {
+        q: "Which investment routes are open now?",
+        a: "The National Transformation Fund donation and approved real estate. We confirm current thresholds for you at qualification.",
+      },
+    ],
+    author: { name: "[PLACEHOLDER: named advisor]", title: "[PLACEHOLDER: title + credentials]" },
+    sources: [{ label: "[PLACEHOLDER: official Grenada CBI source]", url: "#" }],
+    lastReviewed: "[PLACEHOLDER: date]",
+  },
+
+  panama: {
+    whoItSuits: [
+      "Entrepreneurs who want a territorial-tax base and a strategic hub connecting North and South America.",
+      "Nationals of qualifying countries who can use the Friendly Nations Visa via economic ties.",
+      "Retirees with a qualifying lifetime pension looking at the well-known Pensionado programme.",
+    ],
+    investmentRoutes: [
+      {
+        name: "Friendly Nations Visa",
+        detail:
+          "Residency for nationals of qualifying countries via economic ties such as property, a fixed deposit or local employment. [VERIFY current qualifying-country list and economic-tie thresholds.]",
+      },
+      {
+        name: "Qualified Investor Visa",
+        detail:
+          "Faster residency via a larger qualifying investment in real estate, a fixed-term bank deposit or the securities market. [VERIFY current minimums by sub-route.]",
+      },
+      {
+        name: "Pensionado (retiree)",
+        detail:
+          "Residency for applicants with a qualifying lifetime pension, with no investment route. [VERIFY current minimum monthly pension.]",
+      },
+    ],
+    taxNote:
+      "Panama operates a territorial tax system, so foreign-source income is generally outside the Panamanian tax net. Your worldwide position still depends on your other residencies and where you spend time. We coordinate with qualified tax advisers rather than giving tax advice.",
+    faqs: [
+      {
+        q: "Do I have to live in Panama?",
+        a: "Presence expectations are light for most routes, though keeping ties supports renewal and the path to permanent residency and citizenship. [VERIFY current presence rules.]",
+      },
+      {
+        q: "Can I include my family?",
+        a: "Yes. Spouses and dependent children are typically included, with dependent parents possible in some cases. [VERIFY current dependant rules.]",
+      },
+      {
+        q: "How long until citizenship?",
+        a: "Citizenship by naturalisation generally becomes possible after about 5 years of residency, subject to conditions. [VERIFY current timeline.]",
+      },
+      {
+        q: "Which routes are available?",
+        a: "The Friendly Nations Visa, the Qualified Investor Visa and the Pensionado programme. We confirm the current thresholds for you at qualification.",
+      },
+    ],
+    author: { name: "[PLACEHOLDER: named advisor]", title: "[PLACEHOLDER: title + credentials]" },
+    sources: [{ label: "[PLACEHOLDER: official Panama immigration source]", url: "#" }],
+    lastReviewed: "[PLACEHOLDER: date]",
+  },
+
+  "sao-tome": {
+    whoItSuits: [
+      "Budget-led applicants who want one of the most affordable second citizenships in the market, with no physical residency required.",
+      "Families wanting lifetime citizenship that can be included for a spouse and dependants.",
+      "Those who value discreet processing and a single, straightforward contribution route.",
+    ],
+    investmentRoutes: [
+      {
+        name: "National development fund contribution",
+        detail:
+          "A one-time donation to a government development fund. The single qualifying route and one of the lowest entry points in the market. [VERIFY current minimum, family bands and that the programme is currently accepting applications.]",
+      },
+    ],
+    taxNote:
+      "Holding citizenship of Sao Tome & Principe does not by itself make you tax-resident there, and there is no physical-presence requirement. Your tax position depends on where you actually live. We coordinate with qualified tax advisers rather than giving tax advice.",
+    faqs: [
+      {
+        q: "Do I have to live in Sao Tome?",
+        a: "No. There is no physical residency requirement to obtain or keep the citizenship.",
+      },
+      {
+        q: "Can I include my family?",
+        a: "Yes. A spouse and dependent children can be included. [VERIFY current dependant rules.]",
+      },
+      {
+        q: "How strong is the passport?",
+        a: "Visa-free access is more limited than the established Caribbean programmes, at roughly 63 destinations, so it suits budget and optionality goals more than mobility. [VERIFY current count.]",
+      },
+      {
+        q: "Which route is available?",
+        a: "A single contribution to the national development fund. We confirm the current minimum and that the programme is active for you at qualification.",
+      },
+    ],
+    author: { name: "[PLACEHOLDER: named advisor]", title: "[PLACEHOLDER: title + credentials]" },
+    sources: [{ label: "[PLACEHOLDER: official Sao Tome programme source]", url: "#" }],
+    lastReviewed: "[PLACEHOLDER: date]",
+  },
+
+  serbia: {
+    whoItSuits: [
+      "Applicants seeking a European citizenship as a strategic gateway, available through an exclusive partner arrangement.",
+      "Clients who want a Schengen-access bridge alongside a longer EU residency or citizenship plan.",
+      "Those comfortable with a route confirmed case by case rather than a standard published programme.",
+    ],
+    investmentRoutes: [
+      {
+        name: "Investment route via partner network",
+        detail:
+          "Serbia is offered through an exclusive partner arrangement rather than a standard published citizenship-by-investment programme. The qualifying structure and amount are confirmed case by case. [VERIFY exact route, legal basis and current availability before quoting anything to a client.]",
+      },
+    ],
+    taxNote:
+      "Serbian citizenship does not by itself make you tax-resident in Serbia, which depends on where you actually live and spend time. We coordinate with qualified tax advisers rather than giving tax advice.",
+    faqs: [
+      {
+        q: "How does the Serbia route work?",
+        a: "It is offered through an exclusive partner network rather than a standard programme, so the structure is confirmed individually. We walk you through the current route at qualification. [VERIFY current mechanism.]",
+      },
+      {
+        q: "Does it give Schengen access?",
+        a: "Serbia is an EU candidate country and its passport offers strong regional mobility, which can serve as a bridge during a longer EU plan. [VERIFY current visa-free and Schengen position.]",
+      },
+      {
+        q: "Can I include my family?",
+        a: "Family inclusion is typically possible. We confirm the current dependant rules with our partner for your case. [VERIFY current dependant rules.]",
+      },
+      {
+        q: "How long does it take?",
+        a: "Timelines are longer than the Caribbean programmes, around 9 months in our experience, and depend on the specific structure. We confirm the current timeline for you at qualification.",
+      },
+    ],
+    author: { name: "[PLACEHOLDER: named advisor]", title: "[PLACEHOLDER: title + credentials]" },
+    sources: [{ label: "[PLACEHOLDER: partner / official Serbia source]", url: "#" }],
+    lastReviewed: "[PLACEHOLDER: date]",
+  },
+
+  "sierra-leone": {
+    whoItSuits: [
+      "Budget-led applicants who want a low-cost second citizenship with no physical residency requirement.",
+      "Those who value discretion and a straightforward contribution route.",
+      "Families wanting lifetime citizenship that can include a spouse and dependants.",
+    ],
+    investmentRoutes: [
+      {
+        name: "National development fund contribution",
+        detail:
+          "A one-time donation to a government development fund. A low-cost single route with no residency requirement. [VERIFY current minimum, family bands and that the programme is currently accepting applications.]",
+      },
+    ],
+    taxNote:
+      "Holding citizenship of Sierra Leone does not by itself make you tax-resident there, and there is no physical-presence requirement. Your tax position depends on where you actually live. We coordinate with qualified tax advisers rather than giving tax advice.",
+    faqs: [
+      {
+        q: "Do I have to live in Sierra Leone?",
+        a: "No. There is no physical residency requirement to obtain or keep the citizenship.",
+      },
+      {
+        q: "Can I include my family?",
+        a: "Yes. A spouse and dependent children can be included. [VERIFY current dependant rules.]",
+      },
+      {
+        q: "How strong is the passport?",
+        a: "Visa-free access is more limited than the established Caribbean programmes, at roughly 73 destinations, so it suits budget and optionality goals more than mobility. [VERIFY current count.]",
+      },
+      {
+        q: "Which route is available?",
+        a: "A single contribution to the national development fund. We confirm the current minimum and that the programme is active for you at qualification.",
+      },
+    ],
+    author: { name: "[PLACEHOLDER: named advisor]", title: "[PLACEHOLDER: title + credentials]" },
+    sources: [{ label: "[PLACEHOLDER: official Sierra Leone programme source]", url: "#" }],
+    lastReviewed: "[PLACEHOLDER: date]",
+  },
+
+  slovakia: {
+    whoItSuits: [
+      "Entrepreneurs who want EU residency and Schengen access through a genuine Slovak business, at a low setup cost.",
+      "Those wanting a central European base with a long-term path to EU citizenship.",
+      "Applicants comfortable running real business activity to support the permit.",
+    ],
+    investmentRoutes: [
+      {
+        name: "Business establishment",
+        detail:
+          "EU residency through forming and running a Slovak company, with the permit tied to genuine business activity rather than a passive investment. [VERIFY current capital, substance and renewal requirements.]",
+      },
+    ],
+    taxNote:
+      "A Slovak residency permit does not by itself change your tax residency, which depends on where you actually live and spend time. EU residency and Schengen access follow from the permit. We coordinate with qualified tax advisers rather than giving tax advice.",
+    faqs: [
+      {
+        q: "Do I have to live in Slovakia?",
+        a: "The permit is tied to genuine business activity, and renewal and the path to permanent residency depend on real substance and presence. [VERIFY current presence rules.]",
+      },
+      {
+        q: "Can I include my family?",
+        a: "Yes. Spouses and dependent children can generally join under family reunification. [VERIFY current dependant rules.]",
+      },
+      {
+        q: "Does it give Schengen access?",
+        a: "Yes. A Slovak residency permit provides access to the Schengen area on the standard terms for residents. [VERIFY current rules.]",
+      },
+      {
+        q: "How does the route work?",
+        a: "You establish and operate a Slovak company, and the residency permit is granted on the basis of that business activity. We confirm the current requirements for you at qualification.",
+      },
+    ],
+    author: { name: "[PLACEHOLDER: named advisor]", title: "[PLACEHOLDER: title + credentials]" },
+    sources: [{ label: "[PLACEHOLDER: official Slovakia immigration source]", url: "#" }],
+    lastReviewed: "[PLACEHOLDER: date]",
+  },
+
+  "st-kitts-and-nevis": {
+    whoItSuits: [
+      "Applicants who want the oldest and most established CBI programme, with no residency requirement.",
+      "Travellers who value visa-free or visa-on-arrival access to roughly 156 destinations, including the UK and the Schengen area.",
+      "Families wanting a reputable, tax-friendly second passport that includes dependants.",
+    ],
+    investmentRoutes: [
+      {
+        name: "Sustainable Island State Contribution",
+        detail:
+          "A one-time donation to the government fund. The primary single-applicant route. [VERIFY current minimum and family bands.]",
+      },
+      {
+        name: "Approved real estate",
+        detail:
+          "Purchase in an approved development or an approved private home, held for a minimum period before resale. [VERIFY current minimum value and holding period.]",
+      },
+    ],
+    taxNote:
+      "St Kitts & Nevis does not tax worldwide income, capital gains or inheritance for individuals who are not tax-resident there, and holding the passport does not by itself make you tax-resident. Your position depends on where you actually live and are taxed. We coordinate with qualified tax advisers rather than giving tax advice.",
+    faqs: [
+      {
+        q: "Do I have to live in St Kitts & Nevis?",
+        a: "No. There is no residency or physical-presence requirement to obtain or keep the citizenship.",
+      },
+      {
+        q: "Can I include my family?",
+        a: "Yes. A spouse, dependent children and, in many cases, dependent parents and siblings can be included. [VERIFY current dependant rules.]",
+      },
+      {
+        q: "How strong is the passport?",
+        a: "It gives visa-free or visa-on-arrival access to roughly 156 countries, including the UK and the Schengen area. [VERIFY current count.]",
+      },
+      {
+        q: "Which investment routes are open now?",
+        a: "The Sustainable Island State Contribution and approved real estate. We confirm current thresholds for you at qualification.",
+      },
+    ],
+    author: { name: "[PLACEHOLDER: named advisor]", title: "[PLACEHOLDER: title + credentials]" },
+    sources: [{ label: "[PLACEHOLDER: official St Kitts & Nevis CIU source]", url: "#" }],
+    lastReviewed: "[PLACEHOLDER: date]",
+  },
+
+  "st-lucia": {
+    whoItSuits: [
+      "Applicants who want a best-value Caribbean passport with a choice of investment routes and no residency requirement.",
+      "Travellers who value visa-free or visa-on-arrival access to roughly 146 destinations, including the UK and the Schengen area.",
+      "Families wanting a tax-friendly second citizenship that includes dependants.",
+    ],
+    investmentRoutes: [
+      {
+        name: "National Economic Fund donation",
+        detail:
+          "A one-time contribution to the government fund. The most direct single-applicant route. [VERIFY current minimum and family bands.]",
+      },
+      {
+        name: "Approved real estate",
+        detail:
+          "Purchase in an approved development, held for a minimum period before resale. [VERIFY current minimum value and holding period.]",
+      },
+      {
+        name: "Government bonds",
+        detail:
+          "Purchase of non-interest-bearing government bonds, held for a set term. [VERIFY current minimum, term and whether this route is currently open.]",
+      },
+      {
+        name: "Enterprise project",
+        detail:
+          "An approved business investment, made alone or jointly. [VERIFY current minimum and approval criteria.]",
+      },
+    ],
+    taxNote:
+      "St Lucia does not tax worldwide income, capital gains or inheritance for individuals who are not tax-resident there, and holding the passport does not by itself make you tax-resident. Your position depends on where you actually live and are taxed. We coordinate with qualified tax advisers rather than giving tax advice.",
+    faqs: [
+      {
+        q: "Do I have to live in St Lucia?",
+        a: "No. There is no residency or physical-presence requirement to obtain or keep the citizenship.",
+      },
+      {
+        q: "Can I include my family?",
+        a: "Yes. A spouse, dependent children and, in many cases, dependent parents and siblings can be included. [VERIFY current dependant rules.]",
+      },
+      {
+        q: "How strong is the passport?",
+        a: "It gives visa-free or visa-on-arrival access to roughly 146 countries, including the UK and the Schengen area. [VERIFY current count.]",
+      },
+      {
+        q: "Which investment routes are open now?",
+        a: "The National Economic Fund donation, approved real estate, government bonds and an enterprise project. We confirm which routes are currently open and their thresholds for you at qualification.",
+      },
+    ],
+    author: { name: "[PLACEHOLDER: named advisor]", title: "[PLACEHOLDER: title + credentials]" },
+    sources: [{ label: "[PLACEHOLDER: official St Lucia CIU source]", url: "#" }],
+    lastReviewed: "[PLACEHOLDER: date]",
+  },
+
+  dubai: {
+    whoItSuits: [
+      "Entrepreneurs and investors who want a zero-income-tax base with world-class infrastructure and a strategic global location.",
+      "Property buyers who want a long-term, renewable residency tied to UAE real estate.",
+      "Families seeking a secure, well-connected home base with strong mobility, around 183 destinations.",
+    ],
+    investmentRoutes: [
+      {
+        name: "Property investment",
+        detail:
+          "Purchase of qualifying UAE real estate at or above the Golden Visa threshold secures a long-term, renewable residency. [VERIFY current property threshold and visa length.]",
+      },
+      {
+        name: "Business or company setup",
+        detail:
+          "Establishing or investing in a UAE company, mainland or free zone, supports a residency visa for owners and, in some cases, family and staff. [VERIFY current capital and structure requirements.]",
+      },
+      {
+        name: "Talent and specialist categories",
+        detail:
+          "Additional Golden Visa categories exist for specified professionals, investors and exceptional talent. [VERIFY current eligibility categories.]",
+      },
+    ],
+    taxNote:
+      "The UAE levies no personal income tax, which is a common reason to base in Dubai. A corporate tax now applies to certain business profits, and your overall position still depends on where you are tax-resident. [VERIFY current corporate-tax rules.] We coordinate with qualified tax advisers rather than giving tax advice.",
+    faqs: [
+      {
+        q: "Do I have to live in Dubai?",
+        a: "Long-term residency visas carry presence expectations to keep them valid, though these are lighter than full relocation in some categories. [VERIFY current minimum-presence rules to maintain the visa.]",
+      },
+      {
+        q: "Is income really tax-free?",
+        a: "The UAE has no personal income tax. A corporate tax applies to certain business profits, so company structures need planning. [VERIFY current rules.]",
+      },
+      {
+        q: "Can I include my family?",
+        a: "Yes. Spouses, dependent children and, in some cases, parents and domestic staff can be sponsored. [VERIFY current dependant rules.]",
+      },
+      {
+        q: "Which routes are available?",
+        a: "Qualifying property investment, business or company setup, and talent or specialist categories. We confirm the current thresholds for you at qualification.",
+      },
+    ],
+    author: { name: "[PLACEHOLDER: named advisor]", title: "[PLACEHOLDER: title + credentials]" },
+    sources: [{ label: "[PLACEHOLDER: official UAE / Dubai Golden Visa source]", url: "#" }],
+    lastReviewed: "[PLACEHOLDER: date]",
+  },
+
+  vanuatu: {
+    whoItSuits: [
+      "Applicants who want the fastest second passport available, often in around 1 to 2 months, with no residency requirement.",
+      "Those who value a zero-tax jurisdiction with no income, capital gains or inheritance tax.",
+      "Families wanting a remote, straightforward application with a single contribution route.",
+    ],
+    investmentRoutes: [
+      {
+        name: "Development Support Program contribution",
+        detail:
+          "A single donation route to a national development fund, processed faster than any other citizenship-by-investment programme. [VERIFY current minimum and family bands.]",
+      },
+    ],
+    taxNote:
+      "Vanuatu levies no personal income, capital gains or inheritance tax, and holding the passport does not by itself make you tax-resident there. Your position depends on where you actually live and are taxed. We coordinate with qualified tax advisers rather than giving tax advice.",
+    faqs: [
+      {
+        q: "Do I have to live in Vanuatu?",
+        a: "No. There is no residency or physical-presence requirement, and the whole process can be completed remotely.",
+      },
+      {
+        q: "How fast is it?",
+        a: "Vanuatu is the fastest CBI on the market, often processing in around 1 to 2 months. We confirm the current timeline for you at qualification.",
+      },
+      {
+        q: "How strong is the passport?",
+        a: "Visa-free access is narrower than the Caribbean programmes, at roughly 96 destinations, and EU and Schengen access has been subject to change. [VERIFY current visa-free access, including the Schengen position, before quoting.]",
+      },
+      {
+        q: "Can I include my family?",
+        a: "Yes. A spouse, dependent children and, in many cases, dependent parents can be included. [VERIFY current dependant rules.]",
+      },
+    ],
+    author: { name: "[PLACEHOLDER: named advisor]", title: "[PLACEHOLDER: title + credentials]" },
+    sources: [{ label: "[PLACEHOLDER: official Vanuatu programme source]", url: "#" }],
+    lastReviewed: "[PLACEHOLDER: date]",
+  },
 };
