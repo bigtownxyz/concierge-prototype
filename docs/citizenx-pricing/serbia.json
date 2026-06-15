@@ -1,0 +1,34 @@
+{
+  "programme": "Serbia",
+  "slug": "serbia",
+  "sourceUrls": [
+    "https://citizenx.com/serbia",
+    "https://citizenx.com/citizenship-investment/serbia",
+    "https://citizenx.com/insights/serbian-citizenship-investment"
+  ],
+  "retrieved": "2026-06-05",
+  "currency": "EUR",
+  "familyRules": "Spouse naturalisation permitted under Article 19 on identical terms. Dependants may be included but are processed separately: approximately 2-3 months for their citizenship approval, after which they must travel to Serbia. Per-dependant pricing bands: not shown.",
+  "routes": [
+    {
+      "name": "Citizenship by Merit (Company incorporation and donation)",
+      "status": "open",
+      "baseComposition": "Main applicant",
+      "governmentContribution": 172500,
+      "governmentFees": 177500,
+      "dueDiligencePerAdult": null,
+      "citizenxServiceFee": 25000,
+      "allInSingleApplicant": 375000,
+      "familyIncrements": [],
+      "processing": "3 months official government processing time",
+      "notes": "RESTRICTED / BY-EXCEPTION: the route is described as only open to high-profile individuals with a clean criminal record (citizenship by exception/merit under Article 19 of the Law on Citizenship). Physical presence REQUIRED: two mandatory visits to Belgrade (3-5 days initially, then 5-7 days after approval). Breakdown: contribution EUR 172,500 + government fees EUR 177,500 + CitizenX fee EUR 25,000 = EUR 375,000 (reconciles exactly). Includes legal representation, 24/7 concierge, company incorporation costs and first-year maintenance (accounting). The non-refundable government contribution is included in the total. NOTE: CitizenX's /insights/serbian-citizenship-investment article describes a SEPARATE real-estate residency-to-citizenship path (no formal CBI, ~6 years to naturalisation) which is a different route and not priced here."
+    }
+  ],
+  "closedOrUnavailableRoutes": [],
+  "uncertain": [
+    "Status modelled as 'open' but is effectively by-exception only (high-profile applicants, clean record) - not a standard open CBI programme.",
+    "Due diligence fee per adult: not shown (no separate DD line item).",
+    "Family/dependant pricing bands: not shown - dependants processed separately, cost increments behind interactive quote.",
+    "Single-sourced pricing (the /serbia programme page); breakdown reconciles to the cent (172,500 + 177,500 + 25,000 = 375,000) which supports accuracy."
+  ]
+}

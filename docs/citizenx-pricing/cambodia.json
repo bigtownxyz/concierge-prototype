@@ -1,0 +1,24 @@
+{
+  "programme": "Cambodia",
+  "slug": "cambodia",
+  "sourceUrls": [
+    "https://citizenx.com/cambodia",
+    "https://citizenx.com/citizenship-investment/cambodia"
+  ],
+  "retrieved": "2026-06-05",
+  "currency": "KHR",
+  "familyRules": "Not shown. A site visit is required. Dual citizenship permitted.",
+  "routes": [],
+  "closedOrUnavailableRoutes": [
+    {
+      "name": "Whole programme (no CitizenX-offered routes)",
+      "reason": "CitizenX states verbatim: \"We do not have any options for this country that meet our standards yet.\" Page adds \"Please check back soon or contact us to get notified when we have new options.\" No priced route, government fees, due diligence, service fee, or all-in total is available. The underlying Cambodia programme has a stated minimum donation of USD 245,000 (approx; quoted in KHR ~1 billion Riel), visit required, processing ~6 months to passport, currency KHR; but CitizenX offers no quote at this time."
+    }
+  ],
+  "uncertain": [
+    "/cambodia/cost slug 404s; data taken from /cambodia main programme page.",
+    "No CitizenX routes meet their standards yet, so no pricing is offered (no quote available).",
+    "USD 245,000 minimum donation is the underlying programme figure shown on the page, not a CitizenX-priced all-in.",
+    "Processing time shown as ~6 months to passport on one fetch; current government processing data flagged unavailable on another. Treat as uncertain."
+  ]
+}

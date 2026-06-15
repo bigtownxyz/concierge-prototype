@@ -1,0 +1,38 @@
+{
+  "programme": "Egypt",
+  "slug": "egypt",
+  "sourceUrls": [
+    "https://citizenx.com/citizenship-investment/egypt",
+    "https://citizenx.com/egypt"
+  ],
+  "retrieved": "2026-06-05",
+  "currency": "USD",
+  "familyRules": "Family-composition / eligibility rules not shown in rendered page content. Dual citizenship is allowed. null pending interactive calculator.",
+  "routes": [
+    {
+      "name": "Deposit (refundable bank deposit)",
+      "status": "open",
+      "baseComposition": "Single / main applicant",
+      "governmentContribution": 500000,
+      "governmentFees": null,
+      "dueDiligencePerAdult": null,
+      "citizenxServiceFee": null,
+      "allInSingleApplicant": null,
+      "familyIncrements": [],
+      "processing": null,
+      "notes": "USD 500,000 refundable deposit, \"refundable in the local currency after 3 years without interest\". Currency USD (deposit denominated USD, refunded in EGP). Government fees, due diligence, CitizenX service fee, all-in total and family increments not shown in rendered page."
+    }
+  ],
+  "closedOrUnavailableRoutes": [
+    {
+      "name": "Contribute to Egypt economy (non-refundable treasury contribution)",
+      "reason": "Marked \"Not available\" on CitizenX. USD 250,000 non-refundable contribution to the state treasury. Processing time shown as \"Current data is not available, please talk with your Concierge\". Route currently not offered / unavailable via CitizenX."
+    }
+  ],
+  "uncertain": [
+    "/egypt/cost slug 404s; data taken from /citizenship-investment/egypt and /egypt main programme pages.",
+    "No CitizenX fee breakdown (government fees, DD per adult, service fee, all-in total) rendered for any Egypt route.",
+    "Family-composition increments and eligibility rules not shown.",
+    "Treasury-contribution route ($250,000) explicitly flagged 'Not available' on CitizenX even though it exists in the underlying programme."
+  ]
+}

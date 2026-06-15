@@ -1,0 +1,35 @@
+{
+  "programme": "El Salvador",
+  "slug": "el-salvador",
+  "sourceUrls": [
+    "https://citizenx.com/citizenship-investment/el-salvador",
+    "https://citizenx.com/el-salvador"
+  ],
+  "retrieved": "2026-06-05",
+  "currency": "USD",
+  "familyRules": "Spouse and children under 18 can be included in the application. Each additional family member pays the $999 administrative/application fee but does NOT require a separate $1,000,000 contribution. Parents/grandparents and siblings: not shown.",
+  "routes": [
+    {
+      "name": "Freedom Passport (Bitcoin/USDT contribution)",
+      "status": "open",
+      "baseComposition": "Main applicant only (spouse + children under 18 addable at $999 each)",
+      "governmentContribution": 1000000,
+      "governmentFees": 999,
+      "dueDiligencePerAdult": null,
+      "citizenxServiceFee": 21000,
+      "allInSingleApplicant": 1021000,
+      "familyIncrements": [
+        {"label": "Per additional dependant (spouse or child under 18) - application fee only, no extra contribution", "amount": 999}
+      ],
+      "processing": "6 weeks official government processing; 10 to 12 weeks total end-to-end",
+      "notes": "Non-refundable $1,000,000 contribution payable in Bitcoin (BTC) or USDT. Annual quota of 1,000 applicants. No residency requirement, no language test, no in-person interview. Headline all-in of $1,021,000 = $1,000,000 contribution + $21,000 CitizenX fee; the $999 government/application fee appears to sit on top per applicant (see uncertain)."
+    }
+  ],
+  "closedOrUnavailableRoutes": [],
+  "uncertain": [
+    "Stated headline all-in $1,021,000 = contribution ($1,000,000) + CitizenX fee ($21,000) only; the $999 government/application fee is per-applicant and appears to be charged ON TOP, so a true single-applicant all-in may be ~$1,021,999. Source is ambiguous.",
+    "Source small-model extraction listed both an 'application fee $999' and a 'government fee $999' as separate items; these are most likely the SAME single $999 fee double-listed, not two distinct $999 charges.",
+    "Due diligence fee per adult: not shown (no separate DD line item published).",
+    "Parent/grandparent and sibling eligibility/pricing: not shown."
+  ]
+}

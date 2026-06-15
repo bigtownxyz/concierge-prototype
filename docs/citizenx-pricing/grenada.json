@@ -1,0 +1,44 @@
+{
+  "programme": "Grenada",
+  "slug": "grenada",
+  "sourceUrls": ["https://citizenx.com/grenada/cost"],
+  "retrieved": "2026-06-05",
+  "currency": "USD",
+  "familyRules": "Spouse any age; children under 18; dependent children 18-30 with sworn affidavit; children 18+ with disability if fully supported; parents/grandparents over 55 if fully supported; parents/grandparents under 55 if fully supported (+USD 50,000); siblings 18+ single childless (+USD 75,000); newborns within 12 months of approval may be added within 6 months of birth.",
+  "routes": [
+    {
+      "name": "National Transformation Fund (NTF) donation",
+      "status": "open",
+      "baseComposition": "Main applicant + up to 3 dependants",
+      "governmentContribution": 235000,
+      "governmentFees": 15250,
+      "dueDiligencePerAdult": null,
+      "citizenxServiceFee": 25025,
+      "allInSingleApplicant": 275275,
+      "familyIncrements": [
+        {"label": "Each additional dependant beyond base", "amount": 25000},
+        {"label": "Dependent parent/grandparent under 55", "amount": 50000},
+        {"label": "Dependent sibling", "amount": 75000}
+      ],
+      "processing": "5-7 months",
+      "notes": "Main + up to 3 dependants covered by the USD 275,275 all-in."
+    },
+    {
+      "name": "Approved real estate",
+      "status": "open",
+      "baseComposition": "Main applicant + up to 3 dependants",
+      "governmentContribution": 50000,
+      "governmentFees": null,
+      "dueDiligencePerAdult": null,
+      "citizenxServiceFee": null,
+      "allInSingleApplicant": null,
+      "familyIncrements": [
+        {"label": "Each additional dependant", "amount": 25000}
+      ],
+      "processing": "5-7 months",
+      "notes": "Real estate minimum USD 350,000 sole / USD 270,000 per share (shared). + USD 50,000 government contribution. 5-year hold before resale. All-in not quoted statically."
+    }
+  ],
+  "closedOrUnavailableRoutes": [],
+  "uncertain": ["dueDiligencePerAdult not shown statically", "real-estate route all-in not quoted (calculator-gated)"]
+}

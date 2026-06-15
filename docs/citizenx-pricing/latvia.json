@@ -1,0 +1,47 @@
+{
+  "programme": "Latvia",
+  "slug": "latvia",
+  "sourceUrls": [
+    "https://citizenx.com/residency/latvia",
+    "https://citizenx.com/latvia"
+  ],
+  "retrieved": "2026-06-05",
+  "currency": "EUR",
+  "familyRules": "Family-composition / eligibility rules not shown in rendered page content; page exposes an \"Include someone else\" option to add family members. Annual visit required. Time to passport (naturalisation) stated as 10 years. null pending interactive calculator.",
+  "routes": [
+    {
+      "name": "Equity investment",
+      "status": "open",
+      "baseComposition": "Single / main applicant",
+      "governmentContribution": 50000,
+      "governmentFees": null,
+      "dueDiligencePerAdult": null,
+      "citizenxServiceFee": null,
+      "allInSingleApplicant": 95000,
+      "familyIncrements": [],
+      "processing": "4 weeks",
+      "notes": "Residency-by-investment (RBI), not citizenship. EUR 50,000 in company share capital. CitizenX total cost shown as EUR 95,000 for a single applicant (difficulty: Moderate). Component breakdown (government fees, DD per adult, CitizenX service fee) not itemised in rendered page; the ~EUR 45,000 gap above the 50,000 equity covers fees but is not itemised. Family increments not shown."
+    },
+    {
+      "name": "Bank deposit",
+      "status": "open",
+      "baseComposition": "Single / main applicant",
+      "governmentContribution": 280000,
+      "governmentFees": null,
+      "dueDiligencePerAdult": null,
+      "citizenxServiceFee": null,
+      "allInSingleApplicant": 340000,
+      "familyIncrements": [],
+      "processing": "4 weeks",
+      "notes": "EUR 280,000 in a Latvian bank. CitizenX total cost shown as EUR 340,000 for a single applicant (difficulty: Simple). Component breakdown (government fees, DD per adult, CitizenX service fee) not itemised in rendered page; the ~EUR 60,000 gap above the 280,000 deposit covers fees but is not itemised. Family increments not shown."
+    }
+  ],
+  "closedOrUnavailableRoutes": [],
+  "uncertain": [
+    "/latvia/cost slug 404s; data taken from /residency/latvia and /latvia main programme pages.",
+    "Latvia is residency-by-investment (RBI), not citizenship; ~10 years to naturalisation.",
+    "Fee components (government fees, DD per adult, CitizenX service fee) not itemised; only the investment minimum and the CitizenX all-in single-applicant total are shown.",
+    "Family-composition increments and eligibility rules not shown.",
+    "Processing '4 weeks' is the official residency-permit estimate shown on the page."
+  ]
+}

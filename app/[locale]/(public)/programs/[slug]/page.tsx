@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PROGRAMS, PROGRAMME_GUIDES, SITE_URL } from "@/lib/constants";
 import { JsonLd } from "@/components/shared/JsonLd";
-import { ProgrammeGuide } from "@/components/programs/ProgrammeGuide";
 import { FeeBreakdown } from "@/components/programs/FeeBreakdown";
 import { ProgramDetail } from "./program-detail";
 
@@ -81,14 +80,10 @@ export default async function ProgramDetailPage({ params }: Props) {
   return (
     <>
       <JsonLd data={schema} />
+      {/* Guided programmes render the lean sticky-rail body (with costs) inside
+          ProgramDetail. Unguided ones keep the original layout + fee breakdown. */}
       <ProgramDetail program={program} />
-      {guide ? (
-        // Full guide (includes the fee breakdown in its costs slot)
-        <ProgrammeGuide program={program} guide={guide} />
-      ) : (
-        // Every other programme still gets the transparent fee breakdown
-        <FeeBreakdown program={program} />
-      )}
+      {!guide && <FeeBreakdown program={program} />}
     </>
   );
 }

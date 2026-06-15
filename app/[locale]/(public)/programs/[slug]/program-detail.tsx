@@ -17,6 +17,7 @@ import {
 import { addProgrammeToApplication } from "@/lib/concierge-apply-signup";
 import { useRouter } from "@/i18n/navigation";
 import { programHasImage } from "@/lib/constants";
+import { ProgrammeRail } from "@/components/programs/ProgrammeRail";
 
 // ---------------------------------------------------------------------------
 // Benefit icon mapping
@@ -384,6 +385,32 @@ export function ProgramDetail({ program }: { program: Program }) {
 
   const designationLabel = program.exclusive ? "Exclusive" : "Premium Designation";
 
+  // Guided programmes render the lean sticky-rail body instead of the
+  // radar / bento / protocols / timeline / CTA sections below.
+  const guide = PROGRAMME_GUIDES[program.slug];
+  const railSubject =
+    program.country && program.country !== "Global" ? program.country : program.name;
+  const railCtaLabel =
+    program.comingSoon || hasExistingApplication
+      ? enquireLabel
+      : `Enquire about ${railSubject}`;
+  const railCta = (
+    <button
+      type="button"
+      onClick={openApply}
+      disabled={enquireDisabled}
+      className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold transition-all disabled:cursor-not-allowed"
+      style={{
+        background: enquireDisabled ? "rgba(143,144,149,0.18)" : "var(--color-obsidian-primary)",
+        color: enquireDisabled ? "rgba(198,198,203,0.55)" : "var(--color-obsidian-on-primary)",
+        border: "none",
+      }}
+    >
+      <span className="material-symbols-outlined text-[16px]">{enquireIcon}</span>
+      {railCtaLabel}
+    </button>
+  );
+
   return (
     <div
       className="min-h-[85vh]"
@@ -519,9 +546,45 @@ export function ProgramDetail({ program }: { program: Program }) {
               >
                 {program.marketingHook}
               </motion.p>
+
+              {/* Quick-glance badges  - shown in guided mode where the hero has no stats card */}
+              {hasGuide && (
+                <motion.div
+                  variants={fadeUp}
+                  custom={0.2}
+                  className="mt-7 flex flex-wrap gap-2.5"
+                >
+                  {program.visaFreeCount != null && (
+                    <span
+                      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[0.72rem]"
+                      style={{ background: "rgba(187,196,247,0.12)", color: "var(--color-obsidian-primary)" }}
+                    >
+                      <span className="material-symbols-outlined text-[14px]">flight_takeoff</span>
+                      {program.visaFreeCount} visa-free
+                    </span>
+                  )}
+                  {program.processingTimeMonths && (
+                    <span
+                      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[0.72rem]"
+                      style={{ background: "rgba(255,200,100,0.12)", color: "#FFC864" }}
+                    >
+                      <span className="material-symbols-outlined text-[14px]">schedule</span>
+                      {program.processingTimeMonths} months
+                    </span>
+                  )}
+                  <span
+                    className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[0.72rem]"
+                    style={{ background: "rgba(187,196,247,0.12)", color: "var(--color-obsidian-primary)" }}
+                  >
+                    <span className="material-symbols-outlined text-[14px]">badge</span>
+                    {program.type}
+                  </span>
+                </motion.div>
+              )}
             </motion.div>
 
-            {/* Right  - glass stats card */}
+            {/* Right  - glass stats card (hidden in guided mode; facts move to the rail) */}
+            {!hasGuide && (
             <motion.div
               className="lg:col-span-5"
               initial={{ opacity: 0, x: 24 }}
@@ -689,10 +752,15 @@ export function ProgramDetail({ program }: { program: Program }) {
                 </button>
               </GlassCard>
             </motion.div>
+            )}
           </div>
         </div>
       </section>
 
+      {/* Guided programmes render the lean sticky-rail body (below); everyone
+          else keeps the original radar / bento / protocols / timeline / CTA. */}
+      {!hasGuide ? (
+        <>
       {/* ------------------------------------------------------------------ */}
       {/* OVERVIEW + RADAR                                                     */}
       {/* ------------------------------------------------------------------ */}
@@ -1309,6 +1377,15 @@ export function ProgramDetail({ program }: { program: Program }) {
           </motion.div>
         </div>
       </section>
+        </>
+      ) : (
+        <ProgrammeRail
+          program={program}
+          guide={guide!}
+          cta={railCta}
+          onQuiz={() => setQualifyOpen(true)}
+        />
+      )}
 
       {/* ------------------------------------------------------------------ */}
       {/* MATERIAL SYMBOLS  - loaded via inline style tag                      */}

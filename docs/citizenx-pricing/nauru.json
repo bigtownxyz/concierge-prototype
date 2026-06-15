@@ -1,0 +1,32 @@
+{
+  "programme": "Nauru",
+  "slug": "nauru",
+  "sourceUrls": [
+    "https://citizenx.com/citizenship-investment/nauru",
+    "https://citizenx.com/nauru"
+  ],
+  "retrieved": "2026-06-05",
+  "currency": "USD",
+  "familyRules": "Applicants may include: spouse (legally married or de facto spouse relationship), children of any age from either applicant or spouse, parents and grandparents of either applicant or spouse, and siblings of either applicant or spouse. Restricted nationalities: Iran, North Korea, Russia, Belarus, Myanmar, Afghanistan, Yemen, Sudan.",
+  "routes": [
+    {
+      "name": "Economic and Climate Resilience Fund contribution",
+      "status": "open",
+      "baseComposition": "Single applicant",
+      "governmentContribution": 90000,
+      "governmentFees": 12700,
+      "dueDiligencePerAdult": null,
+      "citizenxServiceFee": 25675,
+      "allInSingleApplicant": 128375,
+      "familyIncrements": [],
+      "processing": "3 months government processing time",
+      "notes": "Non-refundable contribution to the Economic and Climate Resilience Fund. PROMOTIONAL PRICING: $90,000 contribution is a limited-time offer until June 30 (post-deadline pricing expected to rise). Breakdown: contribution $90,000 + government fees $12,700 + CitizenX fee $25,675 = $128,375 (reconciles exactly). No visit required; dual citizenship allowed. AUD listed as local currency but program pricing quoted in USD."
+    }
+  ],
+  "closedOrUnavailableRoutes": [],
+  "uncertain": [
+    "Due diligence fee per adult: not shown (no separate DD line item published).",
+    "Family-composition pricing bands (family of 2-4, larger families, per additional dependant, per parent/grandparent, per sibling): not shown - gated behind CitizenX 'Get family quote' interactive calculator.",
+    "$90,000 contribution is time-sensitive promotional pricing (limited-time offer until June 30); data retrieved 2026-06-05."
+  ]
+}

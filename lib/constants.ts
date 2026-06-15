@@ -731,6 +731,92 @@ export const PROGRAMME_GUIDES: Record<string, ProgrammeGuide> = {
     lastReviewed: "[PLACEHOLDER: date]",
   },
 
+  argentina: {
+    whoItSuits: [
+      "Applicants who want one of the world's fastest routes to a second citizenship, with naturalisation possible after roughly 2 years of residency. [VERIFY current naturalisation timeline.]",
+      "Remote workers and entrepreneurs drawn to a low cost of living and a residency that does not require a lump-sum investment.",
+      "Families wanting Mercosur access and a foothold in South America, with spouses and dependent children included.",
+    ],
+    investmentRoutes: [
+      {
+        name: "Rentista / income-based residency",
+        detail:
+          "Temporary residency based on a stable, provable monthly income rather than a lump-sum investment, renewing toward permanent residency. [VERIFY current minimum income and qualifying sources.]",
+      },
+      {
+        name: "Investor or business residency",
+        detail:
+          "Residency tied to a qualifying business or investment in Argentina, for applicants who prefer a capital-based route. [VERIFY current minimum investment and approval criteria.]",
+      },
+    ],
+    taxNote:
+      "An Argentine residency permit does not by itself fix your tax residency, which generally follows from how much time you spend in the country. Argentina taxes residents on worldwide income. Your position depends on your circumstances, and we coordinate with qualified tax advisers rather than giving tax advice.",
+    faqs: [
+      {
+        q: "Do I have to live in Argentina?",
+        a: "The path to citizenship is based on genuine residence, so meaningful time in the country is expected. [VERIFY current physical-presence rules.]",
+      },
+      {
+        q: "How fast can I get citizenship?",
+        a: "Naturalisation can become possible after around 2 years of continuous residency, one of the fastest timelines available. [VERIFY current rules.]",
+      },
+      {
+        q: "Can I include my family?",
+        a: "Yes. Spouses and dependent children are typically included on family residency applications. [VERIFY current dependant rules.]",
+      },
+      {
+        q: "Is an investment required?",
+        a: "Not necessarily. Income-based (rentista) residency is available without a lump-sum investment; an investor route also exists. We confirm the current options for you at qualification.",
+      },
+    ],
+    author: { name: "[PLACEHOLDER: named advisor]", title: "[PLACEHOLDER: title + credentials]" },
+    sources: [{ label: "[PLACEHOLDER: official Argentina migration source]", url: "#" }],
+    lastReviewed: "[PLACEHOLDER: date]",
+  },
+
+  "asset-protection-trust": {
+    whoItSuits: [
+      "Individuals and families who want to shield wealth from future lawsuits, creditors or political instability through a recognised legal structure.",
+      "Business owners and professionals in higher-liability fields seeking separation between personal and at-risk assets.",
+      "Anyone planning their estate across multiple jurisdictions who values privacy and orderly succession.",
+    ],
+    investmentRoutes: [
+      {
+        name: "Offshore trust formation",
+        detail:
+          "Establishing the trust in a creditor-friendly jurisdiction, with a licensed trustee holding assets under a deed tailored to your goals. [VERIFY current jurisdiction options and minimum funding.]",
+      },
+      {
+        name: "Trust with underlying holding company",
+        detail:
+          "Pairing the trust with a holding company for operating assets or investments, for added structure and control. [VERIFY current structuring options.]",
+      },
+    ],
+    taxNote:
+      "An asset protection trust is a wealth-structuring tool, not a tax-avoidance scheme, and it does not by itself change where you are tax-resident. Reporting obligations vary by your home country and the trust's jurisdiction. This is not tax or legal advice; we coordinate with qualified trust, tax and legal advisers.",
+    faqs: [
+      {
+        q: "Is this legal?",
+        a: "Yes. Asset protection trusts are an established, lawful structure when set up correctly and disclosed where required. They are not a way to hide assets or evade tax. [VERIFY any jurisdiction-specific disclosure rules.]",
+      },
+      {
+        q: "Do I lose control of my assets?",
+        a: "The structure is designed to balance protection with appropriate influence over how assets are managed and distributed, within the bounds that keep the protection effective. [VERIFY specifics with the structuring adviser.]",
+      },
+      {
+        q: "Which jurisdiction is best?",
+        a: "It depends on your residence, the assets involved and your goals. We help you weigh the recognised trust jurisdictions at consultation.",
+      },
+      {
+        q: "How long does it take to set up?",
+        a: "A straightforward structure can often be established quickly once documentation and KYC are complete. We confirm the timeline for your case at the outset.",
+      },
+    ],
+    author: { name: "[PLACEHOLDER: named advisor]", title: "[PLACEHOLDER: title + credentials]" },
+    sources: [{ label: "[PLACEHOLDER: official / legal source]", url: "#" }],
+    lastReviewed: "[PLACEHOLDER: date]",
+  },
+
   dominica: {
     whoItSuits: [
       "Budget-led applicants who want a full second passport without relocating: there is no residency requirement.",

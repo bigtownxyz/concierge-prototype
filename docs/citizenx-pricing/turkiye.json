@@ -1,0 +1,59 @@
+{
+  "programme": "Turkiye",
+  "slug": "turkiye",
+  "sourceUrls": [
+    "https://citizenx.com/turkey/cost"
+  ],
+  "retrieved": "2026-06-05",
+  "currency": "USD",
+  "familyRules": "Page exposes an \"Include someone else\" option to add family members, but the specific eligibility rules (spouse, child age limits, parents) are not shown in the rendered page content. null pending interactive calculator.",
+  "routes": [
+    {
+      "name": "Invest in real estate",
+      "status": "open",
+      "baseComposition": "Single / main applicant",
+      "governmentContribution": 400000,
+      "governmentFees": 8155,
+      "dueDiligencePerAdult": null,
+      "citizenxServiceFee": 40016,
+      "allInSingleApplicant": 448171,
+      "familyIncrements": [],
+      "processing": "3 months",
+      "notes": "Marked \"Popular option\". USD 400,000 minimum real-estate investment. Breakdown shown verbatim on cost page: investment $400,000 + government fees $8,155 + CitizenX fees $40,016 = $448,171 total per applicant. Due diligence per adult and family-composition increments not shown (require interactive calculator / signup)."
+    },
+    {
+      "name": "Bank deposit",
+      "status": "open",
+      "baseComposition": "Single / main applicant",
+      "governmentContribution": 500000,
+      "governmentFees": null,
+      "dueDiligencePerAdult": null,
+      "citizenxServiceFee": null,
+      "allInSingleApplicant": null,
+      "familyIncrements": [],
+      "processing": null,
+      "notes": "USD 500,000 minimum bank deposit. Fee breakdown and total not shown in rendered page (real-time estimate requires signup)."
+    },
+    {
+      "name": "Invest in government bonds",
+      "status": "open",
+      "baseComposition": "Single / main applicant",
+      "governmentContribution": 500000,
+      "governmentFees": null,
+      "dueDiligencePerAdult": null,
+      "citizenxServiceFee": null,
+      "allInSingleApplicant": null,
+      "familyIncrements": [],
+      "processing": null,
+      "notes": "USD 500,000 minimum government bond investment. Fee breakdown and total not shown in rendered page (real-time estimate requires signup)."
+    }
+  ],
+  "closedOrUnavailableRoutes": [],
+  "uncertain": [
+    "Cost calculator slug is /turkey/cost (not /turkiye/cost, which 404s).",
+    "Due diligence per adult not shown for any route.",
+    "Family-composition increments not shown; only single/main-applicant figures rendered.",
+    "Bank deposit and government bond routes show only the investment minimum, not the all-in total or CitizenX fee.",
+    "Processing '3 months' is the CitizenX-stated estimate on the page; a real-time estimate is gated behind signup."
+  ]
+}
