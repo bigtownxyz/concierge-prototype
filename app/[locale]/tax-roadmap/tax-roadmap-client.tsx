@@ -91,6 +91,35 @@ function SectionTitle({
   );
 }
 
+// Reusable inline CTA band, dropped at high-intent points between sections.
+function InlineCta({ lead }: { lead: string }) {
+  return (
+    <div className="flex flex-col items-center gap-5 rounded-2xl border border-[#bbc4f7]/25 bg-[#bbc4f7]/[0.05] px-7 py-7 text-center sm:flex-row sm:justify-between sm:px-9 sm:text-left">
+      <p
+        className="text-[1.15rem] font-semibold text-[#f1f2f6]"
+        style={DISPLAY_FONT}
+      >
+        {lead}
+      </p>
+      <button
+        type="button"
+        onClick={openCalendlyPopup}
+        className="inline-flex h-12 shrink-0 items-center gap-2 rounded-full px-7 text-sm font-semibold tracking-[0.01em] transition-transform duration-200 hover:scale-[1.02]"
+        style={{
+          background: "#bbc4f7",
+          color: "#242d58",
+          boxShadow: "0 12px 40px rgba(187,196,247,0.28)",
+        }}
+      >
+        Book your call · {PRICE}
+        <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
+          arrow_forward
+        </span>
+      </button>
+    </div>
+  );
+}
+
 export default function TaxRoadmapClient() {
   return (
     <div
@@ -393,6 +422,10 @@ function Deliverable() {
               ))}
             </div>
           </div>
+        </Reveal>
+
+        <Reveal delay={0.05} className="mt-10">
+          <InlineCta lead="Want this built around your situation?" />
         </Reveal>
       </div>
     </section>
@@ -716,6 +749,10 @@ function Destinations() {
             </Reveal>
           ))}
         </div>
+
+        <Reveal delay={0.05} className="mt-10">
+          <InlineCta lead="Not sure which fits you? That's what the call is for." />
+        </Reveal>
       </div>
     </section>
   );
