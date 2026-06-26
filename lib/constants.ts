@@ -2,6 +2,18 @@
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://thecitizenshipconcierge.com";
 
+/**
+ * Calendly event for the paid $500 Tax Roadmap Call (used on /tax-roadmap).
+ * Calendly event type with Stripe payment ($500) enabled, so the single link
+ * collects payment AND books the call in one step. Opened as a popup overlay,
+ * so we keep Calendly's clean default (light) styling and only brand the accent
+ * colour — a dark background override looks masked inside the popup frame and
+ * makes the date→time resize look janky.
+ */
+export const TAX_ROADMAP_CALENDLY_URL =
+  "https://calendly.com/lc-concierge/tax-roadmap-consultation" +
+  "?hide_gdpr_banner=1&primary_color=bbc4f7";
+
 export const NAV_LINKS = [
   { href: "/programs", label: "Programs" },
   { href: "/compare", label: "Compare" },
