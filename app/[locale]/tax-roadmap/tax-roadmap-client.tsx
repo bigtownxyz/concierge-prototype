@@ -187,7 +187,7 @@ function Hero() {
       />
 
       <div className="relative z-30">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl items-center justify-center px-6 py-6 lg:px-8">
           <Link href="/" aria-label="Concierge home">
             <Image
               src="/logo.svg"
@@ -198,9 +198,6 @@ function Hero() {
               priority
             />
           </Link>
-          <span className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[#9aa0b8]">
-            Tax Roadmap Call
-          </span>
         </div>
       </div>
 
