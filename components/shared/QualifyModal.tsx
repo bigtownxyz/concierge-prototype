@@ -62,6 +62,7 @@ interface FormData {
   country: string;
   nationality: string;
   situation: string;
+  newsletterOptOut: boolean;
 }
 
 const DRAFT_KEY = "concierge_qualification_draft";
@@ -83,6 +84,7 @@ const EMPTY_FORM: FormData = {
   nationality: "",
   situation: "",
   selectedPrograms: [],
+  newsletterOptOut: false,
 };
 
 export const TIMELINE_OPTIONS: { id: Timeline; label: string; desc: string }[] = [
@@ -995,6 +997,8 @@ function StepContact({
   onConstraintsToggle,
   constraintDetail,
   onConstraintDetailChange,
+  newsletterOptOut,
+  onNewsletterOptOutToggle,
 }: {
   data: Pick<FormData, "name" | "email" | "phone" | "country" | "nationality" | "situation">;
   onChange: <K extends keyof typeof data>(key: K, value: string) => void;
@@ -1002,6 +1006,8 @@ function StepContact({
   onConstraintsToggle: (v: string) => void;
   constraintDetail: string;
   onConstraintDetailChange: (v: string) => void;
+  newsletterOptOut: boolean;
+  onNewsletterOptOutToggle: (v: boolean) => void;
 }) {
   return (
     <div className="flex flex-col gap-5">
@@ -1162,6 +1168,32 @@ function StepContact({
             onBlur={(e) => { (e.currentTarget as HTMLTextAreaElement).style.borderColor = "rgba(69,71,75,0.3)"; }}
           />
         )}
+      </div>
+
+      {/* Newsletter opt-out */}
+      <div className="pt-4" style={{ borderTop: "1px solid rgba(69,71,75,0.2)" }}>
+        <button
+          type="button"
+          onClick={() => onNewsletterOptOutToggle(!newsletterOptOut)}
+          className="flex items-start gap-3 text-left text-sm transition-colors duration-150"
+          style={{ color: "#8f9095" }}
+        >
+          <div
+            className="w-4 h-4 mt-0.5 rounded flex items-center justify-center flex-shrink-0"
+            style={{
+              border: newsletterOptOut ? "2px solid #bbc4f7" : "2px solid rgba(69,71,75,0.5)",
+              background: newsletterOptOut ? "#bbc4f7" : "transparent",
+            }}
+          >
+            {newsletterOptOut && (
+              <span className="material-symbols-outlined" style={{ fontSize: 12, color: "#242d58" }}>check</span>
+            )}
+          </div>
+          <span>
+            Don&apos;t add me to the newsletter. By default we&apos;ll send occasional Concierge
+            insights and programme updates. You can unsubscribe at any time.
+          </span>
+        </button>
       </div>
     </div>
   );
@@ -1672,6 +1704,7 @@ function pushQualificationToLcCrm(
       phone: formData.phone || null,
       country: formData.country || null,
       nationality: formData.nationality || null,
+      newsletterSubscribed: !formData.newsletterOptOut,
       qualification: {
         strategicFocus: formData.strategicFocus,
         investmentAmount: formData.investmentAmount,
@@ -1690,6 +1723,19 @@ function pushQualificationToLcCrm(
       conciergeUserId: conciergeUserId ?? null,
     }),
   }).catch((err) => console.warn("[QualifyModal] LC CRM POST failed (non-fatal)", err));
+}
+
+// Fire-and-forget newsletter subscription. Skipped when the user opts out on
+// the contact step. The /api/newsletter route dedupes by email, so resubmitting
+// the quiz is harmless. Failures are non-fatal and never block the flow.
+function subscribeToNewsletter(email: string): void {
+  if (!email) return;
+  fetch("/api/newsletter", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    keepalive: true,
+    body: JSON.stringify({ email, source: "qualify-form" }),
+  }).catch((err) => console.warn("[QualifyModal] Newsletter subscribe failed (non-fatal)", err));
 }
 
 function markLcSignup(email: string, conciergeUserId: string): void {
@@ -2030,6 +2076,11 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
     // outage never blocks the user's flow. The proxy logs failures.
     pushQualificationToLcCrm(finalFormData, rankedPrograms, !!user, user?.id);
 
+    // Subscribe to the newsletter unless they opted out on the contact step.
+    if (!finalFormData.newsletterOptOut) {
+      subscribeToNewsletter(finalFormData.email);
+    }
+
     if (user) {
       try {
         await Promise.all([
@@ -2339,6 +2390,8 @@ export function QualifyModal({ isOpen, onClose, prefill }: QualifyModalProps) {
                           }
                           constraintDetail={formData.constraintDetail}
                           onConstraintDetailChange={(v) => setFormData((prev) => ({ ...prev, constraintDetail: v }))}
+                          newsletterOptOut={formData.newsletterOptOut}
+                          onNewsletterOptOutToggle={(v) => setFormData((prev) => ({ ...prev, newsletterOptOut: v }))}
                         />
                       )}
                       {saveError && step === 4 && (

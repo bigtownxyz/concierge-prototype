@@ -12,6 +12,8 @@ export interface LcQualificationIntakePayload {
   phone?: string | null;
   country?: string | null;
   nationality?: string | null;
+  /** Whether the lead is on the newsletter mailing list (false = opted out). */
+  newsletterSubscribed?: boolean;
   qualification: {
     strategicFocus: string[];
     investmentAmount: number | null;

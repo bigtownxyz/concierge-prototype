@@ -42,6 +42,9 @@ const PostSchema = z.object({
   phone: z.string().trim().max(50).nullable().optional(),
   country: z.string().trim().max(100).nullable().optional(),
   nationality: z.string().trim().max(100).nullable().optional(),
+  // Whether the lead is on the newsletter mailing list (false = opted out on
+  // the quiz). Forwarded to LC so the CRM can show subscription status.
+  newsletterSubscribed: z.boolean().optional(),
   qualification: QualificationSchema,
   signedUp: z.boolean().optional(),
   conciergeUserId: z.uuid().nullable().optional(),
